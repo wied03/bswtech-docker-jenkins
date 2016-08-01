@@ -1,0 +1,5 @@
+FROM centos:7
+
+RUN echo howdy
+
+TAG bswtech/rocker_first:1
