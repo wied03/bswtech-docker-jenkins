@@ -1,3 +1,6 @@
 require 'serverspec'
+require 'docker'
 
-set :backend, :exec
+image_id = `docker images -q bswtech/rocker_first:1`.strip
+set :backend, :docker
+set :docker_image, image_id
