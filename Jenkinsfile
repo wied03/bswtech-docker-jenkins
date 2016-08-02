@@ -15,7 +15,7 @@ node('docker.build') {
     stage 'Test dependencies'
     // TODO: rbenv is not being found (look at how we do it in TeamCity)
     // TODO: Add a .ruby-version
-    sh 'bash -c "rbenv shell 2.2.5 && ruby -v && bundle install"'
+    sh 'bash --login -c "rbenv shell 2.2.5 && ruby -v && bundle install"'
 
     stage 'Test image'
     sh 'bundle exec rake'
