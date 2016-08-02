@@ -11,7 +11,7 @@ node('docker.build') {
 
     stage 'Build image'
     sh 'rocker build'
-    docker.image('bswtech/rocker_first:1').withRun { c ->
+    docker.image('bswtech/rocker_first:1').inside {
       sh 'yum -v'
     }
   }
