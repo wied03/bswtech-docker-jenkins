@@ -14,16 +14,15 @@ node('docker.build') {
 
     def rubyVersion = '2.2.5'
     def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell ${rubyVersion} && ${cmd}'" }
-    stage 'Test dependencies'
-    // TODO: Add a .ruby-version
-    rubyShell('ruby -v')
-    rubyShell('bundle install')
+    stage 'Dependencies'
+    rubyShell 'ruby -v'
+    rubyShell 'bundle install'
 
-    stage 'Test image'
+    stage 'Test'
     // RSpec CI reporter
     env.GENERATE_REPORTS = 'true'
     try {
-      rubyShell('bundle exec rake')
+      rubyShell 'bundle exec rake'
     }
     finally {
       step([$class: 'JUnitResultArchiver',
@@ -36,8 +35,8 @@ node('docker.build') {
   }
 }
 
-stage 'Deploy Image'
-input 'Release GEM?'
+stage 'Publish Image'
+input 'Publish image'
 node('docker.build') {
   docker.image('ruby:2.2.4').inside {
     unstash 'packaged_gem'
