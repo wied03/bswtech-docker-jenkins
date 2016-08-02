@@ -12,13 +12,15 @@ node('docker.build') {
     stage 'Build image'
     sh 'rocker build'
 
+    def rubyVersion = '2.2.5'
+    def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell ${rubyVersion} && ${cmd}'" }
     stage 'Test dependencies'
-    // TODO: rbenv is not being found (look at how we do it in TeamCity)
     // TODO: Add a .ruby-version
-    sh 'bash --login -c "rbenv shell 2.2.5 && ruby -v && bundle install"'
+    rubyShell('ruby -v')
+    rubyShell('bundle install')
 
     stage 'Test image'
-    sh 'bundle exec rake'
+    rubyShell('bundle exec rake')
   }
   catch (any) {
     handleError()
