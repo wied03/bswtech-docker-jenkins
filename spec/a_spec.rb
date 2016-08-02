@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-describe 'Rockerfile' do
-  it "installs the right version of Ubuntu" do
-    expect(os_version).to include("Ubuntu 14")
-  end
+describe docker_image('bswtech/rocker_first:1') do
+  it { should exist }
 end
