@@ -1,3 +1,6 @@
+def majorVersion = '1.0'
+def imageTag = "bswtech/rocker_first:${majorVersion}.${env.BUILD_NUMBER}"
+
 node('docker.build') {
   try {
     stage 'Checkout'
@@ -10,7 +13,7 @@ node('docker.build') {
                                    url: 'git@bitbucket.org:bradyw/bswtech-docker-jenkins.git']]])
 
     stage 'Build image'
-    sh 'rocker build'
+    sh "rocker build --build-arg IMAGE_TAG=${imageTag}"
 
     def rubyVersion = '2.2.5'
     def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell ${rubyVersion} && ${cmd}'" }
@@ -22,7 +25,7 @@ node('docker.build') {
     // RSpec CI reporter
     env.GENERATE_REPORTS = 'true'
     try {
-      rubyShell 'bundle exec rake'
+      rubyShell "IMAGE_TAG=${imageTag} bundle exec rake"
     }
     finally {
       step([$class: 'JUnitResultArchiver',
