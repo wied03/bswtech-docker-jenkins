@@ -20,7 +20,15 @@ node('docker.build') {
     rubyShell('bundle install')
 
     stage 'Test image'
-    rubyShell('bundle exec rake')
+    // RSpec CI reporter
+    env.GENERATE_REPORTS = 'true'
+    try {
+      rubyShell('bundle exec rake')
+    }
+    finally {
+      step([$class: 'JUnitResultArchiver',
+            testResults: 'spec/reports/*.xml'])
+    }
   }
   catch (any) {
     handleError()
