@@ -9,10 +9,10 @@ if ENV['GENERATE_REPORTS'] == 'true'
 end
 
 desc "Run serverspec tests"
-RSpec::Core::RakeTask.new(:spec)
+RSpec::Core::RakeTask.new(:spec => :build)
 
 image_version = ENV['IMAGE_VERSION'] || '0.1.1'
-image_tag = "bswtech/bswtech-docker-jenkins:#{image_version}"
+ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{image_version}"
 
 desc "Builds Docker image #{image_tag}"
 task :build do
