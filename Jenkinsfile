@@ -12,19 +12,12 @@ node('docker.build') {
     stage 'Build image'
     sh 'rocker build'
 
-    stage 'Test image'
-    // TODO: Put these in slave setup perhaps??
-    sh "git clone https://github.com/rbenv/rbenv.git ~/.rbenv"
-    sh "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.bash_profile"
-    // had to escape the $ in $(rbenv)
-    sh "echo 'eval \"\$(rbenv init -)\"' >> ~/.bash_profile"
-    sh ". ~/.bash_profile"
-    sh "git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build"
-    sh 'type rbenv'
-    sh 'rbenv install 2.2.5'
+    stage 'Test dependencies'
     sh 'rbenv shell 2.2.5'
-    // TODO: End rbenv setup steps
+    sh 'ruby -v'
     sh 'bundle install'
+
+    stage 'Test image'
     sh 'bundle exec rake'
   }
   catch (any) {
