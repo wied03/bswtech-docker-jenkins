@@ -12,20 +12,21 @@ node('docker.build') {
               userRemoteConfigs: [[credentialsId: 'bitbucket',
                                    url: 'git@bitbucket.org:bradyw/bswtech-docker-jenkins.git']]])
 
-    stage 'Build image'
-    sh "rocker build --build-arg IMAGE_TAG=${imageTag}"
-
     def rubyVersion = '2.2.5'
     def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell ${rubyVersion} && ${cmd}'" }
+
     stage 'Dependencies'
-    rubyShell 'ruby -v'
     rubyShell 'bundle install'
+
+    stage 'Build image'
+    def rakeCommand = { cmd -> rubyShell("IMAGE_TAG=${imageTag} bundle exec rake ${cmd}") }
+    rakeCommand 'build'
 
     stage 'Test'
     // RSpec CI reporter
     env.GENERATE_REPORTS = 'true'
     try {
-      rubyShell "IMAGE_TAG=${imageTag} bundle exec rake"
+      rakeCommand 'spec'
     }
     finally {
       step([$class: 'JUnitResultArchiver',

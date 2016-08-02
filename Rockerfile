@@ -1,7 +1,5 @@
 FROM centos:7
 
-ARG IMAGE_TAG=bswtech/rocker_first:1.0
-
 RUN echo howdy
 
-TAG $IMAGE_TAG
+TAG {{ .ImageTag }}
