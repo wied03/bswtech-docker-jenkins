@@ -11,8 +11,17 @@ end
 desc "Run serverspec tests"
 RSpec::Core::RakeTask.new(:spec)
 
-desc 'Builds Docker image'
+image_version = ENV['IMAGE_VERSION'] || '0.1.1'
+image_tag = "bswtech/bswtech-docker-jenkins:#{image_version}"
+
+desc "Builds Docker image #{image_tag}"
 task :build do
-  imageTag = ENV['IMAGE_TAG'] || 'bswtech/rocker_first:1.0'
-  sh "rocker build -var ImageTag=#{imageTag}"
+  sh "rocker build -var ImageTag=#{image_tag}"
+end
+
+desc "Pushes out docker image #{image_tag} to the registry"
+task :push => :build do
+  quay_repo_tag = "quay.io/brady/bswtech-docker-jenkins:#{image_version}"
+  sh "docker tag #{image_tag} #{quay_repo_tag}"
+  sh "docker push #{quay_repo_tag}"
 end

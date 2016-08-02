@@ -1,5 +1,8 @@
-def majorVersion = '1.0'
-def imageTag = "bswtech/rocker_first:${majorVersion}.${env.BUILD_NUMBER}"
+def majorVersion = '0.1'
+def imageVersion = "${majorVersion}.${env.BUILD_NUMBER}"
+def rubyVersion = '2.2.5'
+def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell ${rubyVersion} && ${cmd}'" }
+def rakeCommand = { cmd -> rubyShell("IMAGE_VERSION=${imageVersion} bundle exec rake ${cmd}") }
 
 node('docker.build') {
   try {
@@ -12,14 +15,10 @@ node('docker.build') {
               userRemoteConfigs: [[credentialsId: 'bitbucket',
                                    url: 'git@bitbucket.org:bradyw/bswtech-docker-jenkins.git']]])
 
-    def rubyVersion = '2.2.5'
-    def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell ${rubyVersion} && ${cmd}'" }
-
     stage 'Dependencies'
     rubyShell 'bundle install'
 
     stage 'Build image'
-    def rakeCommand = { cmd -> rubyShell("IMAGE_TAG=${imageTag} bundle exec rake ${cmd}") }
     rakeCommand 'build'
 
     stage 'Test'
@@ -40,12 +39,14 @@ node('docker.build') {
 }
 
 stage 'Publish Image'
-input 'Publish image'
+input 'Publish image to quay.io?'
 node('docker.build') {
-  docker.image('ruby:2.2.4').inside {
-    unstash 'packaged_gem'
-    sh 'gem spec *.gem'
-    // TODO: Add commands dor deploying GEMs
+  try {
+    rakeCommand 'push'
+  }
+  catch (any) {
+    handleError()
+    throw any
   }
 }
 
