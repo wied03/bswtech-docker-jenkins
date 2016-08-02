@@ -42,7 +42,10 @@ stage 'Publish Image'
 input 'Publish image to quay.io?'
 node('docker.build') {
   try {
-    rakeCommand 'push'
+    // 2nd arg is creds
+    docker.withRegistry('quay.io', 'quay_io_docker') {
+      rakeCommand 'push'
+    }
   }
   catch (any) {
     handleError()
