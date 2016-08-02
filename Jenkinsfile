@@ -43,7 +43,7 @@ input 'Publish image to quay.io?'
 node('docker.build') {
   try {
     // 2nd arg is creds
-    docker.withRegistry('quay.io', 'quay_io_docker') {
+    docker.withRegistry('https://quay.io', 'quay_io_docker') {
       rakeCommand 'push'
     }
   }
