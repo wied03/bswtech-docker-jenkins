@@ -32,19 +32,22 @@ node('docker.build') {
   }
 }
 
-stage 'Publish Image'
-input 'Publish image to quay.io?'
-node('docker.build') {
-  try {
-    // 2nd arg is creds
-    docker.withRegistry('https://quay.io', 'quay_io_docker') {
-      rakeCommand 'push'
+// only allow pushing from master
+if (env.BRANCH_NAME == 'master') {
+  stage 'Publish Image'
+  input 'Publish image to quay.io?'
+  node('docker.build') {
+    try {
+      // 2nd arg is creds
+      docker.withRegistry('https://quay.io', 'quay_io_docker') {
+        rakeCommand 'push'
+      }
+      keepBuild()
     }
-    keepBuild()
-  }
-  catch (any) {
-    handleError()
-    throw any
+    catch (any) {
+      handleError()
+      throw any
+    }
   }
 }
 
