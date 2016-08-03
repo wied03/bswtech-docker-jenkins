@@ -17,8 +17,13 @@ ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{image_version}"
 desc "Builds Docker image #{image_tag}"
 task :build do
   args = {
+    'TiniVersion' => '0.9.0',
+    'TiniSha' => 'fa23d1e20732501c3bb8eeeca423c89ac80ed452',
     'JenkinsHome' => '/var/jenkins_home',
-    'ImageTag' => image_tag
+    'ImageTag' => image_tag,
+    'JenkinsVersion' => '2.7.1-1.1',
+    'JdkVersion' => '1.8.0.101-3.b13.el7_2',
+    'JenkinsWarDir' => '/usr/lib/jenkins' # from RPM
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   sh "rocker build #{flat_args}"
