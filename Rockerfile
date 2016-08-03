@@ -11,6 +11,13 @@ ENV JENKINS_HOME {{ .JenkinsHome }}
 ENV JENKINS_SLAVE_AGENT_PORT 50000
 ENV JENKINS_WAR_DIR {{ .JenkinsWarDir }}
 ENV JENKINS_REF_DIR $JENKINS_WAR_DIR/ref
+
+# RPM puts a user in there but we want control over the GID
+RUN userdel -r jenkins
+
+RUN groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
+    && useradd -d {{ .JenkinsHome }} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/false {{ .JenkinsUser }}
+
 VOLUME {{ .JenkinsHome }}
 
 RUN mkdir -p $JENKINS_REF_DIR/init.groovy.d
@@ -21,7 +28,10 @@ COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
 RUN curl -fsSL https://github.com/krallin/tini/releases/download/v{{ .TiniVersion }}/tini-static -o /bin/tini && chmod +x /bin/tini \
   && echo "{{ .TiniSha }}  /bin/tini" | sha1sum -c -
 
+RUN chown -R {{ .JenkinsUser }} {{ .JenkinsHome }} "$JENKINS_REF_DIR"
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
+
+USER {{ .JenkinsUser }}
 
 EXPOSE 8080
 

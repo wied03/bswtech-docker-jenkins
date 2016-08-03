@@ -1,22 +1,35 @@
 require 'serverspec'
 require 'serverspec_patch'
+require 'docker'
 
 set :backend, :docker
 set :docker_image, ENV['IMAGE_TAG']
-JENKINS_VOLUME = File.join Dir.pwd, 'jenkins_test_home'
+# testing this can take a while
+Docker.options[:read_timeout] = 120
+JENKINS_VOLUME = ENV['TEST_VOLUME']
 
-# Clean cannot go in RSpec hooks because serverspec connects ahead of time
-FileUtils.rm_rf JENKINS_VOLUME unless ENV['NO_CLEANUP']
-
-set :docker_container_create_options, {
-  #'User' => 'nonrootuser',
+docker_options = {
   'Volumes' => {
     '/var/jenkins_home' => {}
   },
   'HostConfig' => {
-    'Binds' => ["#{JENKINS_VOLUME}:/var/jenkins_home"]
+    'Binds' => ["#{JENKINS_VOLUME}:/var/jenkins_home:Z"],
+    'CapDrop' => ['all']
   }
 }
+
+unless ENV['NO_TMPFS_OPTIONS']
+  host = docker_options['HostConfig']
+  host.merge!({
+    'ReadonlyRootfs' => true,
+      'Tmpfs' => {
+        '/run' => '',
+        '/tmp' => 'exec' # needed for a jenkins startup command
+      }
+    })
+end
+
+set :docker_container_create_options, docker_options
 
 RSpec.configure do |config|
   config.include DockerSpecHelper
