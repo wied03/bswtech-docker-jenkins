@@ -1,12 +1,10 @@
 require 'spec_helper'
 
-describe 'Rockerfile' do
-  describe file('/etc/redhat-release') do
-    it { is_expected.to be_file }
-    its(:content) { is_expected.to include 'CentOS Linux' }
+describe 'Jenkins image' do
+  # Could use sleep here, but maybe it's better to use the retryable GEM
+  describe command('curl -I http://localhost:8080') do
+    its(:exit_status) { is_expected.to eq 0 }
   end
 
-  describe file('/foobar') do
-    it { is_expected.to be_file }
-  end
+  pending 'volumes, run as user, permissions'
 end
