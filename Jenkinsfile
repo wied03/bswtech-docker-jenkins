@@ -26,8 +26,9 @@ node('docker.build') {
     env.GENERATE_REPORTS = 'true'
     try {
       rakeCommand 'spec'
-      echo "the current build class is ${currentBuild.getClass().getName()}"
-      //currentBuild.keepLog(true)
+      def job = jenkins.model.Jenkins.instance.getItem(env.JOB_NAME)
+      def myBuild = job.getBuild(env.BUILD_NUMBER)
+      myBuild.keepLog(true)
     }
     finally {
       step([$class: 'JUnitResultArchiver',
