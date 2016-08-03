@@ -27,7 +27,7 @@ node('docker.build') {
     try {
       rakeCommand 'spec'
       def jobs = jenkins.model.Jenkins.instance.getAllItems(hudson.model.Job)
-      for (husdon.model.Job job : jobs) {
+      for (hudson.model.Job job : jobs) {
         echo "job ${job.displayName}"
       }
       //def myBuild = job.getBuild(env.BUILD_NUMBER)
