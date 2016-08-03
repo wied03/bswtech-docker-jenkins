@@ -16,7 +16,12 @@ ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{image_version}"
 
 desc "Builds Docker image #{image_tag}"
 task :build do
-  sh "rocker build -var ImageTag=#{image_tag}"
+  args = {
+    'JenkinsHome' => '/var/jenkins_home',
+    'ImageTag' => image_tag
+  }
+  flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
+  sh "rocker build #{flat_args}"
 end
 
 desc "Pushes out docker image #{image_tag} to the registry"
