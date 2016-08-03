@@ -7,13 +7,7 @@ def rakeCommand = { cmd -> rubyShell("IMAGE_VERSION=${imageVersion} bundle exec 
 node('docker.build') {
   try {
     stage 'Checkout'
-    checkout([$class: 'GitSCM',
-              branches: [[name: '*/master']],
-              doGenerateSubmoduleConfigurations: false,
-              extensions: [[$class: 'CleanBeforeCheckout']],
-              submoduleCfg: [],
-              userRemoteConfigs: [[credentialsId: 'bitbucket',
-                                   url: 'git@bitbucket.org:bradyw/bswtech-docker-jenkins.git']]])
+    checkout scm
 
     stage 'Dependencies'
     rubyShell 'bundle install'
