@@ -17,6 +17,9 @@ set :docker_container_create_options, {
 RSpec.configure do |config|
   config.include DockerSpecHelper
   config.before(:suite) do
-    #FileUtils.rm_rf JENKINS_VOLUME
+    FileUtils.rm_rf JENKINS_VOLUME unless ENV['NO_CLEANUP']
   end
+
+  config.filter_run_including focus: true
+  config.run_all_when_everything_filtered = true
 end
