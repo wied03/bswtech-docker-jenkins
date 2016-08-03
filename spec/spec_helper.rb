@@ -14,12 +14,6 @@ set :docker_container_create_options, {
   }
 }
 
-module DockerSpecHelper
-  def current_container_id
-    Specinfra.backend.instance_variable_get(:@container).id
-  end
-end
-
 RSpec.configure do |config|
   config.include DockerSpecHelper
   config.before(:suite) do

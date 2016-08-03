@@ -1,7 +1,15 @@
+module DockerSpecHelper
+  def current_container_id
+    Specinfra.backend.instance_variable_get(:@container).id
+  end
+end
+
 class Serverspec::Type::DockerBase
+  include DockerSpecHelper
+
   def initialize(name=nil, options = {})
     super
-    @name = Specinfra.backend.instance_variable_get(:@container).id
+    @name = current_container_id
   end
 
   def inspection
