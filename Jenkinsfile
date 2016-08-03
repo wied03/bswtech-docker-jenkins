@@ -26,8 +26,6 @@ node('docker.build') {
     env.GENERATE_REPORTS = 'true'
     try {
       rakeCommand 'spec'
-      def myBuild = getBuild()
-      myBuild.keepLog(true)
     }
     finally {
       step([$class: 'JUnitResultArchiver',
@@ -48,6 +46,7 @@ node('docker.build') {
     docker.withRegistry('https://quay.io', 'quay_io_docker') {
       rakeCommand 'push'
     }
+    keepBuild()
   }
   catch (any) {
     handleError()
@@ -61,13 +60,15 @@ def handleError() {
            subject: 'Jenkins Docker image build failed!'
 }
 
-def getBuild() {
+def keepBuild() {
   def job = getJob()
-  return job.getBuild(env.BUILD_NUMBER)
+  def build = job.getBuild(env.BUILD_NUMBER)
+  build.keepLog(true)
 }
 
 def getJob() {
   def jobs = jenkins.model.Jenkins.instance.getAllItems(hudson.model.Job)
+  // Groovy complained about using .each
   for (hudson.model.Job job : jobs) {
     if (job.fullName == env.JOB_NAME) {
       return job
