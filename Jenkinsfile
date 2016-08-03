@@ -26,12 +26,8 @@ node('docker.build') {
     env.GENERATE_REPORTS = 'true'
     try {
       rakeCommand 'spec'
-      def jobs = jenkins.model.Jenkins.instance.getAllItems(hudson.model.Job)
-      for (hudson.model.Job job : jobs) {
-        echo "job ${job.displayName}"
-      }
-      //def myBuild = job.getBuild(env.BUILD_NUMBER)
-      //myBuild.keepLog(true)
+      def myBuild = getBuild()
+      myBuild.keepLog(true)
     }
     finally {
       step([$class: 'JUnitResultArchiver',
@@ -59,8 +55,23 @@ node('docker.build') {
   }
 }
 
-void handleError() {
+def handleError() {
   emailext body: "Build failed! ${env.BUILD_URL}",
            recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
            subject: 'Jenkins Docker image build failed!'
+}
+
+def getBuild() {
+  def job = getJob()
+  return job.getBuild(env.BUILD_NUMBER)
+}
+
+def getJob() {
+  def jobs = jenkins.model.Jenkins.instance.getAllItems(hudson.model.Job)
+  for (hudson.model.Job job : jobs) {
+    if (job.displayName == env.JOB_NAME) {
+      return job
+    }
+  }
+  throw new Exception("Unable to find job ${env.JOB_NAME}")
 }
