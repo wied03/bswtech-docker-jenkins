@@ -26,9 +26,12 @@ node('docker.build') {
     env.GENERATE_REPORTS = 'true'
     try {
       rakeCommand 'spec'
-      def job = jenkins.model.Jenkins.instance.getItem(env.JOB_NAME)
-      def myBuild = job.getBuild(env.BUILD_NUMBER)
-      myBuild.keepLog(true)
+      def jobs = jenkins.model.Jenkins.instance.getAllItems(hudson.model.Job)
+      (jobs).each { job ->
+        echo "job ${job.displayName}"
+      }
+      //def myBuild = job.getBuild(env.BUILD_NUMBER)
+      //myBuild.keepLog(true)
     }
     finally {
       step([$class: 'JUnitResultArchiver',
