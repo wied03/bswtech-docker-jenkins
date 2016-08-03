@@ -26,6 +26,7 @@ node('docker.build') {
     env.GENERATE_REPORTS = 'true'
     try {
       rakeCommand 'spec'
+      currentBuild.keepLog(true)
     }
     finally {
       step([$class: 'JUnitResultArchiver',
