@@ -69,8 +69,8 @@ def getBuild() {
 def getJob() {
   def jobs = jenkins.model.Jenkins.instance.getAllItems(hudson.model.Job)
   for (hudson.model.Job job : jobs) {
-    echo "Checking job ${job.fullDisplayName} against ${env.JOB_NAME}"
-    if (job.fullDisplayName == env.JOB_NAME) {
+    echo "Checking job ${job.fullName} against ${env.JOB_NAME}"
+    if (job.fullName == env.JOB_NAME) {
       return job
     }
   }
