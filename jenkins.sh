@@ -22,7 +22,7 @@ copy_reference_file() {
     [[ ${rel} == plugins/*.jpi ]] && touch "$JENKINS_HOME/${rel}.pinned"
   fi;
 }
-: ${JENKINS_HOME:="/var/jenkins_home"}
+
 export -f copy_reference_file
 touch "${COPY_REFERENCE_FILE_LOG}" || (echo "Can not write to ${COPY_REFERENCE_FILE_LOG}. Wrong volume permissions?" && exit 1)
 echo "--- Copying files at $(date)" >> "$COPY_REFERENCE_FILE_LOG"

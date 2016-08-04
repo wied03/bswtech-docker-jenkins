@@ -1,8 +1,7 @@
 def majorVersion = '0.1'
 def imageVersion = "${majorVersion}.${env.BUILD_NUMBER}"
-def rubyVersion = '2.2.5'
-def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell ${rubyVersion} && ${cmd}'" }
-def rakeCommand = { cmd -> rubyShell("IMAGE_VERSION=${imageVersion} bundle exec rake ${cmd}") }
+def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell 2.2.5 && ${cmd}'" }
+def rakeCommand = { cmd -> rubyShell("IMAGE_VERSION=${imageVersion} bundle exec rake --trace ${cmd}") }
 
 node('docker.build') {
   try {
@@ -53,7 +52,8 @@ if (env.BRANCH_NAME == 'master') {
 
 def handleError() {
   emailext body: "Build failed! ${env.BUILD_URL}",
-           recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+           recipientProviders: [[$class: 'DevelopersRecipientProvider'],
+                                [$class: 'RequesterRecipientProvider']],
            subject: 'Jenkins Docker image build failed!'
 }
 
