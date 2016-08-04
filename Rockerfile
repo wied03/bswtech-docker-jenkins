@@ -4,7 +4,7 @@ MOUNT .:/src
 
 RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.d/jenkins.repo \
  && rpm --import /src/jenkins-ci.org.key \
- && yum install -y java-1.8.0-openjdk-{{ .JdkVersion }} jenkins-{{ .JenkinsVersion }} \
+ && yum install -y java-1.8.0-openjdk-{{ .JdkVersion }} jenkins-{{ .JenkinsVersion }} git-{{ .GitVersion }} \
  && yum clean all
 
 ENV JENKINS_HOME {{ .JenkinsHome }}
