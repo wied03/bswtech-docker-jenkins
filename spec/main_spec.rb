@@ -5,7 +5,7 @@ describe 'Jenkins container' do
   JENKINS_HOME_IMAGE = '/var/jenkins_home'
 
   def with_retry
-    Retryable.retryable(tries: 10,
+    Retryable.retryable(tries: 15,
                         on: RSpec::Expectations::ExpectationNotMetError,
                         sleep: 5) do
       yield
