@@ -16,7 +16,7 @@ ENV JENKINS_REF_DIR $JENKINS_WAR_DIR/ref
 RUN userdel -r jenkins
 
 RUN groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
-    && useradd -d {{ .JenkinsHome }} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/false {{ .JenkinsUser }}
+    && useradd -d {{ .JenkinsHome }} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }}
 
 VOLUME {{ .JenkinsHome }}
 

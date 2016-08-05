@@ -50,7 +50,8 @@ describe 'Jenkins container' do
     it { is_expected.to exist }
     it { is_expected.to have_uid 991 }
     it { is_expected.to have_home_directory JENKINS_HOME_IMAGE }
-    it { is_expected.to have_login_shell '/bin/false' }
+    # Jenkins seems to have problems making SSH connections if we don't use Bash
+    it { is_expected.to have_login_shell '/bin/bash' }
     it { is_expected.to belong_to_primary_group 'jenkins' }
   end
 
