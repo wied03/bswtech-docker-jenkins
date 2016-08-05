@@ -2,6 +2,7 @@
 Description=Jenkins CI Server for %n
 After=docker.service
 Requires=docker.service
+ADDL_UNIT_SETTINGS
 
 [Service]
 ExecStartPre=-/usr/bin/docker stop %p

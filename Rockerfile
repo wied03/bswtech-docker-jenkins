@@ -42,7 +42,7 @@ ADD root /
 
 LABEL Vendor="BSW Technology Consulting LLC" License=MIT
 LABEL Version={{ .ImageVersion }}
-LABEL INSTALL="docker run -u root --rm --privileged -v /:/host -e HOST=/host -e JENKINS_GID={{ .JenkinsGid }} -e JENKINS_GROUP={{ .JenkinsGroup }} -e JENKINS_UID={{ .JenkinsUid }} -e JENKINS_USER={{ .JenkinsUser }} -e IMAGE=\${IMAGE} -e NAME=\${NAME} \${IMAGE} /install.sh"
-LABEL UNINSTALL="docker run -u root --rm --privileged -v /:/host -e HOST=/host -e IMAGE=\${IMAGE} -e NAME=\${NAME} \${IMAGE} /uninstall.sh"
+LABEL INSTALL="docker run -u root --rm --privileged -v /:/host -e HOST=/host -e JENKINS_GID={{ .JenkinsGid }} -e JENKINS_GROUP={{ .JenkinsGroup }} -e JENKINS_UID={{ .JenkinsUid }} -e JENKINS_USER={{ .JenkinsUser }} -e IMAGE=\${IMAGE} -e NAME=\${NAME} \${IMAGE} /install.py"
+LABEL UNINSTALL="docker run -u root --rm --privileged -v /:/host -e JENKINS_USER={{ .JenkinsUser }} -e HOST=/host -e IMAGE=\${IMAGE} -e NAME=\${NAME} \${IMAGE} /uninstall.sh"
 
 TAG {{ .ImageTag }}
