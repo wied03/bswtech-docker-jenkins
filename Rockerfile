@@ -38,4 +38,11 @@ EXPOSE 8080
 COPY jenkins.sh /usr/local/bin/jenkins.sh
 ENTRYPOINT ["/bin/tini", "-v", "--", "/usr/local/bin/jenkins.sh"]
 
+ADD root /
+
+LABEL Vendor="BSW Technology Consulting LLC" License=MIT
+LABEL Version={{ .ImageVersion }}
+LABEL INSTALL="docker run --rm --privileged -v /:/host -e HOST=/host -e JENKINS_GID={{ .JenkinsGid }} -e JENKINS_GROUP={{ .JenkinsGroup }} -e JENKINS_UID={{ .JenkinsUid }} -e JENKINS_USER={{ .JenkinsUser }} -e IMAGE=\${IMAGE} -e NAME=\${NAME} \${IMAGE} /install.sh"
+LABEL UNINSTALL="docker run --rm --privileged -v /:/host -e HOST=/host -e IMAGE=\${IMAGE} -e NAME=\${NAME} \${IMAGE} /uninstall.sh"
+
 TAG {{ .ImageTag }}

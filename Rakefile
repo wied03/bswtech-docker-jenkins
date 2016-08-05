@@ -52,6 +52,7 @@ task :build do
     'TiniSha' => 'fa23d1e20732501c3bb8eeeca423c89ac80ed452',
     'JenkinsHome' => '/var/jenkins_home',
     'ImageTag' => image_tag,
+    'ImageVersion' => image_version,
     'GitVersion' => '1.8.3.1-6.el7_2.1',
     'JenkinsVersion' => '2.7.1-1.1',
     'JdkVersion' => '1.8.0.101-3.b13.el7_2',
