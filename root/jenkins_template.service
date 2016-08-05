@@ -1,8 +1,9 @@
 [Unit]
-Description=Jenkins CI Server for %n
+Description=Jenkins CI Server for %p
 After=docker.service
 Requires=docker.service
-ADDL_UNIT_SETTINGS
+Wants=%p_backup.timer
+${addl_unit_settings}
 
 [Service]
 ExecStartPre=-/usr/bin/docker stop %p
