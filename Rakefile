@@ -38,7 +38,10 @@ end
 desc "Run serverspec tests"
 RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume, :test_user])
 
-image_version = ENV['IMAGE_VERSION'] || '0.1.1'
+JENKINS_VERSION = '2.7.2-1.1'
+MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
+# Drop the RPM subrelease
+image_version = "#{Gem::Version.new(JENKINS_VERSION).release}.#{MINOR_VERSION}"
 ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{image_version}"
 
 desc "Builds Docker image #{image_tag}"
@@ -54,7 +57,7 @@ task :build do
     'ImageTag' => image_tag,
     'ImageVersion' => image_version,
     'GitVersion' => '1.8.3.1-6.el7_2.1',
-    'JenkinsVersion' => '2.7.1-1.1',
+    'JenkinsVersion' => JENKINS_VERSION,
     'JdkVersion' => '1.8.0.101-3.b13.el7_2',
     'JenkinsWarDir' => '/usr/lib/jenkins' # from RPM
   }

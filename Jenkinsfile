@@ -1,7 +1,5 @@
-def majorVersion = '0.1'
-def imageVersion = "${majorVersion}.${env.BUILD_NUMBER}"
 def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell 2.2.5 && ${cmd}'" }
-def rakeCommand = { cmd -> rubyShell("IMAGE_VERSION=${imageVersion} bundle exec rake --trace ${cmd}") }
+def rakeCommand = { cmd -> rubyShell("MINOR_VERSION=${env.BUILD_NUMBER} bundle exec rake --trace ${cmd}") }
 
 node('docker.build') {
   try {
