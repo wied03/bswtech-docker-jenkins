@@ -14,12 +14,12 @@ def parse_args():
   parser.add_argument('docker_args', nargs='*', type=str, help='Args to pass to docker')
   return parser.parse_args()
 
-def systemd_file(args, template_filename, dest_filename, main_service=False):
+def systemd_file(args, template_filename, dest_filename, enable_service=False):
   print "Reading template for file %s" % template_filename
   template_file = open('/'+template_filename, 'r')
   template = Template(template_file.read())
   template_file.close()
-  unit_settings = "\n".join(args.systemd) if main_service and args.systemd else ''
+  unit_settings = "\n".join(args.systemd) if args.systemd else ''
   result = template.substitute(jenkins_home=args.home_dir,
                                backup_directory=args.backup_dir,
                                addl_unit_settings=unit_settings)
@@ -31,8 +31,13 @@ def systemd_file(args, template_filename, dest_filename, main_service=False):
   systemd_file = open(destination, 'w')
   systemd_file.write(result)
   systemd_file.close()
+  if subprocess.call(['chroot',
+                      os.environ['HOST'],
+                      'systemctl',
+                      'daemon-reload']) != 0:
+    raise Exception('while trying to do a daemon reload for %s' % systemd_filename)
 
-  if not main_service:
+  if not enable_service:
     return
 
   print "Enabling systemd service %s" % systemd_filename
@@ -43,7 +48,7 @@ def systemd_file(args, template_filename, dest_filename, main_service=False):
     'enable',
     systemd_filename
     ]) != 0:
-    raise Exception('systemd enable failed!')
+    raise Exception('systemd enable failed for %s!' % systemd_filename)
 
 def main():
   args = parse_args()
@@ -78,7 +83,8 @@ def main():
                '%s_backup.service' % os.environ['NAME'])
   systemd_file(args,
                'jenkins_backup_template.timer',
-               '%s_backup.timer' % os.environ['NAME'])
+               '%s_backup.timer' % os.environ['NAME'],
+               True)
 
   print 'Installation complete'
   print 'Run the following commands on the host before starting the container:'

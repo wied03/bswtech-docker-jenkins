@@ -4,11 +4,11 @@ import os
 import subprocess
 import sys
 
-def systemd_file(dest_filename, main_service=False):
+def systemd_file(dest_filename, disable_service=False):
   systemd_file = '/etc/systemd/system/%s' % dest_filename
   destination = os.environ['HOST'] + systemd_file
 
-  if main_service:
+  if disable_service:
     print "Disabling systemd service %s" % systemd_file
     if subprocess.call([
       'chroot',
@@ -21,12 +21,18 @@ def systemd_file(dest_filename, main_service=False):
 
   print "Removing systemd service %s" % systemd_file
   os.remove(destination)
+  if subprocess.call(['chroot',
+                      os.environ['HOST'],
+                      'systemctl',
+                      'daemon-reload']) != 0:
+    raise Exception('while trying to do a daemon reload for %s' % systemd_filename)
 
 def main():
   systemd_file('%s.service' % os.environ['NAME'],
                True)
   systemd_file('%s_backup.service' % os.environ['NAME'])
-  systemd_file('%s_backup.timer' % os.environ['NAME'])
+  systemd_file('%s_backup.timer' % os.environ['NAME'],
+               True)
 
   print 'Uninstall complete'
   print 'Run the following commands on the host to remove user/data'
