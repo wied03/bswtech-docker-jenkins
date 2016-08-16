@@ -18,7 +18,7 @@ RUN userdel -r jenkins \
     && useradd -d {{ .JenkinsHome }} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
     && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
     && chown -R {{ .JenkinsUser }} {{ .JenkinsHome }} "$JENKINS_REF_DIR" \
-    && cp -Rv /src/root/* /usr/local/bin
+    && cp -Rv /src/resources/* /usr/local/bin
 
 VOLUME {{ .JenkinsHome }}
 
