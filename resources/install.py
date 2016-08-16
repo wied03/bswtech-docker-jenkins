@@ -38,16 +38,20 @@ def main():
   if subprocess.call(create_args) != 0:
     raise Exception('Docker container create failed!')
 
-  install_systemd(args,
-                  'jenkins_template.service',
+  unit_settings = "\n".join(args.systemd) if args.systemd else ''
+  jenkins_template = lambda temp: temp.substitute(jenkins_home=args.home_dir,
+                                                  backup_directory=args.backup_dir,
+                                                  addl_unit_settings=unit_settings)
+  install_systemd('jenkins_template.service',
                   '%s.service' % os.environ['NAME'],
+                  jenkins_template,
                   True)
-  install_systemd(args,
-                  'jenkins_backup_template.service',
-                  '%s_backup.service' % os.environ['NAME'])
-  install_systemd(args,
-                  'jenkins_backup_template.timer',
+  install_systemd('jenkins_backup_template.service',
+                  '%s_backup.service' % os.environ['NAME'],
+                  jenkins_template)
+  install_systemd('jenkins_backup_template.timer',
                   '%s_backup.timer' % os.environ['NAME'],
+                  jenkins_template,
                   True)
 
   print 'Installation complete'
