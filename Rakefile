@@ -51,8 +51,6 @@ task :build do
     'JenkinsGroup' => JENKINS_GROUP,
     'JenkinsUid' => JENKINS_UID,
     'JenkinsUser' => JENKINS_USER,
-    'TiniVersion' => '0.9.0',
-    'TiniSha' => 'fa23d1e20732501c3bb8eeeca423c89ac80ed452',
     'JenkinsHome' => '/var/jenkins_home',
     'ImageTag' => image_tag,
     'ImageVersion' => image_version,
