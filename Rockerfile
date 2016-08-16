@@ -1,4 +1,4 @@
-FROM centos:7
+FROM quay.io/brady/bswtech-docker-base:1.0.6
 
 MOUNT .:/src
 
@@ -13,34 +13,23 @@ ENV JENKINS_WAR_DIR {{ .JenkinsWarDir }}
 ENV JENKINS_REF_DIR $JENKINS_WAR_DIR/ref
 
 # RPM puts a user in there but we want control over the GID
-RUN userdel -r jenkins
-
-RUN groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
-    && useradd -d {{ .JenkinsHome }} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }}
+RUN userdel -r jenkins \
+    && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
+    && useradd -d {{ .JenkinsHome }} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
+    && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
+    && chown -R {{ .JenkinsUser }} {{ .JenkinsHome }} "$JENKINS_REF_DIR" \
+    && cp -Rv /src/root/* /usr/local/bin
 
 VOLUME {{ .JenkinsHome }}
 
-RUN mkdir -p $JENKINS_REF_DIR/init.groovy.d
-
 COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
-
-# Use tini as subreaper in Docker container to adopt zombie processes
-RUN curl -fsSL https://github.com/krallin/tini/releases/download/v{{ .TiniVersion }}/tini-static -o /bin/tini && chmod +x /bin/tini \
-  && echo "{{ .TiniSha }}  /bin/tini" | sha1sum -c -
-
-RUN chown -R {{ .JenkinsUser }} {{ .JenkinsHome }} "$JENKINS_REF_DIR"
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
-
 USER {{ .JenkinsUser }}
 
 EXPOSE 8080
 
-COPY jenkins.sh /usr/local/bin/jenkins.sh
 ENTRYPOINT ["/bin/tini", "-v", "--", "/usr/local/bin/jenkins.sh"]
 
-ADD root /
-
-LABEL Vendor="BSW Technology Consulting LLC" License=MIT
 LABEL Version={{ .ImageVersion }}
 LABEL INSTALL="docker run -u root --rm --privileged -v /:/host -e HOST=/host -e JENKINS_GID={{ .JenkinsGid }} -e JENKINS_GROUP={{ .JenkinsGroup }} -e JENKINS_UID={{ .JenkinsUid }} -e JENKINS_USER={{ .JenkinsUser }} -e IMAGE=\${IMAGE} -e NAME=\${NAME} \${IMAGE} /install.py"
 LABEL UNINSTALL="docker run -u root --rm --privileged -v /:/host -e JENKINS_USER={{ .JenkinsUser }} -e HOST=/host -e IMAGE=\${IMAGE} -e NAME=\${NAME} \${IMAGE} /uninstall.py"

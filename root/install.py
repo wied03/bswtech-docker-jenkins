@@ -4,7 +4,7 @@ import argparse
 import sys
 import os
 import subprocess
-from string import Template
+from installer import install_systemd
 
 def parse_args():
   parser = argparse.ArgumentParser(description="Installs container", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -13,42 +13,6 @@ def parse_args():
   parser.add_argument('-sc', '--systemd', nargs='*', help='Additional systemd unit settings')
   parser.add_argument('docker_args', nargs='*', type=str, help='Args to pass to docker')
   return parser.parse_args()
-
-def systemd_file(args, template_filename, dest_filename, enable_service=False):
-  print "Reading template for file %s" % template_filename
-  template_file = open('/'+template_filename, 'r')
-  template = Template(template_file.read())
-  template_file.close()
-  unit_settings = "\n".join(args.systemd) if args.systemd else ''
-  result = template.substitute(jenkins_home=args.home_dir,
-                               backup_directory=args.backup_dir,
-                               addl_unit_settings=unit_settings)
-
-  systemd_filename = '/etc/systemd/system/%s' % dest_filename
-  destination = os.environ['HOST'] + systemd_filename
-
-  print "Setting up systemd file in %s" % systemd_filename
-  systemd_file = open(destination, 'w')
-  systemd_file.write(result)
-  systemd_file.close()
-  if subprocess.call(['chroot',
-                      os.environ['HOST'],
-                      'systemctl',
-                      'daemon-reload']) != 0:
-    raise Exception('while trying to do a daemon reload for %s' % systemd_filename)
-
-  if not enable_service:
-    return
-
-  print "Enabling systemd service %s" % systemd_filename
-  if subprocess.call([
-    'chroot',
-    os.environ['HOST'],
-    'systemctl',
-    'enable',
-    systemd_filename
-    ]) != 0:
-    raise Exception('systemd enable failed for %s!' % systemd_filename)
 
 def main():
   args = parse_args()
@@ -74,17 +38,17 @@ def main():
   if subprocess.call(create_args) != 0:
     raise Exception('Docker container create failed!')
 
-  systemd_file(args,
-               'jenkins_template.service',
-               '%s.service' % os.environ['NAME'],
-               True)
-  systemd_file(args,
-               'jenkins_backup_template.service',
-               '%s_backup.service' % os.environ['NAME'])
-  systemd_file(args,
-               'jenkins_backup_template.timer',
-               '%s_backup.timer' % os.environ['NAME'],
-               True)
+  install_systemd(args,
+                  'jenkins_template.service',
+                  '%s.service' % os.environ['NAME'],
+                  True)
+  install_systemd(args,
+                  'jenkins_backup_template.service',
+                  '%s_backup.service' % os.environ['NAME'])
+  install_systemd(args,
+                  'jenkins_backup_template.timer',
+                  '%s_backup.timer' % os.environ['NAME'],
+                  True)
 
   print 'Installation complete'
   print 'Run the following commands on the host before starting the container:'
