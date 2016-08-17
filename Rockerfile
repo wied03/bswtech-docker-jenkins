@@ -4,22 +4,23 @@ MOUNT .:/src
 
 RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.d/jenkins.repo \
  && rpm --import /src/jenkins-ci.org.key \
- && yum install -y java-1.8.0-openjdk-{{ .JdkVersion }} jenkins-{{ .JenkinsVersion }} git-{{ .GitVersion }} \
+ && yum install -y java-1.8.0-openjdk-1.8.0.101-3.b13.el7_2 jenkins-{{ .JenkinsVersion }} git-1.8.3.1-6.el7_2.1 \
  && yum clean all
 
-ENV JENKINS_HOME {{ .JenkinsHome }}
+ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_SLAVE_AGENT_PORT 50000
-ENV JENKINS_WAR_DIR {{ .JenkinsWarDir }}
+# from RPM
+ENV JENKINS_WAR_DIR /usr/lib/jenkins
 ENV JENKINS_REF_DIR $JENKINS_WAR_DIR/ref
 
 # RPM puts a user in there but we want control over the GID
 RUN userdel -r jenkins \
     && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
-    && useradd -d {{ .JenkinsHome }} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
+    && useradd -d ${JENKINS_HOME} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
     && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
-    && chown -R {{ .JenkinsUser }} {{ .JenkinsHome }} "$JENKINS_REF_DIR"
+    && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR"
 
-VOLUME {{ .JenkinsHome }}
+VOLUME ${JENKINS_HOME}
 
 COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
 COPY ./resources/ /usr/local/bin/

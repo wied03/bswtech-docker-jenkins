@@ -51,13 +51,9 @@ task :build do
     'JenkinsGroup' => JENKINS_GROUP,
     'JenkinsUid' => JENKINS_UID,
     'JenkinsUser' => JENKINS_USER,
-    'JenkinsHome' => '/var/jenkins_home',
     'ImageTag' => image_tag,
     'ImageVersion' => image_version,
-    'GitVersion' => '1.8.3.1-6.el7_2.1',
-    'JenkinsVersion' => JENKINS_VERSION,
-    'JdkVersion' => '1.8.0.101-3.b13.el7_2',
-    'JenkinsWarDir' => '/usr/lib/jenkins' # from RPM
+    'JenkinsVersion' => JENKINS_VERSION
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   sh "rocker build #{flat_args}"
