@@ -10,9 +10,13 @@ def parse_args():
   parser = argparse.ArgumentParser(description="Installs container", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('-d', '--home_dir', type=str, help='Where should Jenkins be', required=True)
   parser.add_argument('-bd', '--backup_dir', type=str, help='Where daily backups should go', required=True)
-  parser.add_argument('-sc', '--systemd', nargs='*', help='Additional systemd unit settings')
+  parser.add_argument('-sm', '--systemd_main', nargs='*', help='Additional systemd unit settings for main service')
+  parser.add_argument('-sb', '--systemd_back', nargs='*', help='Additional systemd service settings for backup service')
   parser.add_argument('docker_args', nargs='*', type=str, help='Args to pass to docker')
   return parser.parse_args()
+
+def sysd_args(arg):
+  return "\n".join(arg) if arg else ''
 
 def main():
   args = parse_args()
@@ -38,10 +42,10 @@ def main():
   if subprocess.call(create_args) != 0:
     raise Exception('Docker container create failed!')
 
-  unit_settings = "\n".join(args.systemd) if args.systemd else ''
   jenkins_template = lambda temp: temp.substitute(jenkins_home=args.home_dir,
                                                   backup_directory=args.backup_dir,
-                                                  addl_unit_settings=unit_settings)
+                                                  addl_unit_settings=sysd_args(args.systemd_main),
+                                                  addl_backup_svc_set=sysd_args(args.systemd_back))
   install_systemd('jenkins_template.service',
                   '%s.service' % os.environ['NAME'],
                   jenkins_template,

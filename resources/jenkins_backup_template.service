@@ -4,3 +4,4 @@ Description=Perform Jenkins home directory backup
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/tar czvf ${backup_directory} ${jenkins_home}
+${addl_backup_svc_set}
