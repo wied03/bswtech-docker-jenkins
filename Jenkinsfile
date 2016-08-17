@@ -2,6 +2,15 @@ def rubyShell = { cmd -> sh "bash --login -c 'rbenv shell 2.2.5 && ${cmd}'" }
 def rakeCommand = { cmd -> rubyShell("MINOR_VERSION=${env.BUILD_NUMBER} bundle exec rake --trace ${cmd}") }
 
 node('docker.build') {
+  // should only need 3 builds (code will mark published builds as permanent)
+  properties([[$class: 'BuildDiscarderProperty',
+               strategy: [$class: 'LogRotator',
+                          artifactDaysToKeepStr: '',
+                          artifactNumToKeepStr: '',
+                          daysToKeepStr: '',
+                          numToKeepStr: '3']
+              ]])
+
   try {
     stage 'Checkout'
     checkout scm
