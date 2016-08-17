@@ -17,12 +17,12 @@ RUN userdel -r jenkins \
     && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
     && useradd -d {{ .JenkinsHome }} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
     && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
-    && chown -R {{ .JenkinsUser }} {{ .JenkinsHome }} "$JENKINS_REF_DIR" \
-    && cp -Rv /src/resources/* /usr/local/bin
+    && chown -R {{ .JenkinsUser }} {{ .JenkinsHome }} "$JENKINS_REF_DIR"
 
 VOLUME {{ .JenkinsHome }}
 
 COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
+COPY ./resources/ /usr/local/bin/
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 USER {{ .JenkinsUser }}
 
