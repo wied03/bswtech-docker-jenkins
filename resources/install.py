@@ -10,8 +10,10 @@ def parse_args():
   parser = argparse.ArgumentParser(description="Installs container", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('-d', '--home_dir', type=str, help='Where should Jenkins be', required=True)
   parser.add_argument('-bd', '--backup_dir', type=str, help='Where daily backups should go', required=True)
-  parser.add_argument('-sm', '--systemd_main', nargs='*', help='Additional systemd unit settings for main service')
-  parser.add_argument('-sb', '--systemd_back', nargs='*', help='Additional systemd service settings for backup service')
+  parser.add_argument('-smu', '--sysd_main_unit', nargs='*', help='Additional systemd unit settings for main service')
+  parser.add_argument('-sms', '--sysd_main_svc', nargs='*', help='Additional systemd service settings for main service')
+  parser.add_argument('-sbu', '--sysd_back_unit', nargs='*', help='Additional systemd unit settings for backup service')
+  parser.add_argument('-sbs', '--sysd_back_svc', nargs='*', help='Additional systemd service settings for backup service')
   parser.add_argument('docker_args', nargs='*', type=str, help='Args to pass to docker')
   return parser.parse_args()
 
@@ -44,8 +46,10 @@ def main():
 
   jenkins_template = lambda temp: temp.substitute(jenkins_home=args.home_dir,
                                                   backup_directory=args.backup_dir,
-                                                  addl_unit_settings=sysd_args(args.systemd_main),
-                                                  addl_backup_svc_set=sysd_args(args.systemd_back))
+                                                  addl_main_unit_set=sysd_args(args.sysd_main_unit),
+                                                  addl_main_svc_set=sysd_args(args.sysd_main_svc),
+                                                  addl_backup_unit_set=sysd_args(args.sysd_back_unit),
+                                                  addl_backup_svc_set=sysd_args(args.sysd_back_svc))
   install_systemd('jenkins_template.service',
                   '%s.service' % os.environ['NAME'],
                   jenkins_template,

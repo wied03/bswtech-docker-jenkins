@@ -1,5 +1,6 @@
 [Unit]
 Description=Perform Jenkins home directory backup
+${addl_backup_unit_set}
 
 [Service]
 Type=oneshot
