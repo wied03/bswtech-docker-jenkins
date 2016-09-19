@@ -24,6 +24,7 @@ unless ENV['NO_TMPFS_OPTIONS']
     'ReadonlyRootfs' => true,
       'Tmpfs' => {
         '/run' => '',
+        '/etc/docker' => '',
         '/tmp' => 'exec' # needed for a jenkins startup command
       }
     })
