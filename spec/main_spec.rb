@@ -20,6 +20,10 @@ describe 'Jenkins container' do
     it { is_expected.to be_installed }
   end
 
+  describe package('docker') do
+    it { is_expected.to be_installed }
+  end
+
   it 'listens on port 8080' do
     with_retry do
       cmd = command('curl http://localhost:8080')
