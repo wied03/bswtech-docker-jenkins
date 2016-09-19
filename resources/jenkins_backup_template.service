@@ -1,8 +1,7 @@
 [Unit]
 Description=Perform Jenkins home directory backup
-${addl_backup_unit_set}
+OnFailure=status-email-support@%n.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/tar czvf ${backup_directory} ${jenkins_home}
-${addl_backup_svc_set}
+ExecStart=/usr/bin/tar czvf /mnt/filer_volume/shared_stuff/sysbackups/jenkins_backup.tgz /mnt/filer_volume/jenkins

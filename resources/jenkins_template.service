@@ -3,7 +3,10 @@ Description=Jenkins CI Server for %p
 After=docker.service
 Requires=docker.service
 Wants=%p_backup.timer
-${addl_main_unit_set}
+After=samba.service
+Requires=samba.service
+After=mail.service
+Requires=mail.service
 
 [Service]
 ExecStartPre=-/usr/bin/docker stop %p
