@@ -19,7 +19,7 @@ RUN userdel -r jenkins \
     && useradd -d ${JENKINS_HOME} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
     && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
     && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR" \
-    && chown -R {{ .JenkinsUser }} /etc/docker
+    && chmod -R -v a+rwX /etc/docker
 
 VOLUME ${JENKINS_HOME}
 
