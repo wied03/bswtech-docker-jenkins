@@ -41,7 +41,6 @@ node('docker.build') {
 // only allow pushing from master
 if (env.BRANCH_NAME == 'master') {
   stage 'Publish Image'
-  input 'Publish image to quay.io?'
   node('docker.build') {
     try {
       // 2nd arg is creds
