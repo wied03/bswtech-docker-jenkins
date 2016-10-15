@@ -13,7 +13,7 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  && yum info ${GIT_PACKAGE} \
  && yum clean all \
  && yum autoremove -y \
- rm -rfv /tmp/*
+ && rm -rfv /tmp/*
 
 ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_SLAVE_AGENT_PORT 50000
