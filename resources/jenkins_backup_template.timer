@@ -1,9 +1,0 @@
-[Unit]
-Description=Runs Jenkins backup once per day
-
-[Timer]
-OnCalendar=daily
-RandomizedDelaySec=10
-
-[Install]
-WantedBy=timers.target
