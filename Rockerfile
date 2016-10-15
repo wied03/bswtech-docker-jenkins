@@ -2,6 +2,7 @@ FROM quay.io/brady/bswtech-docker-base:1.0.12
 
 MOUNT .:/src
 
+# can't use java headless because hudson.util.ChartUtil needs some X11 stuff
 ENV JAVA_PACKAGE java-1.8.0-openjdk-1.8.0.101-3.b13.el7_2
 ENV GIT_PACKAGE git-1.8.3.1-6.el7_2.1
 
