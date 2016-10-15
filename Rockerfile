@@ -2,10 +2,18 @@ FROM quay.io/brady/bswtech-docker-base:1.0.12
 
 MOUNT .:/src
 
+ENV JAVA_PACKAGE java-1.8.0-openjdk-1.8.0.101-3.b13.el7_2
+ENV GIT_PACKAGE git-1.8.3.1-6.el7_2.1
+
 RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.d/jenkins.repo \
  && rpm --import /src/jenkins-ci.org.key \
- && yum install -y java-1.8.0-openjdk-1.8.0.101-3.b13.el7_2 jenkins-{{ .JenkinsVersion }} git-1.8.3.1-6.el7_2.1 \
- && yum clean all
+ && yum install -y ${JAVA_PACKAGE} jenkins-{{ .JenkinsVersion }} ${GIT_PACKAGE} \
+ && yum info jenkins-{{ .JenkinsVersion }} \
+ && yum info ${JAVA_PACKAGE} \
+ && yum info ${GIT_PACKAGE} \
+ && yum clean all \
+ && yum autoremove -y \
+ rm -rfv /tmp/*
 
 ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_SLAVE_AGENT_PORT 50000
