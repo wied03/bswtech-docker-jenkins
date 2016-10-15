@@ -13,8 +13,8 @@ ENV['TEST_VOLUME'] = TEST_VOLUME = File.join Dir.pwd, 'jenkins_test_home'
 ENV['NO_TMPFS_OPTIONS'] = '1' unless ENV['JENKINS_URL']
 JENKINS_USER = 'jenkins'
 JENKINS_GROUP = 'jenkins'
-JENKINS_GID = 991
-JENKINS_UID = 991
+JENKINS_GID = 1002
+JENKINS_UID = 1002
 
 task :clean_test_volume do
   # Clean cannot go in RSpec hooks because serverspec connects ahead of time
