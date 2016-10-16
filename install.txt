@@ -1,1 +1,0 @@
-sdocker create --name jenkins --cap-drop=all --read-only --tmpfs /run --tmpfs /tmp:exec -v /mnt/filer_volume/jenkins:/var/jenkins_home:Z -v /mnt/filer_volume/gitrepos:/gitrepos:ro,z --env-file=/mnt/filer_volume/jenkins/systemd.env --net=server-network -p 8443:8443 quay.io/brady/bswtech-docker-jenkins:2.7.2.26
