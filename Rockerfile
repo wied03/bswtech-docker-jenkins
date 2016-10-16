@@ -43,8 +43,17 @@ RUN unzip ${JENKINS_WAR_DIR}/jenkins.war -d /tmp/jenkins \
  && cd /tmp/jenkins \
  && zip -r ${JENKINS_WAR_DIR}/jenkins.war * \
  && rm -rf /tmp/jenkins
-RUN yum erase -y unzip zip
 
+# Avoid wizard prompt on first run
+RUN echo 2.0 > ${JENKINS_REF_DIR}/jenkins.install.UpgradeWizard.state
+# This needs unzip and the jar command inside the devel package
+RUN yum install -y java-1.8.0-openjdk-devel
+ENV JENKINS_UC https://updates.jenkins.io
+# TODO: Read plugins from file
+RUN bash /src/install-plugins.sh workflow-basic-steps:2.1
+RUN yum erase -y unzip zip java-1.8.0-openjdk-devel
+RUN mkdir ${JENKINS_WAR_DIR}/plugins \
+ && mv -v ${JENKINS_REF_DIR}/*.jpi ${JENKINS_WAR_DIR}/plugins
 COPY ./resources/ /usr/local/bin/
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 USER {{ .JenkinsUser }}

@@ -18,8 +18,6 @@ copy_reference_file() {
     echo "copy $rel to JENKINS_HOME" >> "$COPY_REFERENCE_FILE_LOG"
     mkdir -p "$JENKINS_HOME/${dir:23}"
     cp -r "${f}" "$JENKINS_HOME/${rel}";
-    # pin plugins on initial copy
-    [[ ${rel} == plugins/*.jpi ]] && touch "$JENKINS_HOME/${rel}.pinned"
   fi;
 }
 
