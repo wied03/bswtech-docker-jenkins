@@ -50,7 +50,7 @@ RUN echo 2.0 > ${JENKINS_REF_DIR}/jenkins.install.UpgradeWizard.state
 RUN yum install -y java-1.8.0-openjdk-devel
 ENV JENKINS_UC https://updates.jenkins.io
 # TODO: Read plugins from file
-RUN bash /src/install-plugins.sh workflow-basic-steps:2.1
+RUN bash /src/plugins/install-plugins.sh workflow-basic-steps:2.1
 RUN yum erase -y unzip zip java-1.8.0-openjdk-devel
 RUN mkdir ${JENKINS_WAR_DIR}/plugins \
  && mv -v ${JENKINS_REF_DIR}/*.jpi ${JENKINS_WAR_DIR}/plugins
