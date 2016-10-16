@@ -12,7 +12,6 @@ import hudson.model.UpdateCenter;
 import java.util.concurrent.Future;
 import java.util.List;
 
-// TODO: set hudson.PluginManager.className to com.bswtechconsulting.jenkins.ReadOnlyPluginManager
 public class ReadOnlyPluginManager extends LocalPluginManager {
   private static final String ERROR = "Plugins cannot be changed through the GUI!";
 
@@ -22,11 +21,6 @@ public class ReadOnlyPluginManager extends LocalPluginManager {
   }
 
   // TODO: Prevent uninstall/upgrade here
-  @Override
-  public HttpResponse doInstallPlugins(StaplerRequest req) throws IOException {
-    throw new RuntimeException(ERROR);
-  }
-
   @Override
   public List<Future<UpdateCenter.UpdateCenterJob>> install(Collection<String> plugins, boolean dynamicLoad) {
     throw new RuntimeException(ERROR);

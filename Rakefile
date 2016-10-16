@@ -44,8 +44,12 @@ MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
 image_version = "#{Gem::Version.new(JENKINS_VERSION).release}.#{MINOR_VERSION}"
 ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{image_version}"
 
+task :plugin_manager_override do
+  sh './gradlew build'
+end
+
 desc "Builds Docker image #{image_tag}"
-task :build do
+task :build => :plugin_manager_override do
   args = {
     'JenkinsGid' => JENKINS_GID,
     'JenkinsGroup' => JENKINS_GROUP,
