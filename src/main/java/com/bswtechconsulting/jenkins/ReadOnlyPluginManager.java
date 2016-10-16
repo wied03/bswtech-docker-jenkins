@@ -16,8 +16,8 @@ public class ReadOnlyPluginManager extends LocalPluginManager {
   private static final String ERROR = "Plugins cannot be changed through the GUI!";
 
   public ReadOnlyPluginManager(Jenkins jenkins) {
-    // this is set in the Docker image
-    super(jenkins.servletContext, new File(System.getenv("JENKINS_APP_DIR")));
+    // this is set in the Docker image, LocalPluginManager will add 'plugins' so go 1 level higher
+    super(jenkins.servletContext, new File(System.getenv("JENKINS_PLUGIN_DIR"), ".."));
   }
 
   // TODO: Prevent uninstall/upgrade here
