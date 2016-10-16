@@ -17,7 +17,7 @@ public class ReadOnlyPluginManager extends LocalPluginManager {
 
   public ReadOnlyPluginManager(Jenkins jenkins) {
     // this is set in the Docker image
-    super(jenkins.servletContext, new File(System.getenv("JENKINS_WAR_DIR")));
+    super(jenkins.servletContext, new File(System.getenv("JENKINS_APP_DIR")));
   }
 
   // TODO: Prevent uninstall/upgrade here

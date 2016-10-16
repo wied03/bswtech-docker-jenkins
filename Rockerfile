@@ -4,11 +4,10 @@ MOUNT .:/src
 
 ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_SLAVE_AGENT_PORT 50000
-ENV JENKINS_UC https://updates.jenkins.io
 # from RPM
-ENV JENKINS_WAR_DIR /usr/lib/jenkins
-ENV JENKINS_REF_DIR $JENKINS_WAR_DIR/ref
-ENV JENKINS_PLUGIN_DIR $JENKINS_WAR_DIR/plugins
+ENV JENKINS_APP_DIR {{ .JenkinsBinDir }}/app
+ENV JENKINS_REF_DIR {{ .JenkinsBinDir }}/ref
+ENV JENKINS_PLUGIN_DIR {{ .JenkinsBinDir }}/plugins
 
 RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.d/jenkins.repo \
  && rpm --import /src/jenkins-ci.org.key \
@@ -19,14 +18,14 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  # For executing plugin download/setup
  && yum install -y unzip zip {{ .JavaDevPackage }} \
  # TODO: Read plugins from file
- && bash /src/plugins/install-plugins.sh workflow-basic-steps:2.1 \
+ && JENKINS_WAR_PATH={{ .JenkinsWarFile }} bash /src/plugins/install-plugins.sh workflow-basic-steps:2.1 \
  && mkdir ${JENKINS_PLUGIN_DIR} \
  && mv -v ${JENKINS_REF_DIR}/*.jpi ${JENKINS_PLUGIN_DIR} \
  && cd ${JENKINS_PLUGIN_DIR} \
  # Expand all the plugins. Jenkins insists on a timestamp
  && for i in *; do unzip ${i} -d "${i%.jpi}"; touch "${i%.jpi}/.timestamp2"; done \
- # No need for compressed version anymore
- && rm -v *.jpi \
+ && unzip {{ .JenkinsWarFile }} -d ${JENKINS_APP_DIR} \
+ && rm -v {{ .JenkinsWarFile }} \
  # only temp utilities
  && yum remove -y unzip zip {{ .JavaDevPackage }} \
  && yum clean all \
@@ -43,7 +42,9 @@ RUN userdel -r jenkins \
 VOLUME ${JENKINS_HOME}
 
 COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
-COPY ./build/libs/bswtech-docker-jenkins.jar ${JENKINS_WAR_DIR}/
+
+# Contains a read only Jenkins plugin manager
+COPY ./build/libs/bswtech-docker-jenkins.jar ${JENKINS_APP_DIR}/WEB-INF/lib/
 
 COPY ./resources/ /usr/local/bin/
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log

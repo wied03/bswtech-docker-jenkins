@@ -50,6 +50,7 @@ task :plugin_manager_override do
   sh './gradlew build'
 end
 
+JENKINS_BIN_DIR='/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
 task :build => :plugin_manager_override do
   args = {
@@ -62,7 +63,9 @@ task :build => :plugin_manager_override do
     'JenkinsVersion' => JENKINS_VERSION,
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'JavaDevPackage' => "java-1.8.0-openjdk-devel-#{JAVA_VERSION}",
-    'GitPackage' => "git-#{GIT_VERSION}"
+    'GitPackage' => "git-#{GIT_VERSION}",
+    'JenkinsBinDir' => JENKINS_BIN_DIR,
+    'JenkinsWarFile' => File.join(JENKINS_BIN_DIR, 'jenkins.war')
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   sh "rocker build #{flat_args}"

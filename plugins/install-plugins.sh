@@ -61,7 +61,7 @@ doDownload() {
         echo "Using provided plugin: $plugin"
         return 0
     fi
-
+    JENKINS_UC="https://updates.jenkins.io"
     JENKINS_UC_DOWNLOAD=${JENKINS_UC_DOWNLOAD:-"$JENKINS_UC/download"}
 
     url="$JENKINS_UC_DOWNLOAD/plugins/$plugin/$version/${plugin}.hpi"
@@ -122,7 +122,7 @@ resolveDependencies() {
 }
 
 bundledPlugins() {
-    local JENKINS_WAR=${JENKINS_WAR_DIR}/jenkins.war
+    local JENKINS_WAR=${JENKINS_WAR_PATH}
     if [ -f $JENKINS_WAR ]
     then
         TEMP_PLUGIN_DIR=/tmp/plugintemp.$$
