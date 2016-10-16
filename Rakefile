@@ -39,6 +39,8 @@ desc "Run serverspec tests"
 RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume, :test_user])
 
 JENKINS_VERSION = '2.7.2-1.1'
+JAVA_VERSION = '1.8.0.102-1.b14.el7_2'
+GIT_VERSION = '1.8.3.1-6.el7_2.1'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
 # Drop the RPM subrelease
 image_version = "#{Gem::Version.new(JENKINS_VERSION).release}.#{MINOR_VERSION}"
@@ -57,7 +59,10 @@ task :build => :plugin_manager_override do
     'JenkinsUser' => JENKINS_USER,
     'ImageTag' => image_tag,
     'ImageVersion' => image_version,
-    'JenkinsVersion' => JENKINS_VERSION
+    'JenkinsVersion' => JENKINS_VERSION,
+    'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
+    'JavaDevPackage' => "java-1.8.0-openjdk-devel-#{JAVA_VERSION}",
+    'GitPackage' => "git-#{GIT_VERSION}"
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   sh "rocker build #{flat_args}"

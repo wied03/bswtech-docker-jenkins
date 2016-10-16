@@ -2,25 +2,36 @@ FROM quay.io/brady/bswtech-docker-base:1.0.12
 
 MOUNT .:/src
 
-# can't use java headless because hudson.util.ChartUtil needs some X11 stuff
-ENV JAVA_PACKAGE java-1.8.0-openjdk-1.8.0.101-3.b13.el7_2
-ENV GIT_PACKAGE git-1.8.3.1-6.el7_2.1
-
-RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.d/jenkins.repo \
- && rpm --import /src/jenkins-ci.org.key \
- && yum install -y ${JAVA_PACKAGE} jenkins-{{ .JenkinsVersion }} ${GIT_PACKAGE} \
- && yum info jenkins-{{ .JenkinsVersion }} \
- && yum info ${JAVA_PACKAGE} \
- && yum info ${GIT_PACKAGE} \
- && yum clean all \
- && yum autoremove -y \
- && rm -rfv /tmp/*
-
 ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_SLAVE_AGENT_PORT 50000
+ENV JENKINS_UC https://updates.jenkins.io
 # from RPM
 ENV JENKINS_WAR_DIR /usr/lib/jenkins
 ENV JENKINS_REF_DIR $JENKINS_WAR_DIR/ref
+ENV JENKINS_PLUGIN_DIR $JENKINS_WAR_DIR/plugins
+
+RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.d/jenkins.repo \
+ && rpm --import /src/jenkins-ci.org.key \
+ && yum install -y {{ .JavaPackage }} jenkins-{{ .JenkinsVersion }} {{ .GitPackage }} \
+ && yum info jenkins-{{ .JenkinsVersion }} \
+ && yum info {{ .JavaPackage }} \
+ && yum info {{ .GitPackage }} \
+ # For executing plugin download/setup
+ && yum install -y unzip zip {{ .JavaDevPackage }} \
+ # TODO: Read plugins from file
+ && bash /src/plugins/install-plugins.sh workflow-basic-steps:2.1 \
+ && mkdir ${JENKINS_PLUGIN_DIR} \
+ && mv -v ${JENKINS_REF_DIR}/*.jpi ${JENKINS_PLUGIN_DIR} \
+ && cd ${JENKINS_PLUGIN_DIR} \
+ # Expand all the plugins. Jenkins insists on a timestamp
+ && for i in *; do unzip ${i} -d "${i%.jpi}"; touch "${i%.jpi}/.timestamp2"; done \
+ # No need for compressed version anymore
+ && rm -v *.jpi \
+ # only temp utilities
+ && yum remove -y unzip zip {{ .JavaDevPackage }} \
+ && yum clean all \
+ && yum autoremove -y \
+ && rm -rfv /tmp/*
 
 # RPM puts a user in there but we want control over the GID
 RUN userdel -r jenkins \
@@ -34,26 +45,6 @@ VOLUME ${JENKINS_HOME}
 COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
 COPY ./build/libs/bswtech-docker-jenkins.jar ${JENKINS_WAR_DIR}/
 
-# TODO: Collapse/integrate this
-# Was not easy to alter classpath with Winstone
-RUN yum install -y unzip zip
-RUN unzip ${JENKINS_WAR_DIR}/jenkins.war -d /tmp/jenkins \
- && mv -v ${JENKINS_WAR_DIR}/bswtech-docker-jenkins.jar /tmp/jenkins/WEB-INF/lib \
- && rm ${JENKINS_WAR_DIR}/jenkins.war \
- && cd /tmp/jenkins \
- && zip -r ${JENKINS_WAR_DIR}/jenkins.war * \
- && rm -rf /tmp/jenkins
-
-# Avoid wizard prompt on first run
-RUN echo 2.0 > ${JENKINS_REF_DIR}/jenkins.install.UpgradeWizard.state
-# This needs unzip and the jar command inside the devel package
-RUN yum install -y java-1.8.0-openjdk-devel
-ENV JENKINS_UC https://updates.jenkins.io
-# TODO: Read plugins from file
-RUN bash /src/plugins/install-plugins.sh workflow-basic-steps:2.1
-RUN yum erase -y unzip zip java-1.8.0-openjdk-devel
-RUN mkdir ${JENKINS_WAR_DIR}/plugins \
- && mv -v ${JENKINS_REF_DIR}/*.jpi ${JENKINS_WAR_DIR}/plugins
 COPY ./resources/ /usr/local/bin/
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 USER {{ .JenkinsUser }}
