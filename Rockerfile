@@ -34,6 +34,10 @@ RUN yum install -y unzip zip {{ .JavaDevPackage }} \
  # install script looks at WAR file, but now we can expand it in the image
  && unzip {{ .JenkinsWarFile }} -d ${JENKINS_APP_DIR} \
  && rm -v {{ .JenkinsWarFile }} \
+ # BEGIN MANUAL PLUGINS
+ && unzip /src/digitalocean-plugin/target/digitalocean-plugin.hpi -d ${JENKINS_PLUGIN_DIR}/digitalocean-plugin.jpi \
+ && touch ${JENKINS_PLUGIN_DIR}/digitalocean-plugin.jpi/.timestamp2 \
+ # END MANUAL PLUGINS
  # only temp utilities
  && yum remove -y unzip zip {{ .JavaDevPackage }} \
  && yum clean all \

@@ -51,9 +51,17 @@ task :plugin_manager_override do
   sh './gradlew build'
 end
 
+task :digital_ocean_plugin do
+  sh 'git clone https://github.com/jenkinsci/digitalocean-plugin.git' unless Dir.exist?('digitalocean-plugin')
+  Dir.chdir 'digitalocean-plugin' do
+    sh 'git checkout 56ef608886a41dad5ba4778191b393a0f9e3aac9'
+    sh 'mvn -DskipTests package'
+  end
+end
+
 JENKINS_BIN_DIR='/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
-task :build => :plugin_manager_override do
+task :build => [:plugin_manager_override, :digital_ocean_plugin] do
   args = {
     'JenkinsGid' => JENKINS_GID,
     'JenkinsGroup' => JENKINS_GROUP,
