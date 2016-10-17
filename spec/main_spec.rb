@@ -31,10 +31,11 @@ describe 'Jenkins container' do
   it 'shows no errors in logs' do
     with_retry do
       output = `docker logs #{current_container_id} 2>&1`
-      expect(output).to include 'Running from: /usr/lib/jenkins/jenkins.war'
       expect(output).to include 'Jenkins initial setup is required'
       expect(output).to include 'INFO: Jenkins is fully up and running'
+      # asserting these after up and running should catch stuff
       expect(output).to_not include 'ERROR'
+      expect(output).to_not include 'SEVERE'
       # empty contextPath is an expected error
       expect(output).to_not match /WARN(?!ING: Empty contextPath)/m
     end
@@ -48,7 +49,6 @@ describe 'Jenkins container' do
 
   describe user('jenkins') do
     it { is_expected.to exist }
-    it { is_expected.to have_uid 991 }
     it { is_expected.to have_home_directory JENKINS_HOME_IMAGE }
     # Jenkins seems to have problems making SSH connections if we don't use Bash
     it { is_expected.to have_login_shell '/bin/bash' }
@@ -67,7 +67,6 @@ describe 'Jenkins container' do
 
   describe group('jenkins') do
     it { is_expected.to exist }
-    it { is_expected.to have_gid 991 }
   end
 
   describe command('grep Cap /proc/self/status') do

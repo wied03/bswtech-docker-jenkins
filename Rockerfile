@@ -2,36 +2,61 @@ FROM quay.io/brady/bswtech-docker-base:1.0.12
 
 MOUNT .:/src
 
-# can't use java headless because hudson.util.ChartUtil needs some X11 stuff
-ENV JAVA_PACKAGE java-1.8.0-openjdk-1.8.0.101-3.b13.el7_2
-ENV GIT_PACKAGE git-1.8.3.1-6.el7_2.1
+ENV JENKINS_HOME /var/jenkins_home
+ENV JENKINS_SLAVE_AGENT_PORT 50000
+# from RPM
+ENV JENKINS_APP_DIR {{ .JenkinsBinDir }}/app
+ENV JENKINS_REF_DIR {{ .JenkinsBinDir }}/ref
+ENV JENKINS_PLUGIN_DIR {{ .JenkinsBinDir }}/plugins
 
 RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.d/jenkins.repo \
  && rpm --import /src/jenkins-ci.org.key \
- && yum install -y ${JAVA_PACKAGE} jenkins-{{ .JenkinsVersion }} ${GIT_PACKAGE} \
+ && yum install -y {{ .JavaPackage }} jenkins-{{ .JenkinsVersion }} {{ .GitPackage }} \
  && yum info jenkins-{{ .JenkinsVersion }} \
- && yum info ${JAVA_PACKAGE} \
- && yum info ${GIT_PACKAGE} \
+ && yum info {{ .JavaPackage }} \
+ && yum info {{ .GitPackage }} \
  && yum clean all \
  && yum autoremove -y \
  && rm -rfv /tmp/*
 
-ENV JENKINS_HOME /var/jenkins_home
-ENV JENKINS_SLAVE_AGENT_PORT 50000
-# from RPM
-ENV JENKINS_WAR_DIR /usr/lib/jenkins
-ENV JENKINS_REF_DIR $JENKINS_WAR_DIR/ref
-
-# RPM puts a user in there but we want control over the GID
-RUN userdel -r jenkins \
-    && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
-    && useradd -d ${JENKINS_HOME} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
-    && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
-    && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR"
+# zip/unzip executing plugin download/setup
+RUN yum install -y unzip zip {{ .JavaDevPackage }} \
+ # If our install plugins list changes, we need to force a rebuild with this hash since the Rockerfile will not change
+ && JENKINS_WAR_PATH={{ .JenkinsWarFile }} bash /src/plugins/install-plugins.sh {{ .PluginHash }} \
+ && mkdir ${JENKINS_PLUGIN_DIR} \
+ && mv -v ${JENKINS_REF_DIR}/*.jpi ${JENKINS_PLUGIN_DIR} \
+ && cd ${JENKINS_PLUGIN_DIR} \
+ # Expand all the plugins. Jenkins insists on a timestamp
+ && for i in *; do unzip ${i} -d "${i%.jpi}"; touch "${i%.jpi}/.timestamp2"; done \
+ # If Jenkins is not doing the plugin archive expansion, it expects .jpi "files" to be directories
+ && rm -v ${JENKINS_PLUGIN_DIR}/*.jpi \
+ && for i in *; do mv -v ${i} "${i}.jpi"; done \
+ # install script looks at WAR file, but now we can expand it in the image
+ && unzip {{ .JenkinsWarFile }} -d ${JENKINS_APP_DIR} \
+ && rm -v {{ .JenkinsWarFile }} \
+ # BEGIN MANUAL PLUGINS
+ && unzip /src/digitalocean-plugin/target/digitalocean-plugin.hpi -d ${JENKINS_PLUGIN_DIR}/digitalocean-plugin.jpi \
+ && touch ${JENKINS_PLUGIN_DIR}/digitalocean-plugin.jpi/.timestamp2 \
+ # END MANUAL PLUGINS
+ # only temp utilities
+ && yum remove -y unzip zip {{ .JavaDevPackage }} \
+ && yum clean all \
+ && yum autoremove -y \
+ && rm -rfv /tmp/* \
+ # RPM puts a user in there but we want control over the GID
+ && userdel -r jenkins \
+ && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
+ && useradd -d ${JENKINS_HOME} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
+ && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
+ && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR"
 
 VOLUME ${JENKINS_HOME}
 
 COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
+
+# Contains a read only Jenkins plugin manager
+COPY ./build/libs/bswtech-docker-jenkins.jar ${JENKINS_APP_DIR}/WEB-INF/lib/
+
 COPY ./resources/ /usr/local/bin/
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 USER {{ .JenkinsUser }}

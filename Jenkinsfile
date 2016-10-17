@@ -17,6 +17,8 @@ node('docker.build') {
 
     stage 'Dependencies'
     rubyShell 'bundle install'
+    // we compile Java code for this image and it's a one off
+    sh 'yum install -y java-1.7.0-openjdk-devel-1.7.0.111-2.6.7.2.el7_2 maven'
 
     stage 'Build image'
     rakeCommand 'build'

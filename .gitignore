@@ -1,3 +1,5 @@
 Gemfile.lock
 .bundle
 /jenkins_test_home
+/.gradle
+/build
