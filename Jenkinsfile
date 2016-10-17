@@ -65,12 +65,14 @@ def handleError() {
            subject: 'Jenkins Docker image build failed!'
 }
 
+@NonCPS
 def keepBuild() {
   def job = getJob()
   def build = job.getBuild(env.BUILD_NUMBER)
   build.keepLog(true)
 }
 
+@NonCPS
 def getJob() {
   def jobs = jenkins.model.Jenkins.instance.getAllItems(hudson.model.Job)
   // Groovy complained about using .each
