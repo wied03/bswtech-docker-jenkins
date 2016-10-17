@@ -51,6 +51,7 @@ if (env.BRANCH_NAME == 'master') {
     node('docker.build') {
       try {
         // might be on a different node (filesystem deps)
+        checkout scm
         ruby.shell 'bundle install'
         sh 'yum install -y java-1.7.0-openjdk-devel-1.7.0.111-2.6.7.2.el7_2 maven'
 
