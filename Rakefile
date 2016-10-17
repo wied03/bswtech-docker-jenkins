@@ -1,5 +1,6 @@
 require 'rake'
 require 'rspec/core/rake_task'
+require 'digest'
 
 task :default => [:build, :spec]
 
@@ -65,7 +66,8 @@ task :build => :plugin_manager_override do
     'JavaDevPackage' => "java-1.8.0-openjdk-devel-#{JAVA_VERSION}",
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
-    'JenkinsWarFile' => File.join(JENKINS_BIN_DIR, 'jenkins.war')
+    'JenkinsWarFile' => File.join(JENKINS_BIN_DIR, 'jenkins.war'),
+    'PluginHash' => Digest::SHA256.hexdigest(File.read('plugins/install_plugins.txt'))
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   sh "rocker build #{flat_args}"

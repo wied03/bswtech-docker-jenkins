@@ -15,10 +15,16 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  && yum info jenkins-{{ .JenkinsVersion }} \
  && yum info {{ .JavaPackage }} \
  && yum info {{ .GitPackage }} \
- # For executing plugin download/setup
- && yum install -y unzip zip {{ .JavaDevPackage }} \
- # TODO: Read plugins from file
- && JENKINS_WAR_PATH={{ .JenkinsWarFile }} bash /src/plugins/install-plugins.sh workflow-basic-steps:2.1 \
+ && yum clean all \
+ && yum autoremove -y \
+ && rm -rfv /tmp/*
+
+# If our install plugins list changes, we need to rebuild
+ENV PLUGIN_HASH {{ .PluginHash }}
+
+# zip/unzip executing plugin download/setup
+RUN yum install -y unzip zip {{ .JavaDevPackage }} \
+ && JENKINS_WAR_PATH={{ .JenkinsWarFile }} bash /src/plugins/install-plugins.sh \
  && mkdir ${JENKINS_PLUGIN_DIR} \
  && mv -v ${JENKINS_REF_DIR}/*.jpi ${JENKINS_PLUGIN_DIR} \
  && cd ${JENKINS_PLUGIN_DIR} \
@@ -27,20 +33,20 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  # If Jenkins is not doing the plugin archive expansion, it expects .jpi "files" to be directories
  && rm -v ${JENKINS_PLUGIN_DIR}/*.jpi \
  && for i in *; do mv -v ${i} "${i}.jpi"; done \
+ # install script looks at WAR file, but now we can expand it in the image
  && unzip {{ .JenkinsWarFile }} -d ${JENKINS_APP_DIR} \
  && rm -v {{ .JenkinsWarFile }} \
  # only temp utilities
  && yum remove -y unzip zip {{ .JavaDevPackage }} \
  && yum clean all \
  && yum autoremove -y \
- && rm -rfv /tmp/*
-
-# RPM puts a user in there but we want control over the GID
-RUN userdel -r jenkins \
-    && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
-    && useradd -d ${JENKINS_HOME} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
-    && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
-    && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR"
+ && rm -rfv /tmp/* \
+ # RPM puts a user in there but we want control over the GID
+ && userdel -r jenkins \
+ && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
+ && useradd -d ${JENKINS_HOME} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
+ && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
+ && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR"
 
 VOLUME ${JENKINS_HOME}
 
