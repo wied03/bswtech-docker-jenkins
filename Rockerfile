@@ -19,12 +19,10 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  && yum autoremove -y \
  && rm -rfv /tmp/*
 
-# If our install plugins list changes, we need to rebuild
-ENV PLUGIN_HASH {{ .PluginHash }}
-
 # zip/unzip executing plugin download/setup
 RUN yum install -y unzip zip {{ .JavaDevPackage }} \
- && JENKINS_WAR_PATH={{ .JenkinsWarFile }} bash /src/plugins/install-plugins.sh \
+ # If our install plugins list changes, we need to force a rebuild since the Rockerfile will not change
+ && JENKINS_WAR_PATH={{ .JenkinsWarFile }} bash /src/plugins/install-plugins.sh {{ .PluginHash }} \
  && mkdir ${JENKINS_PLUGIN_DIR} \
  && mv -v ${JENKINS_REF_DIR}/*.jpi ${JENKINS_PLUGIN_DIR} \
  && cd ${JENKINS_PLUGIN_DIR} \
