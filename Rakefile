@@ -49,8 +49,10 @@ IMAGE_VERSION = "#{VERSION_NO_SUBRELEASE}.#{MINOR_VERSION}"
 ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 
 task :update_gradle_jenkins_dep do
+  # mac sed
+  sed_replace = RUBY_PLATFORM.include?('darwin') ? '-i .bak' : '-i'
   # Want the version we build the plugin manager against to be consistent
-  sh "sed -i .bak \"s/org.jenkins-ci.main:jenkins-core:.*/org.jenkins-ci.main:jenkins-core:#{VERSION_NO_SUBRELEASE}'/\" ./build.gradle"
+  sh "sed #{sed_replace} \"s/org.jenkins-ci.main:jenkins-core:.*/org.jenkins-ci.main:jenkins-core:#{VERSION_NO_SUBRELEASE}'/\" ./build.gradle"
   sh 'rm -f *.bak'
 end
 
