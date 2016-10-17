@@ -4,6 +4,7 @@
 #
 # FROM jenkins
 # RUN install-plugins.sh docker-slaves github-branch-source
+# Only slightly modified for BSW Docker image to use different ENV variables and read plugin list from a file
 
 set -o pipefail
 

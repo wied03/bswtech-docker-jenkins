@@ -65,20 +65,21 @@ GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
 task :generate_plugin_list do
   plugins = [
     'build-timeout:1.17.1', # Standard Jenkins
-    'docker-workflow:1.7', # CloudBees Docker Pipeline
-    'credentials:2.1.4', # Core credentials plugin
+    'docker-workflow:1.9', # CloudBees Docker Pipeline
+    'credentials:2.1.6', # Core credentials plugin
     'credentials-binding:1.9', # Allow use of creds in environment variables/pipeline steps
-    'email-ext:2.47', # better email extensions
-    'git:2.6.0',
-    'workflow-aggregator:2.2', # the actual core pipeline plugin
-    'pipeline-graph-analysis:1.1',
+    'email-ext:2.51', # better email extensions
+    'git:3.0.0',
+    'workflow-aggregator:2.4', # the actual core pipeline plugin
+    'pipeline-graph-analysis:1.2',
     'ssh-agent:1.13', # We use this for core-ansible for SSH credentials
-    'timestamper:1.8.5', # Base jenkins package, adds them to console output
+    'timestamper:1.8.7', # Base jenkins package, adds them to console output
     'ws-cleanup:0.30', # Workspace cleanup
     'antisamy-markup-formatter:1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
-    'ldap:1.12', # Samba authentication needs this
+    'ldap:1.13', # Samba authentication needs this
     'matrix-auth:1.4' # Not using it yet but the option to do matrix based authorization is good to have and standard
   ]
+  # Will be read by shell script (plugins/install-plugins/sh)
   File.write(GEN_PLUGIN_FILENAME, plugins.join("\n"))
 end
 
