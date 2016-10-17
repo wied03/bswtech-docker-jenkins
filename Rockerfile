@@ -48,7 +48,9 @@ RUN yum install -y unzip zip {{ .JavaDevPackage }} \
  && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
  && useradd -d ${JENKINS_HOME} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
  && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
- && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR"
+ && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR" \
+ # Keep track of version in the footer
+ && printf ".jenkins_ver:after {\n        content: \" - I{{ .ImageVersion }}\";\n}\n" >> ${JENKINS_APP_DIR}/css/layout-common.css
 
 VOLUME ${JENKINS_HOME}
 
