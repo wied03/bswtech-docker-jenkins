@@ -39,7 +39,7 @@ end
 desc "Run serverspec tests"
 RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume, :test_user])
 
-JENKINS_VERSION = '2.7.2-1.1'
+JENKINS_VERSION = '2.19.1-1.1'
 JAVA_VERSION = '1.8.0.102-1.b14.el7_2'
 GIT_VERSION = '1.8.3.1-6.el7_2.1'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
@@ -59,9 +59,29 @@ task :digital_ocean_plugin do
   end
 end
 
+task :generate_plugin_list do
+  plugins = [
+    'build-timeout:1.17.1', # Standard Jenkins
+    'docker-workflow:1.7', # CloudBees Docker Pipeline
+    'credentials:2.1.4', # Core credentials plugin
+    'credentials-binding:1.9', # Allow use of creds in environment variables/pipeline steps
+    'email-ext:2.47', # better email extensions
+    'git:2.6.0',
+    'workflow-aggregator:2.2', # the actual core pipeline plugin
+    'pipeline-graph-analysis:1.1',
+    'ssh-agent:1.13', # We use this for core-ansible for SSH credentials
+    'timestamper:1.8.5', # Base jenkins package, adds them to console output
+    'ws-cleanup:0.30', # Workspace cleanup
+    'antisamy-markup-formatter:1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
+    'ldap:1.12', # Samba authentication needs this
+    'matrix-auth:1.4' # Not using it yet but the option to do matrix based authorization is good to have and standard
+  ]
+  File.write('plugins/install_plugins.txt', plugins.join("\n"))
+end
+
 JENKINS_BIN_DIR='/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
-task :build => [:plugin_manager_override, :digital_ocean_plugin] do
+task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugin_list] do
   args = {
     'JenkinsGid' => JENKINS_GID,
     'JenkinsGroup' => JENKINS_GROUP,
