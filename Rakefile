@@ -43,11 +43,18 @@ JENKINS_VERSION = '2.19.1-1.1'
 JAVA_VERSION = '1.8.0.102-1.b14.el7_2'
 GIT_VERSION = '1.8.3.1-6.el7_2.1'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
-# Drop the RPM subrelease
-image_version = "#{Gem::Version.new(JENKINS_VERSION).release}.#{MINOR_VERSION}"
-ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{image_version}"
+# Drop the RPM subrelease when we build our image
+VERSION_NO_SUBRELEASE = Gem::Version.new(JENKINS_VERSION).release
+IMAGE_VERSION = "#{VERSION_NO_SUBRELEASE}.#{MINOR_VERSION}"
+ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 
-task :plugin_manager_override do
+task :update_gradle_jenkins_dep do
+  # Want the version we build the plugin manager against to be consistent
+  sh "sed -i .bak \"s/org.jenkins-ci.main:jenkins-core:.*/org.jenkins-ci.main:jenkins-core:#{VERSION_NO_SUBRELEASE}'/\" ./build.gradle"
+  sh 'rm -f *.bak'
+end
+
+task :plugin_manager_override => :update_gradle_jenkins_dep do
   sh './gradlew build'
 end
 
@@ -92,7 +99,7 @@ task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugi
     'JenkinsUid' => JENKINS_UID,
     'JenkinsUser' => JENKINS_USER,
     'ImageTag' => image_tag,
-    'ImageVersion' => image_version,
+    'ImageVersion' => IMAGE_VERSION,
     'JenkinsVersion' => JENKINS_VERSION,
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'JavaDevPackage' => "java-1.8.0-openjdk-devel-#{JAVA_VERSION}",
@@ -107,7 +114,7 @@ end
 
 desc "Pushes out docker image #{image_tag} to the registry"
 task :push => :build do
-  quay_repo_tag = "quay.io/brady/bswtech-docker-jenkins:#{image_version}"
+  quay_repo_tag = "quay.io/brady/bswtech-docker-jenkins:#{IMAGE_VERSION}"
   sh "docker tag #{image_tag} #{quay_repo_tag}"
   sh "docker push #{quay_repo_tag}"
 end
