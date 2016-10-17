@@ -59,6 +59,9 @@ task :digital_ocean_plugin do
   end
 end
 
+# Read by Jenkins repo's script that downloads plugins+deps
+GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
+
 task :generate_plugin_list do
   plugins = [
     'build-timeout:1.17.1', # Standard Jenkins
@@ -76,7 +79,7 @@ task :generate_plugin_list do
     'ldap:1.12', # Samba authentication needs this
     'matrix-auth:1.4' # Not using it yet but the option to do matrix based authorization is good to have and standard
   ]
-  File.write('plugins/install_plugins.txt', plugins.join("\n"))
+  File.write(GEN_PLUGIN_FILENAME, plugins.join("\n"))
 end
 
 JENKINS_BIN_DIR='/usr/lib/jenkins'
@@ -95,7 +98,7 @@ task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugi
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
     'JenkinsWarFile' => File.join(JENKINS_BIN_DIR, 'jenkins.war'),
-    'PluginHash' => Digest::SHA256.hexdigest(File.read('plugins/install_plugins.txt'))
+    'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME))
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   sh "rocker build #{flat_args}"
