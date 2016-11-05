@@ -25,7 +25,7 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  && rm -rfv /tmp/*
 
 # zip/unzip executing plugin download/setup
-RUN yum install -y unzip zip {{ .JavaDevPackage }} \
+RUN yum install -y unzip zip \
  # If our install plugins list changes, we need to force a rebuild with this hash since the Rockerfile will not change
  && bash /src/plugins/install-plugins.sh {{ .PluginHash }} \
  && mkdir ${JENKINS_PLUGIN_DIR} \
@@ -41,7 +41,7 @@ RUN yum install -y unzip zip {{ .JavaDevPackage }} \
  && touch ${JENKINS_PLUGIN_DIR}/digitalocean-plugin.jpi/.timestamp2 \
  # END MANUAL PLUGINS
  # only temp utilities
- && yum remove -y unzip zip {{ .JavaDevPackage }} \
+ && yum remove -y unzip zip \
  && yum clean all \
  && yum autoremove -y \
  && rm -rfv /tmp/* \

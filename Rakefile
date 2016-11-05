@@ -108,7 +108,6 @@ task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugi
     'ImageVersion' => IMAGE_VERSION,
     'JenkinsVersion' => JENKINS_VERSION,
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
-    'JavaDevPackage' => "java-1.8.0-openjdk-devel-#{JAVA_VERSION}",
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
     'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME))
