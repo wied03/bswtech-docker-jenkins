@@ -136,7 +136,7 @@ installedPlugins() {
     for f in "$REF_DIR"/*.jpi; do
         PLUGIN_NAME="$(basename "$f" | sed -e 's/\.jpi//'):$(get_plugin_version "$f")"
         echo $PLUGIN_NAME
-        echo $PLUGIN_NAME >> /src/plugins/install_plugins.lock
+        echo $PLUGIN_NAME >> ${JENKINS_PLUGIN_DIR}/../installed_plugins.txt
     done
 }
 

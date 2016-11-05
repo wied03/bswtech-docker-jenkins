@@ -114,6 +114,8 @@ task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugi
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   sh "rocker build #{flat_args}"
+  # goes inside the image so it's cached but we want to view this in source control
+  sh "docker run --rm -it -v #{Dir.pwd}:/src #{image_tag} cp #{JENKINS_BIN_DIR}/installed_plugins.txt /src/plugins"
 end
 
 desc "Pushes out docker image #{image_tag} to the registry"
