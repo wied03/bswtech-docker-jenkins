@@ -107,7 +107,6 @@ task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugi
     'JavaDevPackage' => "java-1.8.0-openjdk-devel-#{JAVA_VERSION}",
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
-    'JenkinsWarFile' => File.join(JENKINS_BIN_DIR, 'jenkins.war'),
     'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME))
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '

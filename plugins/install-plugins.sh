@@ -122,28 +122,6 @@ resolveDependencies() {
     wait
 }
 
-bundledPlugins() {
-    local JENKINS_WAR=${JENKINS_WAR_PATH}
-    if [ -f $JENKINS_WAR ]
-    then
-        TEMP_PLUGIN_DIR=/tmp/plugintemp.$$
-        for i in $(jar tf $JENKINS_WAR | egrep '[^detached-]plugins.*\..pi' | sort)
-        do
-            rm -fr $TEMP_PLUGIN_DIR
-            mkdir -p $TEMP_PLUGIN_DIR
-            PLUGIN=$(basename "$i"|cut -f1 -d'.')
-            (cd $TEMP_PLUGIN_DIR;jar xf "$JENKINS_WAR" "$i";jar xvf "$TEMP_PLUGIN_DIR/$i" META-INF/MANIFEST.MF >/dev/null 2>&1)
-            VER=$(egrep -i Plugin-Version "$TEMP_PLUGIN_DIR/META-INF/MANIFEST.MF"|cut -d: -f2|sed 's/ //')
-            echo "$PLUGIN:$VER"
-        done
-        rm -fr $TEMP_PLUGIN_DIR
-    else
-        rm -f "$TEMP_ALREADY_INSTALLED"
-        echo "ERROR file not found: $JENKINS_WAR"
-        exit 1
-    fi
-}
-
 versionFromPlugin() {
     local plugin=$1
     if [[ $plugin =~ .*:.* ]]; then
@@ -172,8 +150,8 @@ main() {
         mkdir "$(getLockFile "${plugin%%:*}")"
     done
 
-    echo "Analyzing war..."
-    bundledPlugins="$(bundledPlugins)"
+    # have not seen any bundled plugins with Jenkins war, so removed
+    bundledPlugins=""
 
     echo "Downloading plugins..."
     for plugin in "${PLUGIN_LIST[@]}"; do
