@@ -92,9 +92,13 @@ task :generate_plugin_list do
   File.write(GEN_PLUGIN_FILENAME, plugins.join("\n"))
 end
 
+task :clean_lock_file do
+  rm_rf 'plugins/install_plugins.lock'
+end
+
 JENKINS_BIN_DIR='/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
-task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugin_list] do
+task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugin_list, :clean_lock_file] do
   args = {
     'JenkinsGid' => JENKINS_GID,
     'JenkinsGroup' => JENKINS_GROUP,

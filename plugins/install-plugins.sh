@@ -134,7 +134,9 @@ versionFromPlugin() {
 
 installedPlugins() {
     for f in "$REF_DIR"/*.jpi; do
-        echo "$(basename "$f" | sed -e 's/\.jpi//'):$(get_plugin_version "$f")"
+        PLUGIN_NAME="$(basename "$f" | sed -e 's/\.jpi//'):$(get_plugin_version "$f")"
+        echo $PLUGIN_NAME
+        echo $PLUGIN_NAME >> /src/plugins/install_plugins.lock
     done
 }
 
