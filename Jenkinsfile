@@ -24,10 +24,13 @@ node('docker.build') {
     }
 
     stage('Build image') {
+      milestone()
       ruby.rake 'build'
+      stash 'complete-workspace'
     }
 
     stage('Test') {
+      milestone()
       // RSpec CI reporter
       env.GENERATE_REPORTS = 'true'
       try {
@@ -48,10 +51,12 @@ node('docker.build') {
 // only allow pushing from master
 if (env.BRANCH_NAME == 'master') {
   stage('Publish Image') {
+    milestone()
+
     node('docker.build') {
       try {
         // might be on a different node (filesystem deps)
-        checkout scm
+        unstash 'complete-workspace'
         ruby.shell 'bundle install'
         sh 'yum install -y java-1.7.0-openjdk-devel-1.7.0.111-2.6.7.2.el7_2 maven'
 
