@@ -86,7 +86,8 @@ task :generate_plugin_list do
     'ws-cleanup:0.32', # Workspace cleanup
     'antisamy-markup-formatter:1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
     'ldap:1.13', # Samba authentication needs this
-    'matrix-auth:1.4' # Not using it yet but the option to do matrix based authorization is good to have and standard
+    'matrix-auth:1.4', # Not using it yet but the option to do matrix based authorization is good to have and standard
+    'naginator:1.17.2' # Do retries of failed builds
   ]
   # Will be read by shell script (plugins/install-plugins/sh)
   File.write(GEN_PLUGIN_FILENAME, plugins.join("\n"))
