@@ -65,6 +65,8 @@ if (env.BRANCH_NAME == 'master') {
           ruby.rake 'push'
         }
         bswKeepBuild()
+        archiveArtifacts artifacts: 'plugins/installed_plugins.txt',
+                         excludes: null
       }
       catch (any) {
         bswHandleError(any)
