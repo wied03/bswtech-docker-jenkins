@@ -27,7 +27,7 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
 # zip/unzip executing plugin download/setup
 RUN yum install -y unzip zip \
  # If our install plugins list changes, we need to force a rebuild with this hash since the Rockerfile will not change
- && JENKINS_BIN_DIR={{ .JenkinsBinDir }} bash /src/plugins/install-plugins.sh {{ .PluginHash }} \
+ && INSTALLED_PLUGINS_FILE={{ .InstalledPluginsFile }} bash /src/plugins/install-plugins.sh {{ .PluginHash }} \
  && mkdir ${JENKINS_PLUGIN_DIR} \
  && mv ${JENKINS_REF_DIR}/*.jpi ${JENKINS_PLUGIN_DIR} \
  && cd ${JENKINS_PLUGIN_DIR} \

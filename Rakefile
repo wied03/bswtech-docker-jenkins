@@ -92,13 +92,10 @@ task :generate_plugin_list do
   File.write(GEN_PLUGIN_FILENAME, plugins.join("\n"))
 end
 
-task :clean_lock_file do
-  rm_rf 'plugins/install_plugins.lock'
-end
-
 JENKINS_BIN_DIR='/usr/lib/jenkins'
+INSTALLED_PLUGINS_FILE=File.join(JENKINS_BIN_DIR, 'installed_plugins.txt')
 desc "Builds Docker image #{image_tag}"
-task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugin_list, :clean_lock_file] do
+task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugin_list] do
   args = {
     'JenkinsGid' => JENKINS_GID,
     'JenkinsGroup' => JENKINS_GROUP,
@@ -110,12 +107,13 @@ task :build => [:plugin_manager_override, :digital_ocean_plugin, :generate_plugi
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
+    'InstalledPluginsFile' => INSTALLED_PLUGINS_FILE,
     'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME))
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   sh "rocker build #{flat_args}"
   # goes inside the image so it's cached but we want to view this in source control
-  sh "docker run --rm -i -v #{Dir.pwd}:/src #{image_tag} cp #{JENKINS_BIN_DIR}/installed_plugins.txt /src/plugins"
+  sh "docker run --rm -i -v #{Dir.pwd}:/src #{image_tag} -u root cp #{INSTALLED_PLUGINS_FILE} /src/plugins"
 end
 
 desc "Pushes out docker image #{image_tag} to the registry"
