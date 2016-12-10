@@ -64,24 +64,26 @@ end
 GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
 
 task :generate_plugin_list do
-  plugins = [
-    'build-timeout:1.18', # Standard Jenkins
-    'docker-workflow:1.9.1', # CloudBees Docker Pipeline
-    'credentials:2.1.10', # Core credentials plugin
-    'credentials-binding:1.10', # Allow use of creds in environment variables/pipeline steps
-    'email-ext:2.52', # better email extensions
-    'git:3.0.1',
-    'workflow-aggregator:2.4', # the actual core pipeline plugin
-    'pipeline-graph-analysis:1.2',
-    'ssh-agent:1.13', # We use this for core-ansible for SSH credentials
-    'timestamper:1.8.7', # Base jenkins package, adds them to console output
-    'ws-cleanup:0.32', # Workspace cleanup
-    'antisamy-markup-formatter:1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
-    'ldap:1.13', # Samba authentication needs this
-    'matrix-auth:1.4' # Not using it yet but the option to do matrix based authorization is good to have and standard
-  ]
+  plugins = {
+    'build-timeout' => '1.18', # Standard Jenkins
+    'docker-workflow' => '1.9.1', # CloudBees Docker Pipeline
+    'credentials' => '2.1.10', # Core credentials plugin
+    'credentials-binding' => '1.10', # Allow use of creds in environment variables/pipeline steps
+    'email-ext' => '2.52', # better email extensions
+    'git' => '3.0.1',
+    'workflow-aggregator' => '2.4', # the actual core pipeline plugin
+    'pipeline-graph-analysis' => '1.2',
+    'ssh-agent' => '1.13', # We use this for core-ansible for SSH credentials
+    'timestamper' => '1.8.7', # Base jenkins package, adds them to console output
+    'ws-cleanup' => '0.32', # Workspace cleanup
+    'antisamy-markup-formatter' => '1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
+    'saml' => '0.12', # Authenticate via SAML
+    'role-strategy' => '2.3.2', # Best authorization setup available
+    'matrix-auth' => '1.4', # Undeclared dependency of role-strategy
+    'ec2' => '1.36'
+  }
   # Will be read by shell script (plugins/install-plugins/sh)
-  File.write(GEN_PLUGIN_FILENAME, plugins.join("\n"))
+  File.write(GEN_PLUGIN_FILENAME, plugins.map {|plugin, version| "#{plugin}:#{version}" }.join("\n"))
 end
 
 JENKINS_BIN_DIR='/usr/lib/jenkins'
