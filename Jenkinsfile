@@ -20,7 +20,7 @@ node('docker.build') {
     stage('Dependencies') {
       ruby.shell 'bundle install'
       // we compile Java code for this image and it's a one off
-      sh 'yum install -y java-1.7.0-openjdk-devel-1.7.0.111-2.6.7.2.el7_2 maven'
+      sh 'yum install -y java-1.7.0-openjdk-devel-1.7.0.111-2.6.7.2.el7_2'
     }
 
     stage('Build image') {
