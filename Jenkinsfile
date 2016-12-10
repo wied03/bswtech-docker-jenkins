@@ -1,4 +1,5 @@
 ruby.version = '2.2.5'
+build_yum_deps = 'yum install -y java-1.7.0-openjdk-devel-1.7.0.111-2.6.7.2.el7_2'
 
 node('docker.build') {
   // should only need 3 master builds (code will mark published builds as permanent)
@@ -20,7 +21,7 @@ node('docker.build') {
     stage('Dependencies') {
       ruby.shell 'bundle install'
       // we compile Java code for this image and it's a one off
-      sh 'yum install -y java-1.7.0-openjdk-devel-1.7.0.111-2.6.7.2.el7_2'
+      sh build_yum_deps
     }
 
     stage('Build image') {
@@ -37,13 +38,13 @@ node('docker.build') {
         ruby.rake 'spec'
       }
       finally {
-        step([$class: 'JUnitResultArchiver',
-              testResults: 'spec/reports/*.xml'])
+        junit keepLongStdio: true,
+              testResults: 'spec/reports/*.xml'
       }
     }
   }
   catch (any) {
-    bswHandleError(any)
+    bswHandleError any
     throw any
   }
 }
@@ -58,7 +59,7 @@ if (env.BRANCH_NAME == 'master') {
         // might be on a different node (filesystem deps)
         unstash 'complete-workspace'
         ruby.shell 'bundle install'
-        sh 'yum install -y java-1.7.0-openjdk-devel-1.7.0.111-2.6.7.2.el7_2 maven'
+        sh build_yum_deps
 
         // 2nd arg is creds
         docker.withRegistry('https://quay.io', 'quay_io_docker') {
@@ -69,7 +70,7 @@ if (env.BRANCH_NAME == 'master') {
                          excludes: null
       }
       catch (any) {
-        bswHandleError(any)
+        bswHandleError any
         throw any
       }
     }
