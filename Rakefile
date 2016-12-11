@@ -9,13 +9,15 @@ if ENV['GENERATE_REPORTS'] == 'true'
   task :spec => 'ci:setup:rspec'
 end
 
-ENV['TEST_VOLUME'] = TEST_VOLUME = File.join Dir.pwd, 'jenkins_test_home'
-# https://github.com/docker/docker/issues/20740 - mac doesn't work with this
-ENV['NO_TMPFS_OPTIONS'] = '1' unless ENV['JENKINS_URL']
 JENKINS_USER = 'jenkins'
 JENKINS_GROUP = 'jenkins'
 JENKINS_GID = 1002
 JENKINS_UID = 1002
+
+ENV['TEST_VOLUME'] = TEST_VOLUME = File.join Dir.pwd, 'jenkins_test_home'
+# https://github.com/docker/docker/issues/20740 - mac doesn't work with this
+ENV['NO_TMPFS_OPTIONS'] = '1' unless ENV['JENKINS_URL']
+ON_MAC = RUBY_PLATFORM.include?('darwin')
 
 task :clean_test_volume do
   # Clean cannot go in RSpec hooks because serverspec connects ahead of time
@@ -105,9 +107,15 @@ task :build => [:plugin_manager_override, :generate_plugin_list] do
     'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME))
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
-  sh "rocker build #{flat_args}"
-  # goes inside the image so it's cached but we want to view this in source control
-  sh "docker run --rm -i -u root -v #{Dir.pwd}:/src #{image_tag} cp #{INSTALLED_PLUGINS_FILE} /src/plugins"
+  begin
+    # SELinux causes problems when trying to use the Rocker MOUNT directive
+    sh 'setenforce 0' unless ON_MAC
+    sh "rocker build #{flat_args}"
+    # goes inside the image so it's cached but we want to view this in source control
+    sh "docker run --rm -i -u root -v #{Dir.pwd}:/src #{image_tag} cp #{INSTALLED_PLUGINS_FILE} /src/plugins"
+  ensure
+    sh 'setenforce 1' unless ON_MAC
+  end
 end
 
 desc "Pushes out docker image #{image_tag} to the registry"
