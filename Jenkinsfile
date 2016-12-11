@@ -1,5 +1,6 @@
 ruby.version = '2.2.5'
-build_yum_deps = 'yum install -y java-1.7.0-openjdk-devel-1.7.0.111-2.6.7.2.el7_2'
+// for Gradle development
+build_yum_deps = 'yum install -y java-1.8.0-openjdk-devel'
 
 node('docker.build') {
   // should only need 3 master builds (code will mark published builds as permanent)
