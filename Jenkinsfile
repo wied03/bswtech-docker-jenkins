@@ -1,4 +1,3 @@
-ruby.version = '2.2.5'
 // for Gradle development
 build_yum_deps = 'yum install -y java-1.8.0-openjdk-devel'
 
