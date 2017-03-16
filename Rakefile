@@ -41,7 +41,7 @@ end
 desc "Run serverspec tests"
 RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume, :test_user])
 
-JENKINS_VERSION = '2.19.4-1.1'
+JENKINS_VERSION = '2.32.3-1.1'
 JAVA_VERSION = '1.8.0.111-1.b15.el7_2'
 GIT_VERSION = '1.8.3.1-6.el7_2.1'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
@@ -68,18 +68,18 @@ GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
 task :generate_plugin_list do
   plugins = {
     'build-timeout' => '1.18', # Standard Jenkins
-    'docker-workflow' => '1.9.1', # CloudBees Docker Pipeline
-    'credentials' => '2.1.10', # Core credentials plugin
+    'docker-workflow' => '1.10', # CloudBees Docker Pipeline
+    'credentials' => '2.1.13', # Core credentials plugin
     'credentials-binding' => '1.10', # Allow use of creds in environment variables/pipeline steps
-    'email-ext' => '2.52', # better email extensions
-    'git' => '3.0.1',
-    'workflow-aggregator' => '2.4', # the actual core pipeline plugin
-    'pipeline-graph-analysis' => '1.2',
-    'ssh-agent' => '1.13', # We use this for core-ansible for SSH credentials
-    'timestamper' => '1.8.7', # Base jenkins package, adds them to console output
+    'email-ext' => '2.57', # better email extensions
+    'git' => '3.1.0',
+    'workflow-aggregator' => '2.5', # the actual core pipeline plugin
+    'pipeline-graph-analysis' => '1.3',
+    'ssh-agent' => '1.14', # We use this for core-ansible for SSH credentials
+    'timestamper' => '1.8.8', # Base jenkins package, adds them to console output
     'ws-cleanup' => '0.32', # Workspace cleanup
     'antisamy-markup-formatter' => '1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
-    'saml' => '0.12', # Authenticate via SAML
+    'saml' => '0.13', # Authenticate via SAML
     'role-strategy' => '2.3.2', # Best authorization setup available
     'matrix-auth' => '1.4', # Undeclared dependency of role-strategy
     'ec2' => '1.36'
