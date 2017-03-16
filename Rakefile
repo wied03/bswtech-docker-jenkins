@@ -42,7 +42,7 @@ desc "Run serverspec tests"
 RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume, :test_user])
 
 JENKINS_VERSION = '2.32.3-1.1'
-JAVA_VERSION = '1.8.0.111-1.b15.el7_2'
+JAVA_VERSION = '1.8.0.121-0.b13.el7_3'
 GIT_VERSION = '1.8.3.1-6.el7_2.1'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
 # Drop the RPM subrelease when we build our image
