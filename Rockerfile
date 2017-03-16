@@ -1,4 +1,4 @@
-FROM quay.io/brady/bswtech-docker-base:1.0.12
+FROM quay.io/brady/bswtech-docker-base:1.0.31
 
 MOUNT .:/src
 
@@ -12,10 +12,7 @@ ARG JENKINS_WAR_FILE={{ .JenkinsBinDir }}/jenkins.war
 
 RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.d/jenkins.repo \
  && rpm --import /src/jenkins-ci.org.key \
- && yum install -y {{ .JavaPackage }} jenkins-{{ .JenkinsVersion }} {{ .GitPackage }} unzip \
- && yum info jenkins-{{ .JenkinsVersion }} \
- && yum info {{ .JavaPackage }} \
- && yum info {{ .GitPackage }} \
+ && yum_check.sh {{ .JavaPackage }} jenkins-{{ .JenkinsVersion }} {{ .GitPackage }} unzip \
  # trading in faster startup for image size
  && unzip ${JENKINS_WAR_FILE} -d ${JENKINS_APP_DIR} \
  && rm ${JENKINS_WAR_FILE} \
