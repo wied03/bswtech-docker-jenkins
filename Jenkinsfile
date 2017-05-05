@@ -1,6 +1,3 @@
-// for Gradle development
-build_yum_deps = 'yum install -y java-1.8.0-openjdk-devel'
-
 node('docker.build') {
   // should only need 3 master builds (code will mark published builds as permanent)
   if (env.BRANCH_NAME == 'master') {
@@ -20,8 +17,6 @@ node('docker.build') {
 
     stage('Dependencies') {
       ruby.shell 'bundle install'
-      // we compile Java code for this image and it's a one off
-      sh build_yum_deps
     }
 
     stage('Build image') {
