@@ -41,7 +41,7 @@ end
 desc "Run serverspec tests"
 RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume, :test_user])
 
-JENKINS_VERSION = '2.32.3-1.1'
+JENKINS_VERSION = '2.46.2-1.1'
 JAVA_VERSION = '1.8.0.121-0.b13.el7_3'
 GIT_VERSION = '1.8.3.1-6.el7_2.1'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
@@ -70,18 +70,18 @@ task :generate_plugin_list do
     'build-timeout' => '1.18', # Standard Jenkins
     'docker-workflow' => '1.10', # CloudBees Docker Pipeline
     'credentials' => '2.1.13', # Core credentials plugin
-    'credentials-binding' => '1.10', # Allow use of creds in environment variables/pipeline steps
-    'email-ext' => '2.57', # better email extensions
-    'git' => '3.1.0',
+    'credentials-binding' => '1.11', # Allow use of creds in environment variables/pipeline steps
+    'email-ext' => '2.57.2', # better email extensions
+    'git' => '3.3.0',
     'workflow-aggregator' => '2.5', # the actual core pipeline plugin
     'pipeline-graph-analysis' => '1.3',
-    'ssh-agent' => '1.14', # We use this for core-ansible for SSH credentials
+    'ssh-agent' => '1.15', # We use this for core-ansible for SSH credentials
     'timestamper' => '1.8.8', # Base jenkins package, adds them to console output
-    'ws-cleanup' => '0.32', # Workspace cleanup
+    'ws-cleanup' => '0.33', # Workspace cleanup
     'antisamy-markup-formatter' => '1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
     'saml' => '0.13', # Authenticate via SAML
-    'role-strategy' => '2.3.2', # Best authorization setup available
-    'matrix-auth' => '1.4', # Undeclared dependency of role-strategy
+    'role-strategy' => '2.4.0', # Best authorization setup available
+    'matrix-auth' => '1.5', # Undeclared dependency of role-strategy
     'ec2' => '1.36'
   }
   # Will be read by shell script (plugins/install-plugins/sh)
