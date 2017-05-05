@@ -16,7 +16,7 @@ node('docker.build') {
     }
 
     stage('Dependencies') {
-      ruby.shell 'bundle install'
+      ruby.dependencies()
     }
 
     stage('Build image') {
@@ -53,7 +53,7 @@ if (env.BRANCH_NAME == 'master') {
       try {
         // might be on a different node (filesystem deps)
         unstash 'complete-workspace'
-        ruby.shell 'bundle install'
+        ruby.dependencies()
 
         // 2nd arg is creds
         docker.withRegistry('https://quay.io', 'quay_io_docker') {
