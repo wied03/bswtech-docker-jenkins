@@ -54,7 +54,6 @@ if (env.BRANCH_NAME == 'master') {
         // might be on a different node (filesystem deps)
         unstash 'complete-workspace'
         ruby.shell 'bundle install'
-        sh build_yum_deps
 
         // 2nd arg is creds
         docker.withRegistry('https://quay.io', 'quay_io_docker') {
