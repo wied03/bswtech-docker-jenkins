@@ -83,6 +83,9 @@ task :generate_plugin_list do
     'email-ext' => '2.57.2', # better email extensions
     'git' => '3.3.1',
     'workflow-aggregator' => '2.5', # the actual core pipeline plugin
+    # We have no direct dependency on workflow-job, usually Pipeline takes care of it.
+    # Problem is workflow-job 2.13 is the latest and it requires Jenkins 2.62
+    'workflow-job' => '2.12.1',
     'pipeline-graph-analysis' => '1.4',
     'ssh-agent' => '1.15', # We use this for core-ansible for SSH credentials
     'timestamper' => '1.8.8', # Base jenkins package, adds them to console output
