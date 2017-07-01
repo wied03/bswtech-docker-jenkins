@@ -52,6 +52,10 @@ ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 
 desc 'Run the actual container for manual testing'
 task :test_run => [:build, :clean_test_volume] do
+  at_exit {
+    sh 'docker rm -f jenkins'
+  }
+
   sh "docker run -v #{TEST_VOLUME}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
 end
 
