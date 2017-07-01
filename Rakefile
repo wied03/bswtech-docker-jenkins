@@ -50,6 +50,11 @@ VERSION_NO_SUBRELEASE = Gem::Version.new(JENKINS_VERSION).release
 IMAGE_VERSION = "#{VERSION_NO_SUBRELEASE}.#{MINOR_VERSION}"
 ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 
+desc 'Run the actual container for manual testing'
+task :test_run => [:build, :clean_test_volume] do
+  sh "docker run -v #{TEST_VOLUME}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
+end
+
 task :update_gradle_jenkins_dep do
   # mac sed
   sed_replace = RUBY_PLATFORM.include?('darwin') ? '-i .bak' : '-i'
