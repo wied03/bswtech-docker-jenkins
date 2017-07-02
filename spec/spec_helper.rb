@@ -15,7 +15,7 @@ docker_options = {
     'Tmpfs' => {
       '/run' => '',
       '/tmp' => 'exec', # needed for a jenkins startup command
-      '/usr/share/tomcat/work' => '',
+      '/usr/share/tomcat/work' => TMPFS_FLAGS,
       '/var/cache/tomcat/temp' => "#{TMPFS_FLAGS},exec",
       '/var/cache/tomcat/work' => TMPFS_FLAGS
     }

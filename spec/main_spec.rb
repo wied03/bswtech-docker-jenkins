@@ -87,6 +87,16 @@ describe 'Jenkins container' do
     it { is_expected.to be_owned_by 'jenkins' }
   end
 
+  ['/var/cache/tomcat/work',
+   '/var/cache/tomcat/temp',
+   '/usr/share/tomcat/work'].each do |dir|
+    describe file(dir) do
+      it { is_expected.to exist }
+      it { is_expected.to be_directory }
+      it { is_expected.to be_owned_by 'jenkins' }
+    end
+  end
+
   describe group('jenkins') do
     it { is_expected.to exist }
   end
