@@ -15,15 +15,16 @@ docker_options = {
   },
   'HostConfig' => {
     'Binds' => ["#{JENKINS_VOLUME}:/var/jenkins_home:Z"],
-    'CapDrop' => ['all']
-  },
-  'Tmpfs' => {
+    'CapDrop' => ['all'],
+    'ReadonlyRootfs' => true,
+    'Tmpfs' => {
       '/run' => '',
       '/tmp' => 'exec', # needed for a jenkins startup command
       '/usr/share/tomcat/work' => '',
       '/var/cache/tomcat/temp' => "#{TMPFS_FLAGS},exec",
       '/var/cache/tomcat/work' => TMPFS_FLAGS
     }
+  }
 }
 
 set :docker_container_create_options, docker_options

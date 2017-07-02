@@ -28,18 +28,31 @@ describe 'Jenkins container' do
     end
   end
 
-  it 'shows no errors in logs' do
+  def wait_for_jenkins
     with_retry do
       output = `docker logs #{current_container_id} 2>&1`
       expect(output).to include 'Jenkins initial setup is required'
       expect(output).to include 'INFO: Jenkins is fully up and running'
-      # asserting these after up and running should catch stuff
-      expect(output).to_not include 'ERROR'
-      expect(output).to_not include 'Exception'
-      expect(output).to_not include 'SEVERE'
-      # empty contextPath is an expected error
-      expect(output).to_not match /WARN(?!ING: Empty contextPath)/m
+      output
     end
+  end
+
+  it 'fully starts up' do
+    wait_for_jenkins
+  end
+
+  it 'shows no ERRORs in logs' do
+    output = wait_for_jenkins
+    # asserting these after up and running should catch stuff
+    expect(output).to_not include 'ERROR'
+    expect(output).to_not include 'Exception'
+    expect(output).to_not include 'SEVERE'
+  end
+
+  it 'shows no warnings in logs' do
+    output = wait_for_jenkins
+    # empty contextPath is an expected error
+    expect(output).to_not match /WARN(?!ING: Empty contextPath)/m
   end
 
   describe docker_container do
