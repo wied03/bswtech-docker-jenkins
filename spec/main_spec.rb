@@ -54,7 +54,8 @@ describe 'Jenkins container' do
     exclusions = [
       'Unknown version string [3.1]',
       'Empty contextPath',
-      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>'
+      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>',
+      'Deprecated unpacked classes directory found in /usr/lib/jenkins/plugins/../plugins/jira.jpi'
     ]
     warning_lines = output.lines.select do |line|
       # empty contextPath is an expected error
