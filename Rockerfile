@@ -12,10 +12,14 @@ ARG JENKINS_WAR_FILE={{ .JenkinsBinDir }}/jenkins.war
 
 RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.d/jenkins.repo \
  && rpm --import /src/jenkins-ci.org.key \
- && yum_check.sh {{ .JavaPackage }} jenkins-{{ .JenkinsVersion }} {{ .GitPackage }} unzip \
+ # Tomcat is more controllable than the Winstone hack Jenkins comes with
+ # And it's an existing RPM within the CentOS ecosystem (security notifications, etc.)
+ && yum_check.sh {{ .JavaPackage }} jenkins-{{ .JenkinsVersion }} {{ .GitPackage }} tomcat-7.0.69-11.el7_3 unzip \
  # trading in faster startup for image size
  && unzip ${JENKINS_WAR_FILE} -d ${JENKINS_APP_DIR} \
- && rm ${JENKINS_WAR_FILE} \
+ # See above for why no Winstone
+ && rm ${JENKINS_WAR_FILE} ${JENKINS_APP_DIR}/winstone.jar \
+ && ln -s ${JENKINS_APP_DIR} /var/lib/tomcat/webapps/ROOT \
  && yum remove -y unzip \
  && yum clean all \
  && yum autoremove -y \
