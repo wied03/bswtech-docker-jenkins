@@ -11,35 +11,25 @@ end
 
 JENKINS_USER = 'jenkins'
 JENKINS_GROUP = 'jenkins'
-JENKINS_GID = 1002
-JENKINS_UID = 1002
+JENKINS_GID = ENV['JENKINS_GID'] = '1002'
+JENKINS_UID = ENV['JENKINS_UID'] = '1002'
 
-ENV['TEST_VOLUME'] = TEST_VOLUME = File.join Dir.pwd, 'jenkins_test_home'
-# https://github.com/docker/docker/issues/20740 - mac doesn't work with this
-ENV['NO_TMPFS_OPTIONS'] = '1' unless ENV['JENKINS_URL']
 ON_MAC = RUBY_PLATFORM.include?('darwin')
-
-task :clean_test_volume do
-  # Clean cannot go in RSpec hooks because serverspec connects ahead of time
-  # Can't go in spec helper because we create the test user first and don't want the directory
-  # to be overwritten
-  rm_rf TEST_VOLUME unless ENV['NO_CLEANUP']
-end
 
 # Docker mac does not replicate problem like CI does
 desc 'Creates test user on Jenkins slave'
-task :test_user => :clean_test_volume do
+task :test_user do
   next unless ENV['JENKINS_URL']
   # jenkins slave will have root access
   sh "groupadd -g #{JENKINS_GID} #{JENKINS_GROUP}"
-  sh "useradd -r -u #{JENKINS_UID} -g #{JENKINS_GID} -m -d #{TEST_VOLUME} -s /bin/false #{JENKINS_USER}"
+  sh "useradd -r -u #{JENKINS_UID} -g #{JENKINS_GID} -m -s /bin/false #{JENKINS_USER}"
   at_exit {
     sh "userdel -r #{JENKINS_USER}"
   }
 end
 
 desc "Run serverspec tests"
-RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume, :test_user])
+RSpec::Core::RakeTask.new(:spec => [:build, :test_user])
 
 JENKINS_VERSION = '2.60.1-1.1'
 JAVA_VERSION = '1.8.0.121-0.b13.el7_3'
@@ -50,13 +40,15 @@ VERSION_NO_SUBRELEASE = Gem::Version.new(JENKINS_VERSION).release
 IMAGE_VERSION = "#{VERSION_NO_SUBRELEASE}.#{MINOR_VERSION}"
 ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 
+TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
-task :test_run => [:build, :clean_test_volume] do
+task :test_run => :build do
   at_exit {
     sh 'docker rm -f jenkins'
+    sh 'docker volume rm jenkins_test_volume'
   }
 
-  sh "docker run -v #{TEST_VOLUME}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
+  sh "docker run -v jenkins_test_volume:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat/temp:#{TMPFS_FLAGS},exec --tmpfs=/var/cache/tomcat/work:#{TMPFS_FLAGS} --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
 end
 
 task :update_gradle_jenkins_dep do
@@ -94,7 +86,8 @@ task :generate_plugin_list do
     'saml' => '0.14', # Authenticate via SAML
     'role-strategy' => '2.5.0', # Best authorization setup available
     'matrix-auth' => '1.7', # Undeclared dependency of role-strategy
-    'ec2' => '1.36'
+    'ec2' => '1.36',
+    'jira' => '2.3.1'
   }
   # Will be read by shell script (plugins/install-plugins/sh)
   File.write(GEN_PLUGIN_FILENAME, plugins.map {|plugin, version| "#{plugin}:#{version}" }.join("\n"))

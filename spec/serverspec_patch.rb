@@ -4,6 +4,22 @@ module DockerSpecHelper
   end
 end
 
+# TODO: Put this in a shared GEM
+class Specinfra::Backend::Docker
+  attr_accessor :cleanup_volumes
+
+  def cleanup_container
+    @container.stop
+    @container.delete
+    # volumes would normally be cleaned up with v:true to delete, but we're using named volumes
+    # to replicate SELinux behavior
+    cleanup_volumes.each do |vol, _|
+      puts "Cleaning up volume #{vol}"
+      Docker::Volume.get(vol).remove
+    end
+  end
+end
+
 class Serverspec::Type::DockerBase
   include DockerSpecHelper
 

@@ -28,7 +28,7 @@ find "${JENKINS_REF_DIR}/" -type f -exec bash -c "copy_reference_file '{}'" \;
 
 # if `docker run` first argument start with `--` the user is passing jenkins launcher arguments
 if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
-  eval "exec java $JAVA_OPTS -Dhudson.PluginManager.className=com.bswtechconsulting.jenkins.ReadOnlyPluginManager -jar ${JENKINS_APP_DIR}/winstone.jar --webroot=${JENKINS_APP_DIR} $JENKINS_OPTS \"\$@\""
+  eval "JAVA_OPTS=\"${JAVA_OPTS} -DJENKINS_HOME=${JENKINS_HOME} -Dhudson.PluginManager.className=com.bswtechconsulting.jenkins.ReadOnlyPluginManager\" exec /usr/libexec/tomcat/server start"
 fi
 
 # As argument is not jenkins, assume user want to run his own process, for sample a `bash` shell to explore this image

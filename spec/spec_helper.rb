@@ -6,30 +6,37 @@ set :backend, :docker
 set :docker_image, ENV['IMAGE_TAG']
 # testing this can take a while
 Docker.options[:read_timeout] = 120
-JENKINS_VOLUME = ENV['TEST_VOLUME']
 
+TMPFS_FLAGS = "uid=#{ENV['JENKINS_UID']},gid=#{ENV['JENKINS_GID']}"
 docker_options = {
-  'Volumes' => {
-    '/var/jenkins_home' => {}
-  },
   'HostConfig' => {
-    'Binds' => ["#{JENKINS_VOLUME}:/var/jenkins_home:Z"],
-    'CapDrop' => ['all']
+    'CapDrop' => ['all'],
+    'ReadonlyRootfs' => true,
+    'Tmpfs' => {
+      '/run' => '',
+      '/tmp' => 'exec', # needed for a jenkins startup command
+      '/usr/share/tomcat/work' => '',
+      '/var/cache/tomcat/temp' => "#{TMPFS_FLAGS},exec",
+      '/var/cache/tomcat/work' => TMPFS_FLAGS
+    }
   }
 }
 
-unless ENV['NO_TMPFS_OPTIONS']
-  host = docker_options['HostConfig']
-  host.merge!({
-    'ReadonlyRootfs' => true,
-      'Tmpfs' => {
-        '/run' => '',
-        '/tmp' => 'exec' # needed for a jenkins startup command
-      }
-    })
+set :docker_container_create_options, docker_options
+
+# TODO: Move this to a shared GEM
+def set_volumes(volumes)
+  opts = Specinfra.configuration.docker_container_create_options
+  host_config = opts['HostConfig'] ||= {}
+  host_config['Binds'] = volumes.map { |name, image_path| "#{name}:#{image_path}" }
+  Specinfra.backend.cleanup_volumes = volumes
 end
 
-set :docker_container_create_options, docker_options
+volumes = {
+  'jenkins_test_home' => '/var/jenkins_home:Z'
+}
+
+set_volumes volumes
 
 RSpec.configure do |config|
   config.include DockerSpecHelper

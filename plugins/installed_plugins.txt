@@ -21,6 +21,7 @@ git:3.3.1
 handlebars:1.1.1
 icon-shim:2.0.3
 jackson2-api:2.7.3
+jira:2.3.1
 jquery-detached:1.2.1
 junit:1.20
 mailer:1.20
