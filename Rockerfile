@@ -57,7 +57,7 @@ COPY /resources/log4j.properties /etc/tomcat/log4j.properties
 COPY /resources/logging.properties /etc/tomcat/logging.properties
 RUN rm -rf /usr/share/tomcat/work \
  && rm /etc/tomcat/tomcat-users.xml \
- && chgrp -R jenkins /var/cache/tomcat
+ && chown -Rv {{ .JenkinsUser }}.{{ .JenkinsGroup }} /var/cache/tomcat
 
 VOLUME ["${JENKINS_HOME}"]
 

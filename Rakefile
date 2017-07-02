@@ -50,13 +50,14 @@ VERSION_NO_SUBRELEASE = Gem::Version.new(JENKINS_VERSION).release
 IMAGE_VERSION = "#{VERSION_NO_SUBRELEASE}.#{MINOR_VERSION}"
 ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 
+TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
 task :test_run => [:build, :clean_test_volume] do
   at_exit {
     sh 'docker rm -f jenkins'
   }
 
-  sh "docker run -v #{TEST_VOLUME}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat/temp --tmpfs=/var/cache/tomcat/work: --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
+  sh "docker run -v #{TEST_VOLUME}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat/temp:#{TMPFS_FLAGS} --tmpfs=/var/cache/tomcat/work:#{TMPFS_FLAGS} --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
 end
 
 task :update_gradle_jenkins_dep do
