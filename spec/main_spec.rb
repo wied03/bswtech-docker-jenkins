@@ -53,7 +53,8 @@ describe 'Jenkins container' do
     output = wait_for_jenkins
     exclusions = [
       'Unknown version string [3.1]',
-      'Empty contextPath'
+      'Empty contextPath',
+      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>'
     ]
     warning_lines = output.lines.select do |line|
       # empty contextPath is an expected error
