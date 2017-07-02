@@ -56,7 +56,7 @@ task :test_run => [:build, :clean_test_volume] do
     sh 'docker rm -f jenkins'
   }
 
-  sh "docker run -v #{TEST_VOLUME}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
+  sh "docker run -v #{TEST_VOLUME}:/var/jenkins_home:Z -v #{TEST_VOLUME}/logs:/usr/share/tomcat/logs:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat/temp --tmpfs=/var/cache/tomcat/work --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
 end
 
 task :update_gradle_jenkins_dep do
