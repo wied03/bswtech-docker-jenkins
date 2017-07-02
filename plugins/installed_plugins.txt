@@ -6,6 +6,7 @@ aws-java-sdk:1.11.119
 bouncycastle-api:2.16.1
 branch-api:2.0.10
 build-timeout:1.18
+cloudbees-bitbucket-branch-source:2.1.2
 cloudbees-folder:6.0.4
 credentials-binding:1.12
 credentials:2.1.14
@@ -27,6 +28,7 @@ junit:1.20
 mailer:1.20
 matrix-auth:1.7
 matrix-project:1.11
+mercurial:1.61
 momentjs:1.1.1
 node-iterator-api:1.5.0
 pipeline-build-step:2.5

@@ -87,7 +87,9 @@ task :generate_plugin_list do
     'role-strategy' => '2.5.0', # Best authorization setup available
     'matrix-auth' => '1.7', # Undeclared dependency of role-strategy
     'ec2' => '1.36',
-    'jira' => '2.3.1'
+    'jira' => '2.3.1',
+    # Needed to trigger multibranch pipelines from Bitbucket
+    'cloudbees-bitbucket-branch-source' => '2.1.2'
   }
   # Will be read by shell script (plugins/install-plugins/sh)
   File.write(GEN_PLUGIN_FILENAME, plugins.map {|plugin, version| "#{plugin}:#{version}" }.join("\n"))
