@@ -66,7 +66,6 @@ describe 'Jenkins container' do
   describe docker_container do
     it { is_expected.to exist }
     it { is_expected.to be_running }
-    it { is_expected.to have_volume JENKINS_HOME_IMAGE, JENKINS_VOLUME }
   end
 
   describe user('jenkins') do

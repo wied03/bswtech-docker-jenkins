@@ -53,7 +53,9 @@ RUN userdel -r jenkins \
  # Keep track of version in the footer
  && printf ".jenkins_ver:after {\n        content: \" - I{{ .ImageVersion }}\";\n}\n" >> ${JENKINS_APP_DIR}/css/layout-common.css \
  && cp -v /src/resources/*.properties /etc/tomcat/ \
- && cp -v /src/resources/server.xml /etc/tomcat/ \
+ && rm /etc/tomcat/server.xml \
+ && ln -s ${JENKINS_HOME}/server.xml /etc/tomcat/server.xml \
+ && cp -v /src/resources/server.xml ${JENKINS_HOME}/server.xml \
  && cp -v /src/resources/jenkins.sh /usr/local/bin/ \
  # Our own plugin manager to deal with pre-loaded plugins
  && cp -v /src/build/libs/bswtech-docker-jenkins.jar ${JENKINS_APP_DIR}/WEB-INF/lib/ \
