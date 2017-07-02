@@ -35,6 +35,7 @@ describe 'Jenkins container' do
       expect(output).to include 'INFO: Jenkins is fully up and running'
       # asserting these after up and running should catch stuff
       expect(output).to_not include 'ERROR'
+      expect(output).to_not include 'Exception'
       expect(output).to_not include 'SEVERE'
       # empty contextPath is an expected error
       expect(output).to_not match /WARN(?!ING: Empty contextPath)/m
