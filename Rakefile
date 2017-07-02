@@ -99,6 +99,10 @@ JENKINS_BIN_DIR='/usr/lib/jenkins'
 INSTALLED_PLUGINS_FILE=File.join(JENKINS_BIN_DIR, 'installed_plugins.txt')
 desc "Builds Docker image #{image_tag}"
 task :build => [:plugin_manager_override, :generate_plugin_list] do
+  # not using docker COPY, so need to force changes
+  resources_hash = FileList['resources/**'].inject do |exist, file|
+    Digest::SHA256.hexdigest(Digest::SHA256.hexdigest(exist)+File.read(file))
+  end
   args = {
     'JenkinsGid' => JENKINS_GID,
     'JenkinsGroup' => JENKINS_GROUP,
@@ -111,7 +115,8 @@ task :build => [:plugin_manager_override, :generate_plugin_list] do
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
     'InstalledPluginsFile' => INSTALLED_PLUGINS_FILE,
-    'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME))
+    'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME)),
+    'ResourcesHash' => resources_hash
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   begin

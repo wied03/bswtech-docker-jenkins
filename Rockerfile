@@ -55,6 +55,7 @@ RUN userdel -r jenkins \
  && cp -v /src/resources/*.properties /etc/tomcat/ \
  && rm /etc/tomcat/server.xml \
  # Make this configurable from the volume
+ && echo Resource Hash {{ .ResourcesHash }} \
  && ln -s ${JENKINS_HOME}/server.xml /etc/tomcat/server.xml \
  && cp -v /src/resources/server.xml ${JENKINS_HOME}/server.xml \
  && cp -v /src/resources/jenkins.sh /usr/local/bin/ \
