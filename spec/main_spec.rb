@@ -51,8 +51,15 @@ describe 'Jenkins container' do
 
   it 'shows no warnings in logs' do
     output = wait_for_jenkins
-    # empty contextPath is an expected error
-    expect(output).to_not match /WARN(?!ING: Empty contextPath)/m
+    exclusions = [
+      'Unknown version string [3.1]',
+      'Empty contextPath'
+    ]
+    warning_lines = output.lines.select do |line|
+      # empty contextPath is an expected error
+      line.include?('WARN') && !exclusions.any? { |e| line.include?(e)}
+    end
+    expect(warning_lines).to be_empty
   end
 
   describe docker_container do
