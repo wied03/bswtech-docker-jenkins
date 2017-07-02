@@ -51,6 +51,10 @@ RUN yum install -y unzip zip \
  # Keep track of version in the footer
  && printf ".jenkins_ver:after {\n        content: \" - I{{ .ImageVersion }}\";\n}\n" >> ${JENKINS_APP_DIR}/css/layout-common.css
 
+# TODO: Merge this in elsewhere
+# https://wiki.jenkins.io/display/JENKINS/Tomcat - Tomcat/URIEncoding issue
+RUN sed -i 's/Connector port="8080"/Connector port="8080" URIEncoding="UTF-8"/' /etc/tomcat/server.xml
+
 VOLUME ${JENKINS_HOME}
 
 COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
