@@ -53,11 +53,13 @@ RUN yum install -y unzip zip \
 
 # TODO: Merge this in elsewhere
 COPY /resources/server.xml /etc/tomcat/server.xml
+COPY /resources/log4j.properties /etc/tomcat/log4j.properties
+COPY /resources/logging.properties /etc/tomcat/logging.properties
 RUN rm -rf /usr/share/tomcat/work \
  && rm /etc/tomcat/tomcat-users.xml \
  && chgrp -R jenkins /var/cache/tomcat
 
-VOLUME ["${JENKINS_HOME}", "/usr/share/tomcat/logs"]
+VOLUME ["${JENKINS_HOME}"]
 
 COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
 
