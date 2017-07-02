@@ -76,6 +76,6 @@ describe 'Jenkins container' do
 
   describe command('touch /howdy') do
     its(:exit_status) { is_expected.to eq 1 }
-    its(:stderr) { is_expected.to match /touch: cannot touch '\/howdy': Read-only file system/ }
-  end unless ENV['NO_TMPFS_OPTIONS'] # jenkins needs a tmpfs option mac doesn't support
+    its(:stderr) { is_expected.to match /touch: cannot touch '\/howdy'.*/ }
+  end
 end

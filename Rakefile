@@ -11,12 +11,10 @@ end
 
 JENKINS_USER = 'jenkins'
 JENKINS_GROUP = 'jenkins'
-JENKINS_GID = 1002
-JENKINS_UID = 1002
+JENKINS_GID = ENV['JENKINS_GID'] = '1002'
+JENKINS_UID = ENV['JENKINS_UID'] = '1002'
 
 ENV['TEST_VOLUME'] = TEST_VOLUME = File.join Dir.pwd, 'jenkins_test_home'
-# https://github.com/docker/docker/issues/20740 - mac doesn't work with this
-ENV['NO_TMPFS_OPTIONS'] = '1' unless ENV['JENKINS_URL']
 ON_MAC = RUBY_PLATFORM.include?('darwin')
 
 task :clean_test_volume do
@@ -57,7 +55,7 @@ task :test_run => [:build, :clean_test_volume] do
     sh 'docker rm -f jenkins'
   }
 
-  sh "docker run -v #{TEST_VOLUME}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat/temp:#{TMPFS_FLAGS} --tmpfs=/var/cache/tomcat/work:#{TMPFS_FLAGS} --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
+  sh "docker run -v #{TEST_VOLUME}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat/temp:#{TMPFS_FLAGS},exec --tmpfs=/var/cache/tomcat/work:#{TMPFS_FLAGS} --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
 end
 
 task :update_gradle_jenkins_dep do

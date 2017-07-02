@@ -8,6 +8,7 @@ set :docker_image, ENV['IMAGE_TAG']
 Docker.options[:read_timeout] = 120
 JENKINS_VOLUME = ENV['TEST_VOLUME']
 
+TMPFS_FLAGS = "uid=#{ENV['JENKINS_UID']},gid=#{ENV['JENKINS_GID']}"
 docker_options = {
   'Volumes' => {
     '/var/jenkins_home' => {}
@@ -15,19 +16,15 @@ docker_options = {
   'HostConfig' => {
     'Binds' => ["#{JENKINS_VOLUME}:/var/jenkins_home:Z"],
     'CapDrop' => ['all']
-  }
+  },
+  'Tmpfs' => {
+      '/run' => '',
+      '/tmp' => 'exec', # needed for a jenkins startup command
+      '/usr/share/tomcat/work' => '',
+      '/var/cache/tomcat/temp' => "#{TMPFS_FLAGS},exec",
+      '/var/cache/tomcat/work' => TMPFS_FLAGS
+    }
 }
-
-unless ENV['NO_TMPFS_OPTIONS']
-  host = docker_options['HostConfig']
-  host.merge!({
-    'ReadonlyRootfs' => true,
-      'Tmpfs' => {
-        '/run' => '',
-        '/tmp' => 'exec' # needed for a jenkins startup command
-      }
-    })
-end
 
 set :docker_container_create_options, docker_options
 
