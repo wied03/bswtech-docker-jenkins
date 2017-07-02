@@ -54,9 +54,12 @@ RUN userdel -r jenkins \
  && printf ".jenkins_ver:after {\n        content: \" - I{{ .ImageVersion }}\";\n}\n" >> ${JENKINS_APP_DIR}/css/layout-common.css \
  && cp -v /src/resources/*.properties /etc/tomcat/ \
  && rm /etc/tomcat/server.xml \
+ # Make this configurable from the volume
  && ln -s ${JENKINS_HOME}/server.xml /etc/tomcat/server.xml \
  && cp -v /src/resources/server.xml ${JENKINS_HOME}/server.xml \
  && cp -v /src/resources/jenkins.sh /usr/local/bin/ \
+ # Longer timeout by default
+ && sed -i 's/<session-timeout>30<\/session-timeout>/<session-timeout>60<\/session-timeout>/' /etc/tomcat/web.xml \
  # Our own plugin manager to deal with pre-loaded plugins
  && cp -v /src/build/libs/bswtech-docker-jenkins.jar ${JENKINS_APP_DIR}/WEB-INF/lib/ \
  && cp -v /src/resources/init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy \
