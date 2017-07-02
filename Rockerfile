@@ -25,6 +25,7 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  && yum autoremove -y \
  && rm -rfv /tmp/*
 
+# Now pre-load our plugins into the image
 # zip/unzip executing plugin download/setup
 RUN yum install -y unzip zip \
  # If our install plugins list changes, we need to force a rebuild with this hash since the Rockerfile will not change
@@ -41,32 +42,28 @@ RUN yum install -y unzip zip \
  && yum remove -y unzip zip \
  && yum clean all \
  && yum autoremove -y \
- && rm -rf /tmp/* \
- # RPM puts a user in there but we want control over the GID
- && userdel -r jenkins \
+ && rm -rf /tmp/*
+
+# RPM puts a user in there but we want control over the GID
+RUN userdel -r jenkins \
  && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
  && useradd -d ${JENKINS_HOME} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
  && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
  && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR" \
  # Keep track of version in the footer
- && printf ".jenkins_ver:after {\n        content: \" - I{{ .ImageVersion }}\";\n}\n" >> ${JENKINS_APP_DIR}/css/layout-common.css
-
-# TODO: Merge this in elsewhere
-COPY /resources/server.xml /etc/tomcat/server.xml
-COPY /resources/log4j.properties /etc/tomcat/log4j.properties
-COPY /resources/logging.properties /etc/tomcat/logging.properties
-RUN rm -rf /usr/share/tomcat/work \
+ && printf ".jenkins_ver:after {\n        content: \" - I{{ .ImageVersion }}\";\n}\n" >> ${JENKINS_APP_DIR}/css/layout-common.css \
+ && cp -v /src/resources/*.properties /etc/tomcat/ \
+ && cp -v /src/resources/server.xml /etc/tomcat/ \
+ && cp -v /src/resources/jenkins.sh /usr/local/bin/ \
+ # Our own plugin manager to deal with pre-loaded plugins
+ && cp -v /src/build/libs/bswtech-docker-jenkins.jar ${JENKINS_APP_DIR}/WEB-INF/lib/ \
+ && cp -v /src/resources/init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy \
+ && rm -rfv /usr/share/tomcat/work \
  && rm /etc/tomcat/tomcat-users.xml \
  && chown -Rv {{ .JenkinsUser }}.{{ .JenkinsGroup }} /var/cache/tomcat
 
 VOLUME ["${JENKINS_HOME}"]
 
-COPY init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
-
-# Contains a read only Jenkins plugin manager
-COPY ./build/libs/bswtech-docker-jenkins.jar ${JENKINS_APP_DIR}/WEB-INF/lib/
-
-COPY ./resources/ /usr/local/bin/
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
 USER {{ .JenkinsUser }}
 
