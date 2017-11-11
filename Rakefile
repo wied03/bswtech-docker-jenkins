@@ -68,28 +68,27 @@ GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
 
 task :generate_plugin_list do
   plugins = {
-    'build-timeout' => '1.18', # Standard Jenkins
-    'docker-workflow' => '1.12', # CloudBees Docker Pipeline
-    'credentials' => '2.1.14', # Core credentials plugin
-    'credentials-binding' => '1.12', # Allow use of creds in environment variables/pipeline steps
-    'email-ext' => '2.57.2', # better email extensions
-    'git' => '3.3.1',
+    'build-timeout' => '1.19', # Standard Jenkins
+    'docker-workflow' => '1.14', # CloudBees Docker Pipeline
+    'credentials' => '2.1.16', # Core credentials plugin
+    'credentials-binding' => '1.13', # Allow use of creds in environment variables/pipeline steps
+    'email-ext' => '2.61', # better email extensions
+    'git' => '3.6.4',
     'workflow-aggregator' => '2.5', # the actual core pipeline plugin
     # We have no direct dependency on workflow-job, usually Pipeline takes care of it.
-    # Problem is workflow-job 2.13 is the latest and it requires Jenkins 2.62
-    'workflow-job' => '2.12.1',
-    'pipeline-graph-analysis' => '1.4',
+    'workflow-job' => '2.15',
+    'pipeline-graph-analysis' => '1.5',
     'ssh-agent' => '1.15', # We use this for core-ansible for SSH credentials
     'timestamper' => '1.8.8', # Base jenkins package, adds them to console output
-    'ws-cleanup' => '0.33', # Workspace cleanup
+    'ws-cleanup' => '0.34', # Workspace cleanup
     'antisamy-markup-formatter' => '1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
-    'saml' => '0.14', # Authenticate via SAML
-    'role-strategy' => '2.5.0', # Best authorization setup available
-    'matrix-auth' => '1.7', # Undeclared dependency of role-strategy
-    'ec2' => '1.36',
-    'jira' => '2.3.1',
+    'saml' => '1.0.4', # Authenticate via SAML
+    'role-strategy' => '2.6.1', # Best authorization setup available
+    'matrix-auth' => '2.1.1', # Undeclared dependency of role-strategy
+    'ec2' => '1.37',
+    'jira' => '2.4.2',
     # Needed to trigger multibranch pipelines from Bitbucket
-    'cloudbees-bitbucket-branch-source' => '2.1.2'
+    'cloudbees-bitbucket-branch-source' => '2.2.7'
   }
   # Will be read by shell script (plugins/install-plugins/sh)
   File.write(GEN_PLUGIN_FILENAME, plugins.map {|plugin, version| "#{plugin}:#{version}" }.join("\n"))
