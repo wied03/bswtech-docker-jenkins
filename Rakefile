@@ -102,6 +102,7 @@ task :build => [:plugin_manager_override, :generate_plugin_list] do
   resources_hash = FileList['resources/**'].inject do |exist, file|
     Digest::SHA256.hexdigest(Digest::SHA256.hexdigest(exist)+File.read(file))
   end
+  base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.42'
   args = {
     'JenkinsGid' => JENKINS_GID,
     'JenkinsGroup' => JENKINS_GROUP,
@@ -115,7 +116,8 @@ task :build => [:plugin_manager_override, :generate_plugin_list] do
     'JenkinsBinDir' => JENKINS_BIN_DIR,
     'InstalledPluginsFile' => INSTALLED_PLUGINS_FILE,
     'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME)),
-    'ResourcesHash' => resources_hash
+    'ResourcesHash' => resources_hash,
+    'BaseVersion' => base_version
   }
   flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
   begin

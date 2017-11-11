@@ -1,15 +1,22 @@
-node('docker.build') {
-  // should only need 3 master builds (code will mark published builds as permanent)
-  if (env.BRANCH_NAME == 'master') {
-    properties([[$class: 'BuildDiscarderProperty',
-                 strategy: [$class: 'LogRotator',
-                            artifactDaysToKeepStr: '',
-                            artifactNumToKeepStr: '',
-                            daysToKeepStr: '',
-                            numToKeepStr: '3']
-                ]])
-  }
+// should only need 3 master builds (code will mark published builds as permanent)
+if (env.BRANCH_NAME == 'master') {
+  properties([[$class: 'BuildDiscarderProperty',
+               strategy: [$class: 'LogRotator',
+                          artifactDaysToKeepStr: '',
+                          artifactNumToKeepStr: '',
+                          daysToKeepStr: '',
+                          numToKeepStr: '3']
+              ],
+              parameters([string(defaultValue: '',
+                                 description: 'Base Docker image version',
+                                 name: 'DOCKER_BASE_VERSION')])])
+}
 
+if (params.DOCKER_BASE_VERSION) {
+    env.DOCKER_BASE_VERSION = params.DOCKER_BASE_VERSION
+}
+
+node('docker.build') {
   try {
     stage('Checkout') {
       checkout scm

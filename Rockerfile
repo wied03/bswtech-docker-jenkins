@@ -1,4 +1,4 @@
-FROM quay.io/brady/bswtech-docker-base:1.0.38
+FROM quay.io/brady/bswtech-docker-base:{{ .BaseVersion }}
 
 MOUNT .:/src
 
