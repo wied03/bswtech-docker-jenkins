@@ -32,8 +32,8 @@ desc "Run serverspec tests"
 RSpec::Core::RakeTask.new(:spec => [:build, :test_user])
 
 JENKINS_VERSION = '2.73.3-1.1'
-JAVA_VERSION = '1.8.0.121-0.b13.el7_3'
-GIT_VERSION = '1.8.3.1-6.el7_2.1'
+JAVA_VERSION = '1.8.0.151-1.b12.el7_4'
+GIT_VERSION = '1.8.3.1-12.el7_4'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
 # Drop the RPM subrelease when we build our image
 VERSION_NO_SUBRELEASE = Gem::Version.new(JENKINS_VERSION).release
