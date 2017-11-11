@@ -51,12 +51,18 @@ describe 'Jenkins container' do
 
   it 'shows no warnings in logs' do
     output = wait_for_jenkins
+    # This should not be a big deal, its plugins that we do not control
+    expected_unpackaged_classes_plugin_messages = [
+        'jira',
+        'jsch'
+    ].select do |plugin|
+      "Deprecated unpacked classes directory found in /usr/lib/jenkins/plugins/../plugins/#{plugin}/WEB-INF/classes"
+    end
     exclusions = [
       'Unknown version string [3.1]',
       'Empty contextPath',
-      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>',
-      'Deprecated unpacked classes directory found in /usr/lib/jenkins/plugins/../plugins/jira.jpi'
-    ]
+      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>'
+    ] + expected_unpackaged_classes_plugin_messages
     warning_lines = output.lines.select do |line|
       # empty contextPath is an expected error
       line.include?('WARN') && !exclusions.any? { |e| line.include?(e)}
