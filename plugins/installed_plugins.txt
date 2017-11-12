@@ -15,7 +15,7 @@ display-url-api:2.1.0
 docker-commons:1.9
 docker-workflow:1.14
 durable-task:1.15
-ec2:1.37
+ec2:1.36
 email-ext:2.61
 git-client:2.6.0
 git-server:1.7
