@@ -85,7 +85,7 @@ task :generate_plugin_list do
     'saml' => '1.0.4', # Authenticate via SAML
     'role-strategy' => '2.6.1', # Best authorization setup available
     'matrix-auth' => '2.1.1', # Undeclared dependency of role-strategy
-    'ec2' => '1.36',
+    'ec2' => '1.36', # 1.37 had issues with spawning EC2 spot instance slaves over and over again
     'jira' => '2.4.2',
     # Needed to trigger multibranch pipelines from Bitbucket
     'cloudbees-bitbucket-branch-source' => '2.2.7'
