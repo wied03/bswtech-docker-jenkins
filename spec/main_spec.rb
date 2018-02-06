@@ -61,7 +61,9 @@ describe 'Jenkins container' do
     exclusions = [
       'Unknown version string [3.1]',
       'Empty contextPath',
-      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>'
+      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>',
+      # https://issues.jenkins-ci.org/browse/JENKINS-48480 - Not a real warning
+      'This Jenkins instance uses deprecated Remoting protocols'
     ] + expected_unpackaged_classes_plugin_messages
     warning_lines = output.lines.select do |line|
       # empty contextPath is an expected error
