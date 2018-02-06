@@ -19,7 +19,12 @@ if (params.DOCKER_BASE_VERSION) {
 node('docker.build') {
   try {
     stage('Checkout') {
-      checkout scm
+      checkout([
+        $class: 'GitSCM',
+        branches: scm.branches,
+        extensions: scm.extensions + [[$class: 'CleanCheckout']],
+        userRemoteConfigs: scm.userRemoteConfigs
+      ])
     }
 
     stage('Dependencies') {
