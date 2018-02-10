@@ -31,47 +31,39 @@ updateCenter.post(
       end
 
       context 'only required' do
-        its(:length) {is_expected.to eq 3}
+        let(:update_json_blob) {
+          <<-CODE
+updateCenter.post(
+{"connectionCheckUrl":"http://www.google.com/","core":{"buildDate":"Feb 04, 2018","name":"core","sha1":"D8lrLmW+uYqWiSkGFhEXHhQ6I4w=","url":"http://updates.jenkins-ci.org/download/war/2.105/jenkins.war","version":"2.105"},"id":"default","plugins":{"AnchorChain":{"buildDate":"Mar 11, 2012","dependencies":[{"name":"maven-plugin","optional":false,"version":"2.9"}],"developers":[{"developerId":"direvius","email":"direvius@gmail.com","name":"Alexey Lavrenuke"}],"excerpt":"Adds links from a text file to sidebar on each build","gav":"org.jenkins-ci.plugins:AnchorChain:1.0","labels":["report"],"name":"AnchorChain","releaseTimestamp":"2012-03-11T14:59:14.00Z","requiredCore":"1.398","scm":"https://github.com/jenkinsci/anchor-chain-plugin","sha1":"rY1W96ad9TJI1F3phFG8X4LE26Q=","title":"AnchorChain","url":"http://updates.jenkins-ci.org/download/plugins/AnchorChain/1.0/AnchorChain.hpi","version":"1.0","wiki":"https://plugins.jenkins.io/AnchorChain"}},"signature":{}, "updateCenterVersion": "1", "warnings": []});
+          CODE
+        }
 
-        shared_examples :dependencies do |name, version|
-          describe name do
-            expected_name = "jenkins-plugin-proxy-#{name}"
-
-            subject(:dep) do
-              result = deps.find {|dependency| dependency.name == expected_name}
-              fail "Unable to find dependency #{expected_name} in #{deps}" unless result
-              result
-            end
-
-            its(:name) {is_expected.to eq expected_name}
-
-            describe '#requirement' do
-              subject {dep.requirement.requirements}
-
-              it {is_expected.to eq [['=', Gem::Version.new(version)]]}
-            end
+        describe 'jenkins-plugin-proxy-maven-plugin' do
+          subject(:dep) do
+            expected_name = 'jenkins-plugin-proxy-maven-plugin'
+            result = deps.find {|dependency| dependency.name == expected_name}
+            fail "Unable to find dependency #{expected_name} in #{deps}" unless result
+            result
           end
 
-        end
+          describe '#requirement' do
+            subject {dep.requirement.requirements}
 
-        include_examples :dependencies,
-                         'workflow-scm-step', '1.14.2'
-        include_examples :dependencies,
-                         'credentials', '2.1.14'
-        include_examples :dependencies,
-                         'git-client', '2.7.0'
+            it {is_expected.to eq [['=', Gem::Version.new('2.9')]]}
+          end
+        end
       end
 
       context 'optional' do
-        let(:update_json_blob) do
+        let(:update_json_blob) {
           <<-CODE
-  
-
+updateCenter.post(
+{"connectionCheckUrl":"http://www.google.com/","core":{"buildDate":"Feb 04, 2018","name":"core","sha1":"D8lrLmW+uYqWiSkGFhEXHhQ6I4w=","url":"http://updates.jenkins-ci.org/download/war/2.105/jenkins.war","version":"2.105"},"id":"default","plugins":{"AnchorChain":{"buildDate":"Mar 11, 2012","dependencies":[{"name":"maven-plugin","optional":true,"version":"2.9"}],"developers":[{"developerId":"direvius","email":"direvius@gmail.com","name":"Alexey Lavrenuke"}],"excerpt":"Adds links from a text file to sidebar on each build","gav":"org.jenkins-ci.plugins:AnchorChain:1.0","labels":["report"],"name":"AnchorChain","releaseTimestamp":"2012-03-11T14:59:14.00Z","requiredCore":"1.398","scm":"https://github.com/jenkinsci/anchor-chain-plugin","sha1":"rY1W96ad9TJI1F3phFG8X4LE26Q=","title":"AnchorChain","url":"http://updates.jenkins-ci.org/download/plugins/AnchorChain/1.0/AnchorChain.hpi","version":"1.0","wiki":"https://plugins.jenkins.io/AnchorChain"}},"signature":{}, "updateCenterVersion": "1", "warnings": []});
           CODE
-        end
+        }
 
         # Current Jenkins script ignores optional dependencies, so will we
-        its(:length) {is_expected.to eq 3}
+        its(:length) {is_expected.to eq 0}
       end
     end
 

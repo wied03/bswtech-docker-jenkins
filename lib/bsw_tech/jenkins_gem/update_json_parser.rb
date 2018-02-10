@@ -16,14 +16,11 @@ module BswTech
             s.version = info['version']
             s.homepage = info['wiki']
             s.authors = info['developers'].map {|dev| dev['email']}
-            # properties['Plugin-Dependencies'].split(',').each do |dependency_string|
-            #   name_version, props = dependency_string.split ';'
-            #   props = props ? Hash[props.split(',').map {|kv| kv.split(':=')}] : {}
-            #   next if props['resolution'] == 'optional'
-            #   name, version = name_version.split(':')
-            #   s.add_runtime_dependency "#{PREFIX}-#{name}",
-            #                            version
-            # end
+            info['dependencies'].each do |dependency|
+              next if dependency['optional']
+              s.add_runtime_dependency "#{PREFIX}-#{dependency['name']}",
+                                       dependency['version']
+            end
           end
         end
       end
