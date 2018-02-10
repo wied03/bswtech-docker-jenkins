@@ -15,11 +15,15 @@ updateCenter.post(
 
     describe 'basics' do
       its(:name) {is_expected.to eq 'jenkins-plugin-proxy-AnchorChain'}
-      its(:description) {is_expected.to eq 'Adds links from a text file to sidebar on each build'}
+      its(:summary) {is_expected.to eq 'Adds links from a text file to sidebar on each build'}
       its(:version) {is_expected.to eq Gem::Version.new('1.0')}
       its(:homepage) {is_expected.to eq 'https://plugins.jenkins.io/AnchorChain'}
       its(:authors) do
         is_expected.to eq ['direvius@gmail.com']
+      end
+
+      it 'do stuff' do
+        ::Gem::Package.build gem_spec
       end
     end
 

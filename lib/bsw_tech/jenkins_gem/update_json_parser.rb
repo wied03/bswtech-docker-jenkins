@@ -13,7 +13,7 @@ module BswTech
           begin
             Gem::Specification.new do |s|
               s.name = "#{PREFIX}-#{plugin_name}"
-              s.description = info['excerpt']
+              s.summary = info['excerpt']
               s.version = format_version(info['version'])
               s.homepage = info['wiki']
               s.authors = info['developers'].map {|dev| dev['email']}
