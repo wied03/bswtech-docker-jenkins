@@ -10,22 +10,32 @@ module BswTech
         fail 'File blob contents is required' unless file_blob && !file_blob.empty?
         metadata = get_hash file_blob
         @gem_listing = metadata['plugins'].map do |plugin_name, info|
-          Gem::Specification.new do |s|
-            s.name = "#{PREFIX}-#{plugin_name}"
-            s.description = info['excerpt']
-            s.version = info['version']
-            s.homepage = info['wiki']
-            s.authors = info['developers'].map {|dev| dev['email']}
-            info['dependencies'].each do |dependency|
-              next if dependency['optional']
-              s.add_runtime_dependency "#{PREFIX}-#{dependency['name']}",
-                                       dependency['version']
+          begin
+            Gem::Specification.new do |s|
+              s.name = "#{PREFIX}-#{plugin_name}"
+              s.description = info['excerpt']
+              s.version = format_version(info['version'])
+              s.homepage = info['wiki']
+              s.authors = info['developers'].map {|dev| dev['email']}
+              info['dependencies'].each do |dependency|
+                next if dependency['optional']
+                s.add_runtime_dependency "#{PREFIX}-#{dependency['name']}",
+                                         dependency['version']
+              end
             end
+          rescue StandardError => e
+            puts "Error while parsing plugin '#{plugin_name}' info #{info}"
+            raise e
           end
         end
       end
 
       private
+
+      def format_version(jenkins_number)
+        # + is not a legal character in GEM versions but we can change it back later
+        Gem::Version.new(jenkins_number.gsub('+', '.PLUS.'))
+      end
 
       def get_hash(file_blob)
         trailing_end_index = file_blob.rindex(');')
