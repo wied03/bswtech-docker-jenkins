@@ -13,7 +13,7 @@ updateCenter.post(
       CODE
     }
 
-    fdescribe 'basics' do
+    describe 'basics' do
       its(:name) {is_expected.to eq 'jenkins-plugin-proxy-AnchorChain'}
       its(:description) {is_expected.to eq 'Adds links from a text file to sidebar on each build'}
       its(:version) {is_expected.to eq Gem::Version.new('1.0')}
@@ -25,6 +25,10 @@ updateCenter.post(
 
     describe '#dependencies' do
       subject(:deps) {gem_spec.dependencies}
+
+      context 'none' do
+        its(:length) {is_expected.to eq 0}
+      end
 
       context 'only required' do
         its(:length) {is_expected.to eq 3}
