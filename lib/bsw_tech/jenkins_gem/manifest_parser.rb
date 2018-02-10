@@ -24,11 +24,12 @@ module BswTech
           previous_line = line_array.pop
           # Manifest lines are wrapped at a fixed boundary
           new_lines = if current_line.start_with? ' '
+                        # Trim off the extra space
                         [previous_line + current_line[1..-1]]
                       else
-                        (previous_line ? [previous_line] : []) << current_line
+                        [previous_line, current_line]
                       end
-          line_array + new_lines
+          line_array + new_lines.compact
         end
 
         Hash[consistent_lines.map do |property_line|
