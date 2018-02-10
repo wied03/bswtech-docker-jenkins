@@ -83,12 +83,13 @@ task :generate_plugin_list do
     'ws-cleanup' => '0.34', # Workspace cleanup
     'antisamy-markup-formatter' => '1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
     'saml' => '1.0.5', # Authenticate via SAML
-    'role-strategy' => '2.6.1', # Best authorization setup available
+    'role-strategy' => '2.7.0', # Best authorization setup available
     'matrix-auth' => '2.2',
     'ec2' => '1.38',
     'jira' => '2.4.2', # 2.5 does not have changelog
     # Needed to trigger multibranch pipelines from Bitbucket
-    'cloudbees-bitbucket-branch-source' => '2.2.9'
+    'cloudbees-bitbucket-branch-source' => '2.2.9',
+    'blueocean' => '1.4.1' # New UI
   }
   # Will be read by shell script (plugins/install-plugins/sh)
   File.write(GEN_PLUGIN_FILENAME, plugins.map {|plugin, version| "#{plugin}:#{version}" }.join("\n"))
