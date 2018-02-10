@@ -1,48 +1,25 @@
 require 'spec_helper'
-require 'bsw_tech/jenkins_gem/manifest_parser'
+require 'bsw_tech/jenkins_gem/update_json_parser'
 
 describe BswTech::JenkinsGem::UpdateJsonParser do
-  subject(:parser) {BswTech::JenkinsGem::UpdateJsonParser.new(manifest_contents)}
+  subject(:parser) {BswTech::JenkinsGem::UpdateJsonParser.new(update_json_blob)}
 
-  describe '#gem_spec' do
-    subject(:gem_spec) {parser.gem_spec}
+  describe '#gem_listing' do
+    subject(:gem_spec) {parser.gem_listing[0]}
+    let(:update_json_blob) {
+      <<-CODE
+updateCenter.post(
+{"connectionCheckUrl":"http://www.google.com/","core":{"buildDate":"Feb 04, 2018","name":"core","sha1":"D8lrLmW+uYqWiSkGFhEXHhQ6I4w=","url":"http://updates.jenkins-ci.org/download/war/2.105/jenkins.war","version":"2.105"},"id":"default","plugins":{"AnchorChain":{"buildDate":"Mar 11, 2012","dependencies":[],"developers":[{"developerId":"direvius","email":"direvius@gmail.com","name":"Alexey Lavrenuke"}],"excerpt":"Adds links from a text file to sidebar on each build","gav":"org.jenkins-ci.plugins:AnchorChain:1.0","labels":["report"],"name":"AnchorChain","releaseTimestamp":"2012-03-11T14:59:14.00Z","requiredCore":"1.398","scm":"https://github.com/jenkinsci/anchor-chain-plugin","sha1":"rY1W96ad9TJI1F3phFG8X4LE26Q=","title":"AnchorChain","url":"http://updates.jenkins-ci.org/download/plugins/AnchorChain/1.0/AnchorChain.hpi","version":"1.0","wiki":"https://plugins.jenkins.io/AnchorChain"}},"signature":{}, "updateCenterVersion": "1", "warnings": []});
+      CODE
+    }
 
-    describe 'basics' do
-      let(:manifest_contents) {
-        <<-CODE
-Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: Apache Maven
-Built-By: mwaite
-Build-Jdk: 1.8.0_151
-Extension-Name: git
-Specification-Title: Integrates Jenkins with GIT SCM
-Implementation-Title: git
-Implementation-Version: 3.7.0
-Group-Id: org.jenkins-ci.plugins
-Short-Name: git
-Long-Name: Jenkins Git plugin
-Url: http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin
-Plugin-Version: 3.7.0
-Hudson-Version: 1.625.3
-Jenkins-Version: 1.625.3
-Plugin-Dependencies: workflow-scm-step:1.14.2,credentials:2.1.14,git-c
- lient:2.7.0
-Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
- rk.earl.waite@gmail.com
-
-
-        CODE
-      }
-
-      its(:name) {is_expected.to eq 'jenkins-plugin-proxy-git'}
-      its(:description) {is_expected.to eq 'Integrates Jenkins with GIT SCM'}
-      its(:summary) {is_expected.to eq 'Jenkins Git plugin'}
-      its(:version) {is_expected.to eq Gem::Version.new('3.7.0')}
-      its(:homepage) {is_expected.to eq 'http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin'}
+    fdescribe 'basics' do
+      its(:name) {is_expected.to eq 'jenkins-plugin-proxy-AnchorChain'}
+      its(:description) {is_expected.to eq 'Adds links from a text file to sidebar on each build'}
+      its(:version) {is_expected.to eq Gem::Version.new('1.0')}
+      its(:homepage) {is_expected.to eq 'https://plugins.jenkins.io/AnchorChain'}
       its(:authors) do
-        is_expected.to eq ['Kohsuke Kawaguchi:kohsuke:',
-                           'Mark Waite:MarkEWaite:mark.earl.waite@gmail.com']
+        is_expected.to eq ['direvius@gmail.com']
       end
     end
 
@@ -50,33 +27,6 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
       subject(:deps) {gem_spec.dependencies}
 
       context 'only required' do
-        let(:manifest_contents) do
-          <<-CODE
-Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: Apache Maven
-Built-By: mwaite
-Build-Jdk: 1.8.0_151
-Extension-Name: git
-Specification-Title: Integrates Jenkins with GIT SCM
-Implementation-Title: git
-Implementation-Version: 3.7.0
-Group-Id: org.jenkins-ci.plugins
-Short-Name: git
-Long-Name: Jenkins Git plugin
-Url: http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin
-Plugin-Version: 3.7.0
-Hudson-Version: 1.625.3
-Jenkins-Version: 1.625.3
-Plugin-Dependencies: workflow-scm-step:1.14.2,credentials:2.1.14,git-c
- lient:2.7.0
-Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
- rk.earl.waite@gmail.com
-  
-
-          CODE
-        end
-
         its(:length) {is_expected.to eq 3}
 
         shared_examples :dependencies do |name, version|
@@ -109,28 +59,8 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
       end
 
       context 'optional' do
-        let(:manifest_contents) do
+        let(:update_json_blob) do
           <<-CODE
-Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: Apache Maven
-Built-By: mwaite
-Build-Jdk: 1.8.0_151
-Extension-Name: git
-Specification-Title: Integrates Jenkins with GIT SCM
-Implementation-Title: git
-Implementation-Version: 3.7.0
-Group-Id: org.jenkins-ci.plugins
-Short-Name: git
-Long-Name: Jenkins Git plugin
-Url: http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin
-Plugin-Version: 3.7.0
-Hudson-Version: 1.625.3
-Jenkins-Version: 1.625.3
-Plugin-Dependencies: workflow-scm-step:1.14.2,credentials:2.1.14,git-c
- lient:2.7.0,promoted-builds:2.27;resolution:=optional
-Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
- rk.earl.waite@gmail.com
   
 
           CODE
@@ -139,6 +69,10 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
         # Current Jenkins script ignores optional dependencies, so will we
         its(:length) {is_expected.to eq 3}
       end
+    end
+
+    context 'full file' do
+      pending 'write this'
     end
   end
 end

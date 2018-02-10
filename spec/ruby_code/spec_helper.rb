@@ -6,4 +6,6 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
   config.fail_if_no_examples = true
+  config.filter_run_including focus: true
+  config.run_all_when_everything_filtered = true
 end
