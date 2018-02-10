@@ -2,11 +2,12 @@ require 'rake'
 require 'rspec/core/rake_task'
 require 'digest'
 
-task :default => [:build, :spec]
+task :default => [:unit_spec ,:build, :server_spec]
 
 if ENV['GENERATE_REPORTS'] == 'true'
   require 'ci/reporter/rake/rspec'
-  task :spec => 'ci:setup:rspec'
+  task :server_spec => 'ci:setup:rspec'
+  task :unit_spec => 'ci:setup:rspec'
 end
 
 JENKINS_USER = 'jenkins'
@@ -29,7 +30,7 @@ task :test_user do
 end
 
 desc "Run serverspec tests"
-RSpec::Core::RakeTask.new(:spec => [:build, :test_user])
+RSpec::Core::RakeTask.new(:server_spec => [:build, :test_user])
 
 JENKINS_VERSION = '2.89.3-1.1'
 JAVA_VERSION = '1.8.0.161-0.b14.el7_4'
