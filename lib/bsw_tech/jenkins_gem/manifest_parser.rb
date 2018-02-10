@@ -6,6 +6,7 @@ module BswTech
       PREFIX = 'jenkins-plugin-proxy'
 
       def initialize(manifest_contents)
+        fail 'Manifest contents is required' unless manifest_contents && !manifest_contents.empty?
         properties = get_prop_hash manifest_contents
         @gem_spec = Gem::Specification.new do |s|
           s.name = "#{PREFIX}-#{properties['Extension-Name']}"
