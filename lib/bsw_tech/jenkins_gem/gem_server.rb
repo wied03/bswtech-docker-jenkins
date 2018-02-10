@@ -3,6 +3,10 @@ require 'net/http'
 require 'rubygems/package'
 require 'rubygems/indexer'
 require 'fileutils'
+require 'bsw_tech/jenkins_gem/update_json_parser'
+
+index_dir = ENV['INDEX_DIRECTORY']
+raise 'Set the INDEX_DIRECTORY variable' unless index_dir
 
 def fetch(uri_str, limit = 10)
   # You should choose a better exception.
@@ -34,7 +38,6 @@ get '/specs.4.8.gz' do
   end
 
   gem_list = parser.gem_listing
-  index_dir = File.join('plugins', 'gem_index')
   FileUtils.rm_rf index_dir
   FileUtils.mkdir_p index_dir
   # Indexer looks here
