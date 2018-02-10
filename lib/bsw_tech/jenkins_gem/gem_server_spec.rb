@@ -9,12 +9,18 @@ describe 'GEM Server' do
     Sinatra::Application
   end
 
-  context 'GEM found' do
-    subject {get '/'}
+  describe 'specs' do
+    subject do
+      response = get '/specs.4.8.gz'
+      Marshal.load(Gem.gunzip(response.body))
+    end
 
-    its(:ok?) {is_expected.to eq true}
-    its(:body) {is_expected.to eq 'foobar'}
-
-    pending 'write this'
+    # TODO: Need to somehow get all Jenkins plugins here
+    it {is_expected.to eq [
+                            ['jenkins-plugin-proxy-git',
+                             # Version does not matter
+                             Gem::Version.new('9.9.9'),
+                             'ruby']
+                          ]}
   end
 end
