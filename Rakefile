@@ -29,10 +29,16 @@ task :test_user do
   }
 end
 
-desc "Run serverspec tests"
+desc 'Run serverspec tests with actual container'
 RSpec::Core::RakeTask.new(:server_spec => [:build, :test_user]) do |task|
   task.pattern = 'spec/server_spec/**/*_spec.rb'
   task.rspec_opts = '-I spec/server_spec'
+end
+
+desc 'Run unit tests for GEM facade for Jenkins'
+RSpec::Core::RakeTask.new(:unit_spec) do |task|
+  task.pattern = 'lib/**/*_spec.rb'
+  task.rspec_opts = '-I spec/ruby_code'
 end
 
 JENKINS_VERSION = '2.89.3-1.1'
