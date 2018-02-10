@@ -1,6 +1,6 @@
 module BswTech
   module JenkinsGem
-    class ManifestParser
+    class UpdateJsonParser
       attr_reader :gem_spec
       SEPARATOR = ': '
       PREFIX = 'jenkins-plugin-proxy'

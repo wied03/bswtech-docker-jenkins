@@ -1,8 +1,8 @@
 require 'spec_helper'
 require 'bsw_tech/jenkins_gem/manifest_parser'
 
-describe BswTech::JenkinsGem::ManifestParser do
-  subject(:parser) {BswTech::JenkinsGem::ManifestParser.new(manifest_contents)}
+describe BswTech::JenkinsGem::UpdateJsonParser do
+  subject(:parser) {BswTech::JenkinsGem::UpdateJsonParser.new(manifest_contents)}
 
   describe '#gem_spec' do
     subject(:gem_spec) {parser.gem_spec}
