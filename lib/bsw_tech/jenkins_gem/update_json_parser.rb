@@ -13,10 +13,14 @@ module BswTech
           begin
             Gem::Specification.new do |s|
               s.name = "#{PREFIX}-#{plugin_name}"
-              s.summary = info['excerpt']
+              excerpt = info['excerpt'].gsub('TODO:', '')
+              s.summary = excerpt
               s.version = format_version(info['version'])
               s.homepage = info['wiki']
-              s.authors = info['developers'].map {|dev| dev['email']}
+              developers = info['developers'].map do |dev|
+                dev['email'] || dev['developerId']
+              end
+              s.authors = developers.any? ? developers : ['unknown']
               info['dependencies'].each do |dependency|
                 next if dependency['optional']
                 s.add_runtime_dependency "#{PREFIX}-#{dependency['name']}",

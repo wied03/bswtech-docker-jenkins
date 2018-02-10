@@ -15,12 +15,6 @@ describe 'GEM Server' do
       Marshal.load(Gem.gunzip(response.body))
     end
 
-    # TODO: Need to somehow get all Jenkins plugins here
-    it {is_expected.to eq [
-                            ['jenkins-plugin-proxy-git',
-                             # Version does not matter
-                             Gem::Version.new('9.9.9'),
-                             'ruby']
-                          ]}
+    its(:length) { is_expected.to eq 1541 }
   end
 end
