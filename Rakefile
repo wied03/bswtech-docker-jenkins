@@ -30,7 +30,10 @@ task :test_user do
 end
 
 desc "Run serverspec tests"
-RSpec::Core::RakeTask.new(:server_spec => [:build, :test_user])
+RSpec::Core::RakeTask.new(:server_spec => [:build, :test_user]) do |task|
+  task.pattern = 'spec/server_spec/**/*_spec.rb'
+  task.rspec_opts = '-I spec/server_spec'
+end
 
 JENKINS_VERSION = '2.89.3-1.1'
 JAVA_VERSION = '1.8.0.161-0.b14.el7_4'
