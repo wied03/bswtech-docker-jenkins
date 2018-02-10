@@ -50,19 +50,33 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
 
         its(:length) {is_expected.to eq 3}
 
-        describe 'workflow-scm-step' do
-          subject(:dep) {deps[0]}
+        shared_examples :dependencies do |name, version|
+          describe name do
+            expected_name = "jenkins-plugin-proxy-#{name}"
 
-          its(:name) {is_expected.to eq 'jenkins-plugin-proxy-workflow-scm-step'}
+            subject(:dep) do
+              result = deps.find {|dependency| dependency.name == expected_name}
+              fail "Unable to find dependency #{expected_name} in #{deps}" unless result
+              result
+            end
 
-          describe '#requirement' do
-            subject {dep.requirement.requirements}
+            its(:name) {is_expected.to eq expected_name}
 
-            it {is_expected.to eq [['=', Gem::Version.new('1.14.2')]]}
+            describe '#requirement' do
+              subject {dep.requirement.requirements}
+
+              it {is_expected.to eq [['=', Gem::Version.new(version)]]}
+            end
           end
+
         end
 
-        pending 'write this'
+        include_examples :dependencies,
+                         'workflow-scm-step', '1.14.2'
+        include_examples :dependencies,
+                         'credentials', '2.1.14'
+        include_examples :dependencies,
+                         'git-client', '2.7.0'
       end
     end
   end
