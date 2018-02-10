@@ -38,10 +38,14 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
         CODE
       }
 
-      describe '#description' do
-        subject {gem_spec.description}
-
-        it {is_expected.to eq 'Integrates Jenkins with GIT SCM'}
+      its(:name) {is_expected.to eq 'jenkins-plugin-proxy-git'}
+      its(:description) {is_expected.to eq 'Integrates Jenkins with GIT SCM'}
+      its(:summary) {is_expected.to eq 'Jenkins Git plugin'}
+      its(:version) {is_expected.to eq Gem::Version.new('3.7.0')}
+      its(:homepage) {is_expected.to eq 'http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin'}
+      its(:authors) do
+        is_expected.to eq ['Kohsuke Kawaguchi:kohsuke:',
+                           'Mark Waite:MarkEWaite:mark.earl.waite@gmail.com']
       end
 
       pending 'write this'
