@@ -21,10 +21,6 @@ updateCenter.post(
       its(:authors) do
         is_expected.to eq ['direvius@gmail.com']
       end
-
-      it 'do stuff' do
-        ::Gem::Package.build gem_spec
-      end
     end
 
     context '+ sign some plugins have' do
