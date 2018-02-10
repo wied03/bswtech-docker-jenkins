@@ -16,7 +16,10 @@ module BswTech
           s.homepage = properties['Url']
           s.authors = properties['Plugin-Developers'].split(',')
           properties['Plugin-Dependencies'].split(',').each do |dependency_string|
-            name, version = dependency_string.split(':')
+            name_version, props = dependency_string.split ';'
+            props = props ? Hash[props.split(',').map {|kv| kv.split(':=')}] : {}
+            next if props['resolution'] == 'optional'
+            name, version = name_version.split(':')
             s.add_runtime_dependency "#{PREFIX}-#{name}",
                                      version
           end

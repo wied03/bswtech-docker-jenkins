@@ -47,6 +47,8 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
     end
 
     describe '#dependencies' do
+      subject(:deps) {gem_spec.dependencies}
+
       context 'only required' do
         let(:manifest_contents) do
           <<-CODE
@@ -74,8 +76,6 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
 
           CODE
         end
-
-        subject(:deps) {gem_spec.dependencies}
 
         its(:length) {is_expected.to eq 3}
 
@@ -106,6 +106,38 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
                          'credentials', '2.1.14'
         include_examples :dependencies,
                          'git-client', '2.7.0'
+      end
+
+      context 'optional' do
+        let(:manifest_contents) do
+          <<-CODE
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: mwaite
+Build-Jdk: 1.8.0_151
+Extension-Name: git
+Specification-Title: Integrates Jenkins with GIT SCM
+Implementation-Title: git
+Implementation-Version: 3.7.0
+Group-Id: org.jenkins-ci.plugins
+Short-Name: git
+Long-Name: Jenkins Git plugin
+Url: http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin
+Plugin-Version: 3.7.0
+Hudson-Version: 1.625.3
+Jenkins-Version: 1.625.3
+Plugin-Dependencies: workflow-scm-step:1.14.2,credentials:2.1.14,git-c
+ lient:2.7.0,promoted-builds:2.27;resolution:=optional
+Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
+ rk.earl.waite@gmail.com
+  
+
+          CODE
+        end
+
+        # Current Jenkins script ignores optional dependencies, so will we
+        its(:length) {is_expected.to eq 3}
       end
     end
   end
