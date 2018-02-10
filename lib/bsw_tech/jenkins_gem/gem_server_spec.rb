@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'rack/test'
 require 'bsw_tech/jenkins_gem/gem_server'
 
-describe 'GEM Server' do
+fdescribe 'GEM Server' do
   include Rack::Test::Methods
 
   def app
@@ -15,6 +15,6 @@ describe 'GEM Server' do
       Marshal.load(Gem.gunzip(response.body))
     end
 
-    its(:length) { is_expected.to eq 1541 }
+    its(:length) { is_expected.to eq 1440 }
   end
 end

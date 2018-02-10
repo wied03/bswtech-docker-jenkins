@@ -34,11 +34,14 @@ get '/specs.4.8.gz' do
   end
 
   gem_list = parser.gem_listing
-  dir = 'gem_index'
-  FileUtils.rm_rf dir
-  Dir.mkdir(dir)
-  puts "Fetched #{gem_list.length} GEM specs from Jenkins, Writing GEM skeletons to #{dir}"
-  Dir.chdir(dir) do
+  index_dir = File.join('plugins', 'gem_index')
+  FileUtils.rm_rf index_dir
+  FileUtils.mkdir_p index_dir
+  # Indexer looks here
+  gems_dir = File.join(index_dir, 'gems')
+  FileUtils.mkdir_p gems_dir
+  puts "Fetched #{gem_list.length} GEM specs from Jenkins, Writing GEM skeletons to #{gems_dir}"
+  Dir.chdir(gems_dir) do
     gem_list.each do |gemspec|
       begin
         ::Gem::Package.build gemspec
@@ -48,5 +51,7 @@ get '/specs.4.8.gz' do
       end
     end
   end
-  #Gem::Indexer.new('.',{ build_modern:true }).generate_index
+  Gem::Indexer.new(index_dir,
+                   { build_modern: true }).generate_index
+  File.open(File.join(index_dir, 'specs.4.8.gz'), 'rb')
 end
