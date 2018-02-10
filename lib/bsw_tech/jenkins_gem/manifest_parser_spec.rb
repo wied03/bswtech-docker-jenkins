@@ -5,7 +5,7 @@ describe BswTech::JenkinsGem::ManifestParser do
   subject(:parser) {BswTech::JenkinsGem::ManifestParser.new(manifest_contents)}
 
   describe '#gem_spec' do
-    context 'has dependencies' do
+    context 'required dependencies' do
       subject(:gem_spec) {parser.gem_spec}
 
       let(:manifest_contents) {
@@ -27,10 +27,7 @@ Plugin-Version: 3.7.0
 Hudson-Version: 1.625.3
 Jenkins-Version: 1.625.3
 Plugin-Dependencies: workflow-scm-step:1.14.2,credentials:2.1.14,git-c
- lient:2.7.0,mailer:1.18,matrix-project:1.7.1,parameterized-trigger:2.
- 33;resolution:=optional,promoted-builds:2.27;resolution:=optional,scm
- -api:2.2.0,ssh-credentials:1.13,structs:1.10,token-macro:1.12.1;resol
- ution:=optional
+ lient:2.7.0
 Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
  rk.earl.waite@gmail.com
 
@@ -48,7 +45,25 @@ Plugin-Developers: Kohsuke Kawaguchi:kohsuke:,Mark Waite:MarkEWaite:ma
                            'Mark Waite:MarkEWaite:mark.earl.waite@gmail.com']
       end
 
-      pending 'write this'
+      describe '#dependencies' do
+        subject(:deps) {gem_spec.dependencies}
+
+        its(:length) {is_expected.to eq 3}
+
+        describe 'workflow-scm-step' do
+          subject(:dep) {deps[0]}
+
+          its(:name) {is_expected.to eq 'jenkins-plugin-proxy-workflow-scm-step'}
+
+          describe '#requirement' do
+            subject {dep.requirement.requirements}
+
+            it {is_expected.to eq [['=', Gem::Version.new('1.14.2')]]}
+          end
+        end
+
+        pending 'write this'
+      end
     end
   end
 end

@@ -14,6 +14,11 @@ module BswTech
           s.version = properties['Plugin-Version']
           s.homepage = properties['Url']
           s.authors = properties['Plugin-Developers'].split(',')
+          properties['Plugin-Dependencies'].split(',').each do |dependency_string|
+            name, version = dependency_string.split(':')
+            s.add_runtime_dependency "#{PREFIX}-#{name}",
+                                     version
+          end
         end
       end
 
