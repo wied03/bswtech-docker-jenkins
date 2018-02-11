@@ -63,7 +63,11 @@ module BswTech
       def add_core_jenkins(version,
                            gem_spec)
         gem_spec.add_runtime_dependency get_name(JENKINS_CORE_PACKAGE),
-                                        ">= #{version}"
+                                        get_dependency_version(version)
+      end
+
+      def get_dependency_version(version)
+        ">= #{version}"
       end
 
       def get_name(package)
@@ -81,7 +85,7 @@ module BswTech
         end
         candidate_version = format_version candidate_version
         gem_spec.add_runtime_dependency get_name(dependency_name),
-                                        ">= #{candidate_version}"
+                                        get_dependency_version(candidate_version)
       end
 
       def format_version(jenkins_number)
