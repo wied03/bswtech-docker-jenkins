@@ -82,13 +82,12 @@ task :fetch_plugins do
   end
 end
 
-JENKINS_BIN_DIR='/usr/lib/jenkins'
-INSTALLED_PLUGINS_FILE=File.join(JENKINS_BIN_DIR, 'installed_plugins.txt')
+JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
 task :build => [:plugin_manager_override, :fetch_plugins] do
   # not using docker COPY, so need to force changes
   resources_hash = FileList['resources/**'].inject do |exist, file|
-    Digest::SHA256.hexdigest(Digest::SHA256.hexdigest(exist)+File.read(file))
+    Digest::SHA256.hexdigest(Digest::SHA256.hexdigest(exist) + File.read(file))
   end
   base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.44'
   args = {
@@ -102,18 +101,15 @@ task :build => [:plugin_manager_override, :fetch_plugins] do
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
-    'InstalledPluginsFile' => INSTALLED_PLUGINS_FILE,
     'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME)),
     'ResourcesHash' => resources_hash,
     'BaseVersion' => base_version
   }
-  flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
+  flat_args = args.map {|key, val| "-var #{key}=#{val}"}.join ' '
   begin
     # SELinux causes problems when trying to use the Rocker MOUNT directive
     sh 'setenforce 0' unless ON_MAC
     sh "rocker build #{flat_args}"
-    # goes inside the image so it's cached but we want to view this in source control
-    sh "docker run --rm -i -u root -v #{Dir.pwd}:/src #{image_tag} cp #{INSTALLED_PLUGINS_FILE} /src/plugins"
   ensure
     sh 'setenforce 1' unless ON_MAC
   end

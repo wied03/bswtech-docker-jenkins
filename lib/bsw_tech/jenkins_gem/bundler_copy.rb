@@ -14,6 +14,7 @@ end.each do |s|
   jenkins_name = hash.metadata['jenkins_name']
   source_path = s.full_gem_path
   dest_path = File.join(dir, "#{jenkins_name}.hpi")
-  puts "Coping '#{jenkins_name}' from #{source_path} to #{dest_path}"
   FileUtils.cp_r(source_path, dest_path)
+  # Jenkins insists on this timestamp file
+  FileUtils.touch File.join(dest_path, '.timestamp2')
 end
