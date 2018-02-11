@@ -7,6 +7,8 @@ require 'bsw_tech/jenkins_gem/update_json_parser'
 
 index_dir = ENV['INDEX_DIRECTORY']
 raise 'Set the INDEX_DIRECTORY variable' unless index_dir
+# Indexer looks here
+gems_dir = File.join(index_dir, 'gems')
 
 def fetch(uri_str, limit = 10)
   # You should choose a better exception.
@@ -27,15 +29,26 @@ def fetch(uri_str, limit = 10)
 end
 
 get '/quick/Marshal.4.8/:rz_file' do |rz_file|
+  build_index(index_dir, gems_dir)
   File.open(File.join(index_dir, 'quick', 'Marshal.4.8', rz_file), 'rb')
 end
 
 get '/specs.4.8.gz' do
-  build_index(index_dir)
+  build_index(index_dir, gems_dir)
   File.open(File.join(index_dir, 'specs.4.8.gz'), 'rb')
 end
 
-def build_index(index_dir)
+get '/gems/:gem_filename' do |gem_filename|
+  path = File.join(gems_dir, gem_filename)
+  next [404, "Unable to find gem #{gem_filename}"] unless File.exists? path
+  gem = ::Gem::Package.new path
+  spec = gem.spec
+  puts "found gem #{spec.name}, metadata #{spec.metadata}"
+  # TODO: This will work. Fetch the HPI file from Jenkins' server and rebuild the GEM with the HPI inside it
+  nil
+end
+
+def build_index(index_dir, gems_dir)
   if File.exist?(index_dir)
     return
   end
@@ -52,8 +65,6 @@ def build_index(index_dir)
   gem_list = parser.gem_listing
   FileUtils.rm_rf index_dir
   FileUtils.mkdir_p index_dir
-  # Indexer looks here
-  gems_dir = File.join(index_dir, 'gems')
   FileUtils.mkdir_p gems_dir
   puts "Fetched #{gem_list.length} GEM specs from Jenkins, Writing GEM skeletons to #{gems_dir}"
   Dir.chdir(gems_dir) do

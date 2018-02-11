@@ -2,7 +2,7 @@ require 'rake'
 require 'rspec/core/rake_task'
 require 'digest'
 
-task :default => [:unit_spec ,:build, :server_spec]
+task :default => [:build, :server_spec]
 
 if ENV['GENERATE_REPORTS'] == 'true'
   require 'ci/reporter/rake/rspec'
