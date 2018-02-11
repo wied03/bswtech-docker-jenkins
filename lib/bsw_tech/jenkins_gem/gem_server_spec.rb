@@ -5,7 +5,8 @@ ENV['INDEX_DIRECTORY'] = index_directory
 require 'bsw_tech/jenkins_gem/gem_server'
 
 describe 'GEM Server' do
-  after(:suite) {FileUtils.rm_rf index_directory}
+  before(:context) {FileUtils.rm_rf index_directory}
+  after(:context) {FileUtils.rm_rf index_directory}
   include Rack::Test::Methods
 
   def app

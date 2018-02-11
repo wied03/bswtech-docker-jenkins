@@ -31,6 +31,14 @@ get '/quick/Marshal.4.8/:rz_file' do |rz_file|
 end
 
 get '/specs.4.8.gz' do
+  build_index(index_dir)
+  File.open(File.join(index_dir, 'specs.4.8.gz'), 'rb')
+end
+
+def build_index(index_dir)
+  if File.exist?(index_dir)
+    return
+  end
   puts "Fetching Jenkins plugin list..."
 
   parser = begin
@@ -60,5 +68,4 @@ get '/specs.4.8.gz' do
   end
   Gem::Indexer.new(index_dir,
                    { build_modern: true }).generate_index
-  File.open(File.join(index_dir, 'specs.4.8.gz'), 'rb')
 end
