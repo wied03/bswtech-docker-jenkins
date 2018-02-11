@@ -21,7 +21,10 @@ updateCenter.post(
       its(:authors) do
         is_expected.to eq ['direvius@gmail.com']
       end
-      its(:metadata) {is_expected.to eq({ 'jenkins_version' => '1.0' })}
+      its(:metadata) {is_expected.to eq({
+                                          'jenkins_version' => '1.0',
+                                          'jenkins_name' => 'AnchorChain'
+                                        })}
     end
 
     context '+ sign some plugins have' do
@@ -33,7 +36,10 @@ updateCenter.post(
       }
 
       its(:version) {is_expected.to eq Gem::Version.new('1.0.123')}
-      its(:metadata) {is_expected.to eq({ 'jenkins_version' => '1.0+123' })}
+      its(:metadata) {is_expected.to eq({
+                                          'jenkins_version' => '1.0+123',
+                                          'jenkins_name' => 'AnchorChain'
+                                        })}
     end
 
     context 'dashes' do
@@ -45,7 +51,10 @@ updateCenter.post(
       }
 
       its(:version) {is_expected.to eq Gem::Version.new('1.0.123')}
-      its(:metadata) {is_expected.to eq({ 'jenkins_version' => '1.0-123' })}
+      its(:metadata) {is_expected.to eq({
+                                          'jenkins_version' => '1.0-123',
+                                          'jenkins_name' => 'AnchorChain'
+                                        })}
     end
 
     context 'no developer email address, which prevents GEM build' do

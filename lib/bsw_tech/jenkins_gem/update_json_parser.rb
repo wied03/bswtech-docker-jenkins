@@ -27,7 +27,8 @@ module BswTech
               jenkins_version = info['version']
               s.version = format_version(jenkins_version)
               s.metadata = {
-                'jenkins_version' => jenkins_version
+                'jenkins_version' => jenkins_version,
+                'jenkins_name' => plugin_name
               }
               s.homepage = info['wiki']
               developers = info['developers'].map do |dev|
