@@ -68,15 +68,25 @@ def build_index(index_dir, gems_dir)
   FileUtils.mkdir_p gems_dir
   puts "Fetched #{gem_list.length} GEM specs from Jenkins, Writing GEM skeletons to #{gems_dir}"
   Dir.chdir(gems_dir) do
-    gem_list.each do |gemspec|
-      begin
-        ::Gem::Package.build gemspec
-      rescue StandardError => e
-        puts "Error while writing GEM for #{gemspec.name}, #{e}"
-        raise e
+    with_quiet_gem do
+      gem_list.each do |gemspec|
+        begin
+          ::Gem::Package.build gemspec
+        rescue StandardError => e
+          puts "Error while writing GEM for #{gemspec.name}, #{e}"
+          raise e
+        end
       end
     end
   end
   Gem::Indexer.new(index_dir,
                    { build_modern: true }).generate_index
+end
+
+def with_quiet_gem
+  current_ui = Gem::DefaultUserInteraction.ui
+  Gem::DefaultUserInteraction.ui = Gem::SilentUI.new
+  yield
+ensure
+  Gem::DefaultUserInteraction.ui = current_ui
 end
