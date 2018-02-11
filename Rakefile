@@ -2,7 +2,7 @@ require 'rake'
 require 'rspec/core/rake_task'
 require 'digest'
 
-task :default => [:build, :server_spec]
+task :default => [:build, :spec]
 
 if ENV['GENERATE_REPORTS'] == 'true'
   require 'ci/reporter/rake/rspec'
@@ -30,16 +30,7 @@ task :test_user do
 end
 
 desc 'Run serverspec tests with actual container'
-RSpec::Core::RakeTask.new(:server_spec => [:build, :test_user]) do |task|
-  task.pattern = 'spec/server_spec/**/*_spec.rb'
-  task.rspec_opts = '-I spec/server_spec'
-end
-
-desc 'Run unit tests for GEM facade for Jenkins'
-RSpec::Core::RakeTask.new(:unit_spec) do |task|
-  task.pattern = 'lib/**/*_spec.rb'
-  task.rspec_opts = '-I spec/ruby_code'
-end
+RSpec::Core::RakeTask.new(:spec => [:build, :test_user])
 
 JENKINS_VERSION = '2.89.3-1.1'
 JAVA_VERSION = '1.8.0.161-0.b14.el7_4'
