@@ -56,8 +56,9 @@ end
 def add_hpi_to_gem(gem, index_gem_path)
   spec = gem.spec
   metadata = spec.metadata
-  jenkins_name = metadata['jenkins_name']
-  url = "https://updates.jenkins.io/download/plugins/#{jenkins_name}/#{metadata['jenkins_version']}/#{jenkins_name}.hpi"
+  jenkins_name = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_NAME]
+  jenkins_version = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_JENKINS_VERSION]
+  url = "https://updates.jenkins.io/download/plugins/#{jenkins_name}/#{jenkins_version}/#{jenkins_name}.hpi"
   hpi_response = begin
     fetch(url)
   rescue StandardError => e
@@ -71,7 +72,7 @@ def add_hpi_to_gem(gem, index_gem_path)
     temp_file.rewind
     signature = Digest::SHA1.file temp_file
     temp_file.rewind
-    expected_sha = metadata['sha1']
+    expected_sha = metadata[BswTech::JenkinsGem::UpdateJsonParser::METADATA_SHA1]
     actual = signature.base64digest
     fail "ZIP failed SHA1 check. Expected '#{expected_sha}', got '#{actual}'" unless actual  == expected_sha
     begin

@@ -10,6 +10,9 @@ module BswTech
         }
       }
       JENKINS_CORE_PACKAGE = 'jenkins-core'
+      METADATA_JENKINS_NAME = 'jenkins_name'
+      METADATA_JENKINS_VERSION = 'jenkins_version'
+      METADATA_SHA1 = 'sha1'
 
       attr_reader :gem_listing
 
@@ -25,9 +28,9 @@ module BswTech
               jenkins_version = info['version']
               s.version = format_version(jenkins_version)
               s.metadata = {
-                'jenkins_version' => jenkins_version,
-                'jenkins_name' => plugin_name,
-                'sha1' => info['sha1']
+                METADATA_JENKINS_VERSION => jenkins_version,
+                METADATA_JENKINS_NAME => plugin_name,
+                METADATA_SHA1 => info['sha1']
               }
               s.homepage = info['wiki']
               developers = info['developers'].map do |dev|
