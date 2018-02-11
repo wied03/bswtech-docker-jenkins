@@ -201,6 +201,8 @@ GEM
       jenkins-plugin-proxy-jenkins-core (>= 1.609)
     jenkins-plugin-proxy-structs (1.13)
       jenkins-plugin-proxy-jenkins-core (>= 1.580.1)
+    jenkins-plugin-proxy-timestamper (1.8.9)
+      jenkins-plugin-proxy-jenkins-core (>= 1.608)
     jenkins-plugin-proxy-token-macro (2.3)
       jenkins-plugin-proxy-jenkins-core (>= 1.642.3)
       jenkins-plugin-proxy-workflow-job (>= 2.0)
@@ -305,6 +307,7 @@ DEPENDENCIES
   jenkins-plugin-proxy-git (= 3.7.0)
   jenkins-plugin-proxy-jenkins-core (= 2.89.3)
   jenkins-plugin-proxy-ssh-agent (= 1.15)
+  jenkins-plugin-proxy-timestamper (= 1.8.9)
   jenkins-plugin-proxy-workflow-aggregator (= 2.5)
 
 BUNDLED WITH

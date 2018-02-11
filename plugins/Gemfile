@@ -30,3 +30,6 @@ jenkins_gem['workflow-aggregator', '2.5']
 
 # We use this for core-ansible for SSH credentials
 jenkins_gem['ssh-agent', '1.15']
+
+# Base jenkins package, adds them to console output
+jenkins_gem['timestamper', '1.8.9']

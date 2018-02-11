@@ -78,7 +78,6 @@ GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
 
 task :generate_plugin_list do
   plugins = {
-    'timestamper' => '1.8.9', # Base jenkins package, adds them to console output
     'ws-cleanup' => '0.34', # Workspace cleanup
     'antisamy-markup-formatter' => '1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
     'saml' => '1.0.5', # Authenticate via SAML
