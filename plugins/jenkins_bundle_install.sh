@@ -5,6 +5,7 @@ echo "Launching Rack in background"
 INDEX_DIRECTORY=gem_index rackup -I ../lib ../lib/bsw_tech/jenkins_gem/config.ru &
 RACKUP_PID=$!
 echo "Running bundle install"
+# TODO: Add --trust-policy HighSecurity
 GEM_SEED_ENABLED=1 bundle install
 echo "Killing Rack"
 kill $RACKUP_PID
