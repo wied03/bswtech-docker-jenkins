@@ -2,7 +2,9 @@ require 'spec_helper'
 require 'bsw_tech/jenkins_gem/update_json_parser'
 
 describe BswTech::JenkinsGem::UpdateJsonParser do
-  subject(:parser) {BswTech::JenkinsGem::UpdateJsonParser.new(update_json_blob)}
+  let(:jenkins_versions) {['1.23']}
+
+  subject(:parser) {BswTech::JenkinsGem::UpdateJsonParser.new(update_json_blob, jenkins_versions)}
 
   describe '#gem_listing' do
     subject(:gem_spec) {parser.gem_listing[0]}
@@ -26,6 +28,20 @@ updateCenter.post(
                                           'jenkins_name' => 'AnchorChain',
                                           'sha1' => 'rY1W96ad9TJI1F3phFG8X4LE26Q='
                                         })}
+    end
+
+    describe 'core Jenkins GEM' do
+      subject(:gem_spec) do
+        parser.gem_listing.find {|gem| gem.name.include? BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE}
+      end
+
+      its(:name) {is_expected.to eq 'jenkins-plugin-proxy-jenkins-core'}
+      its(:summary) {is_expected.to eq 'Jenkins stub'}
+      its(:version) {is_expected.to eq Gem::Version.new('1.23')}
+      its(:homepage) {is_expected.to eq 'https://www.jenkins.io'}
+      its(:authors) do
+        is_expected.to eq ['alotofpeople']
+      end
     end
 
     context '+ sign some plugins have' do
@@ -112,19 +128,19 @@ updateCenter.post(
         shared_examples :dependency do |name, version|
           expected_name = "jenkins-plugin-proxy-#{name}"
           describe expected_name do
-          subject(:dep) do
-            result = deps.find {|dependency| dependency.name == expected_name}
-            fail "Unable to find dependency #{expected_name} in #{deps}" unless result
-            result
-          end
+            subject(:dep) do
+              result = deps.find {|dependency| dependency.name == expected_name}
+              fail "Unable to find dependency #{expected_name} in #{deps}" unless result
+              result
+            end
 
-          describe '#requirement' do
-            subject {dep.requirement.requirements}
+            describe '#requirement' do
+              subject {dep.requirement.requirements}
 
               it {is_expected.to eq [['>=', Gem::Version.new(version)]]}
+            end
           end
         end
-      end
 
         include_examples :dependency,
                          'maven-plugin',
@@ -185,7 +201,7 @@ updateCenter.post(
 
       subject {parser.gem_listing}
 
-      its(:length) {is_expected.to eq 1451}
+      its(:length) {is_expected.to eq 1452}
     end
   end
 end

@@ -9,10 +9,11 @@ module BswTech
           '1.7.1' => '1.12'
         }
       }
+      JENKINS_CORE_PACKAGE = 'jenkins-core'
 
       attr_reader :gem_listing
 
-      def initialize(file_blob)
+      def initialize(file_blob, jenkins_versions)
         fail 'File blob contents is required' unless file_blob && !file_blob.empty?
         metadata = get_hash file_blob
         @gem_listing = metadata['plugins'].map do |plugin_name, info|
@@ -41,6 +42,15 @@ module BswTech
           rescue StandardError => e
             puts "Error while parsing plugin '#{plugin_name}' info #{info}"
             raise e
+          end
+        end
+        jenkins_versions.each do |jenkins_version|
+          @gem_listing << Gem::Specification.new do |s|
+            s.name = get_name(JENKINS_CORE_PACKAGE)
+            s.summary = 'Jenkins stub'
+            s.version = format_version(jenkins_version)
+            s.homepage = 'https://www.jenkins.io'
+            s.authors = ['alotofpeople']
           end
         end
       end
