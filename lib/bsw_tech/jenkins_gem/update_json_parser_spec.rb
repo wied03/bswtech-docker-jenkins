@@ -93,7 +93,7 @@ updateCenter.post(
           describe '#requirement' do
             subject {dep.requirement.requirements}
 
-            it {is_expected.to eq [['=', Gem::Version.new('2.9')]]}
+            it {is_expected.to eq [['~>', Gem::Version.new('2.9')]]}
           end
         end
       end

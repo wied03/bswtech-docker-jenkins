@@ -24,7 +24,7 @@ module BswTech
               info['dependencies'].each do |dependency|
                 next if dependency['optional']
                 s.add_runtime_dependency "#{PREFIX}-#{dependency['name']}",
-                                         dependency['version']
+                                         "~> #{dependency['version']}"
               end
             end
           rescue StandardError => e
