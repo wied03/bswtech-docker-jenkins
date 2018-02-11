@@ -29,17 +29,18 @@ describe 'GEM Server' do
   end
 
   describe 'individual GEMs' do
-    describe 'Jenkins core' do
-      subject(:response) {get '/gems/jenkins-plugin-proxy-jenkins-core-2.89.3.gem'}
+    before {get '/specs.4.8.gz'}
 
-      its(:ok?) {is_expected.to eq true}
+    subject(:gem) do
+      expect(response.ok?).to eq true
+      package = ::Gem::Package.new StringIO.new(response.body)
+      package.spec
+    end
+
+    describe 'Jenkins core' do
+      let(:response) {get '/gems/jenkins-plugin-proxy-jenkins-core-2.89.3.gem'}
 
       describe 'GEM' do
-        subject do
-          package = ::Gem::Package.new StringIO.new(response.body)
-          package.spec
-        end
-
         its(:name) {is_expected.to eq 'jenkins-plugin-proxy-jenkins-core'}
         its(:files) {is_expected.to eq []}
       end
@@ -51,6 +52,15 @@ describe 'GEM Server' do
       its(:ok?) {is_expected.to eq false}
       its(:status) {is_expected.to eq 404}
     end
-    pending 'write it'
+
+    context 'found' do
+      let(:response) {get '/gems/jenkins-plugin-proxy-apache-httpcomponents-client-4-api-4.5.3.2.1.gem'}
+      its(:name) {is_expected.to eq 'jenkins-plugin-proxy-apache-httpcomponents-client-4-api'}
+
+      it 'has files' do
+        expect(gem.files.length).to eq 10
+        expect(gem.files[0]).to eq 'META-INF/MANIFEST.MF'
+      end
+    end
   end
 end
