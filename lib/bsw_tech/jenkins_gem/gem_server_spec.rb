@@ -19,7 +19,7 @@ describe 'GEM Server' do
       Marshal.load(Gem.gunzip(response.body))
     end
 
-    its(:length) {is_expected.to eq 1440}
+    its(:length) {is_expected.to eq 1516}
   end
 
   describe 'individual GEM' do

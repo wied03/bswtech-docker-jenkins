@@ -4,6 +4,7 @@ require 'rubygems/package'
 require 'rubygems/indexer'
 require 'fileutils'
 require 'bsw_tech/jenkins_gem/update_json_parser'
+require 'bsw_tech/jenkins_gem/update_json_parser'
 
 index_dir = ENV['INDEX_DIRECTORY']
 raise 'Set the INDEX_DIRECTORY variable' unless index_dir
@@ -45,8 +46,8 @@ get '/gems/:gem_filename' do |gem_filename|
   spec = gem.spec
   puts "found gem #{spec.name}, metadata #{spec.metadata}"
   # TODO: This will work. Fetch the HPI file from Jenkins' server and rebuild the GEM with the HPI inside it
-  # TODO: Add a core Jenkins fake GEM. Populate stuff based on it
   # TODO: ETag based index expire?
+  # TODO: Check SHA1 when we fetch the HPI
   # TODO: Somewhere, use the Jenkins metadata JSON to verify if any security problems exist
   nil
 end
@@ -57,9 +58,11 @@ def build_index(index_dir, gems_dir)
   end
   puts "Fetching Jenkins plugin list..."
 
+  jenkins_versions = BswTech::JenkinsGem::JenkinsListFetcher.get_available_versions
+
   parser = begin
     update_response = fetch('http://updates.jenkins-ci.org/update-center.json').body
-    BswTech::JenkinsGem::UpdateJsonParser.new(update_response)
+    BswTech::JenkinsGem::UpdateJsonParser.new(update_response, jenkins_versions)
   rescue StandardError => e
     puts "Problem fetching Jenkins info #{e}"
     raise e
