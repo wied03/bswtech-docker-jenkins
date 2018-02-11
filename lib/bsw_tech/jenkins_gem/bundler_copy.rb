@@ -2,6 +2,11 @@ require 'bundler'
 require 'yaml'
 require 'fileutils'
 
+# TODO: Move all of this to a separate library
+# TODO: Reactivate Gemfury
+# TODO: When gem hpi files are added, sign it and upload to Gemfury
+# TODO: Provide a separate one off command to download an hpi and upload a built gem for that to fury. can use previous code that interprets manifest
+# TODO: Use bins for current shell script
 dir = ENV['PLUGIN_DEST_DIR']
 fail 'Specify PLUGIN_DEST_DIR env variable' unless dir && !dir.empty?
 FileUtils.rm_rf dir

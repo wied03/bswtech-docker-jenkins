@@ -1,8 +1,11 @@
-source 'http://localhost:9292'
+# TODO: Add Gemfury as a source
+source 'http://localhost:9292' if ENV['GEM_SEED_ENABLED'] == '1'
 
 jenkins_gem = lambda do |name, version|
   gem "jenkins-plugin-proxy-#{name}", version
 end
+
+# TODO: Require signed gems
 
 jenkins_version = ENV['JENKINS_VERSION']
 fail 'Need Jenkins version!' unless jenkins_version && !jenkins_version.empty?
