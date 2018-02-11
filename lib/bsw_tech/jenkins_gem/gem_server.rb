@@ -45,6 +45,9 @@ get '/gems/:gem_filename' do |gem_filename|
   spec = gem.spec
   puts "found gem #{spec.name}, metadata #{spec.metadata}"
   # TODO: This will work. Fetch the HPI file from Jenkins' server and rebuild the GEM with the HPI inside it
+  # TODO: Add a core Jenkins fake GEM. Populate stuff based on it
+  # TODO: ETag based index expire?
+  # TODO: Somewhere, use the Jenkins metadata JSON to verify if any security problems exist
   nil
 end
 
