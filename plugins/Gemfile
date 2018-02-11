@@ -33,3 +33,6 @@ jenkins_gem['ssh-agent', '1.15']
 
 # Base jenkins package, adds them to console output
 jenkins_gem['timestamper', '1.8.9']
+
+# Workspace cleanup
+jenkins_gem['ws-cleanup', '0.34']

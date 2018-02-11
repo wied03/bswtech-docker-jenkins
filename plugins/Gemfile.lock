@@ -185,6 +185,8 @@ GEM
     jenkins-plugin-proxy-plain-credentials (1.4)
       jenkins-plugin-proxy-credentials (>= 2.1.5)
       jenkins-plugin-proxy-jenkins-core (>= 1.609)
+    jenkins-plugin-proxy-resource-disposer (0.8)
+      jenkins-plugin-proxy-jenkins-core (>= 1.565)
     jenkins-plugin-proxy-scm-api (2.2.6)
       jenkins-plugin-proxy-jenkins-core (>= 1.609.3)
       jenkins-plugin-proxy-structs (>= 1.9)
@@ -294,6 +296,12 @@ GEM
       jenkins-plugin-proxy-script-security (>= 1.39)
       jenkins-plugin-proxy-workflow-api (>= 2.25)
       jenkins-plugin-proxy-workflow-step-api (>= 2.13)
+    jenkins-plugin-proxy-ws-cleanup (0.34)
+      jenkins-plugin-proxy-jenkins-core (>= 1.642.1)
+      jenkins-plugin-proxy-matrix-project (>= 1.12)
+      jenkins-plugin-proxy-resource-disposer (>= 0.3)
+      jenkins-plugin-proxy-structs (>= 1.5)
+      jenkins-plugin-proxy-workflow-durable-task-step (>= 2.4)
 
 PLATFORMS
   ruby
@@ -309,6 +317,7 @@ DEPENDENCIES
   jenkins-plugin-proxy-ssh-agent (= 1.15)
   jenkins-plugin-proxy-timestamper (= 1.8.9)
   jenkins-plugin-proxy-workflow-aggregator (= 2.5)
+  jenkins-plugin-proxy-ws-cleanup (= 0.34)
 
 BUNDLED WITH
    1.16.0
