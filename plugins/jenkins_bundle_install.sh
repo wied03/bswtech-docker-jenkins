@@ -6,4 +6,4 @@ echo "Running bundle install"
 bundle install
 echo "Killing Rack"
 kill $RACKUP_PID
-
+PLUGIN_DEST_DIR=plugins_final bundle exec ruby ../lib/bsw_tech/jenkins_gem/bundler_copy.rb
