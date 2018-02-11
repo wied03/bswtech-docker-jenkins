@@ -7,6 +7,8 @@ require 'bsw_tech/jenkins_gem/update_json_parser'
 require 'bsw_tech/jenkins_gem/jenkins_list_fetcher'
 require 'zip'
 require 'tmpdir'
+require 'digest'
+require 'tempfile'
 
 index_dir = ENV['INDEX_DIRECTORY']
 raise 'Set the INDEX_DIRECTORY variable' unless index_dir
@@ -65,27 +67,36 @@ def add_hpi_to_gem(gem, index_gem_path)
     raise e
   end
   return [404, hpi_response.body] unless hpi_response.is_a? Net::HTTPSuccess
+  temp_file = Tempfile.new('.zip')
+
   begin
-    Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
-      gem.extract_files local_temp_path
-      Zip::File.open_buffer(hpi_response.body) do |zip_file|
-        zip_file.each do |entry|
-          full_path = File.join(local_temp_path, entry.name)
-          entry.extract(full_path)
+    temp_file.write hpi_response.body
+    signature = Digest::SHA1.file temp_file
+    fail 'ZIP failed SHA1 check' unless signature.base64digest == metadata['sha1']
+    begin
+      Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
+        gem.extract_files local_temp_path
+        Zip::File.open(temp_file) do |zip_file|
+          zip_file.each do |entry|
+            full_path = File.join(local_temp_path, entry.name)
+            entry.extract(full_path)
+          end
+        end
+        Dir.chdir(local_temp_path) do
+          spec.files = Dir['**/*']
+          built_gem_path = ::Gem::Package.build spec
+          puts "Copying #{built_gem_path} to #{index_gem_path}"
+          FileUtils.copy built_gem_path, index_gem_path
         end
       end
-      Dir.chdir(local_temp_path) do
-        spec.files = Dir['**/*']
-        built_gem_path = ::Gem::Package.build spec
-        puts "Copying #{built_gem_path} to #{index_gem_path}"
-        FileUtils.copy built_gem_path, index_gem_path
-      end
+    rescue StandardError => e
+      puts "zip/GEM error #{e}"
+      raise e
     end
-  rescue StandardError => e
-    puts "zip/GEM error #{e}"
-    raise e
+  ensure
+    temp_file.close
+    temp_file.unlink
   end
-  # TODO: Check SHA1 when we fetch the HPI
 end
 
 # TODO: ETag based index expire?
