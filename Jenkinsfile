@@ -11,6 +11,10 @@ if (env.BRANCH_NAME == 'master') {
                                  description: 'Base Docker image version',
                                  name: 'DOCKER_BASE_VERSION')])])
 }
+else {
+  // build numbers are not unique across branches
+  env.BUILD_NUMBER = "${env.BRANCH_NAME}.${env.BUILD_NUMBER}"
+}
 
 if (params.DOCKER_BASE_VERSION) {
     env.DOCKER_BASE_VERSION = params.DOCKER_BASE_VERSION
