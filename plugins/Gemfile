@@ -39,3 +39,6 @@ jenkins_gem['ws-cleanup', '0.34']
 
 # OWASP HTML sanitizer for text fields, standard Jenkins
 jenkins_gem['antisamy-markup-formatter', '1.5']
+
+# Authenticate via SAML (Google, Okta, etc.)
+jenkins_gem['saml', '1.0.5']
