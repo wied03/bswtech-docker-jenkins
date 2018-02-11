@@ -47,3 +47,6 @@ jenkins_gem['saml', '1.0.5']
 jenkins_gem['role-strategy','2.7.0']
 
 jenkins_gem['ec2', '1.38']
+
+# 2.5 does not have changelog but 2.4.2 is no longer in the index
+jenkins_gem['jira', '2.5.0']

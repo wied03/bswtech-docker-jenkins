@@ -78,7 +78,6 @@ GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
 
 task :generate_plugin_list do
   plugins = {
-    'jira' => '2.4.2', # 2.5 does not have changelog
     # Needed to trigger multibranch pipelines from Bitbucket
     'cloudbees-bitbucket-branch-source' => '2.2.9',
     'blueocean' => '1.4.1' # New UI
