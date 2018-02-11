@@ -7,9 +7,6 @@ module BswTech
         # For some reason, Jenkins seems to reference invalid dependency versions sometimes
         'matrix-project' => {
           '1.7.1' => '1.12'
-        },
-        'apache-httpcomponents-client-4-api' => {
-          '4.5.3-2.0' => '4.5.3.2.1'
         }
       }
 
