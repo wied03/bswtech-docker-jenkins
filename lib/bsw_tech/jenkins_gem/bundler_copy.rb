@@ -16,8 +16,9 @@ FileUtils.mkdir_p dir
 Bundler.load.specs.select do |s|
   s.name.start_with?('jenkins') && !s.name.include?(BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE)
 end.each do |s|
-  hash = YAML.load s.to_yaml
-  jenkins_name = hash.metadata['jenkins_name']
+  # It's odd this is called to_yaml, but it does in fact load the gemspec that we can retrieve metadata from
+  gem_spec = YAML.load s.to_yaml
+  jenkins_name = gem_spec.metadata['jenkins_name']
   source_path = s.full_gem_path
   dest_path = File.join(dir, "#{jenkins_name}.hpi")
   FileUtils.cp_r(source_path, dest_path)
