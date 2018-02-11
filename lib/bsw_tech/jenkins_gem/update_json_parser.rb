@@ -3,6 +3,12 @@ module BswTech
     class UpdateJsonParser
       SEPARATOR = ': '
       PREFIX = 'jenkins-plugin-proxy'
+      DEPENDENCY_REMAPS = {
+        # For some reason, Jenkins seems to reference invalid dependency versions sometimes
+        'matrix-project' => {
+          '1.7.1' => '1.12'
+        }
+      }
 
       attr_reader :gem_listing
 
@@ -22,9 +28,7 @@ module BswTech
               end
               s.authors = developers.any? ? developers : ['unknown']
               info['dependencies'].each do |dependency|
-                next if dependency['optional']
-                s.add_runtime_dependency "#{PREFIX}-#{dependency['name']}",
-                                         "~> #{dependency['version']}"
+                add_dependency dependency, s
               end
             end
           rescue StandardError => e
@@ -35,6 +39,19 @@ module BswTech
       end
 
       private
+
+      def add_dependency(dependency, gem_spec)
+        return if dependency['optional']
+        candidate_version = dependency['version']
+        dependency_name = dependency['name']
+        remap = DEPENDENCY_REMAPS[dependency_name]
+        if remap
+          new_version = remap[candidate_version]
+          candidate_version = new_version if new_version
+        end
+        gem_spec.add_runtime_dependency "#{PREFIX}-#{dependency_name}",
+                                        ">= #{candidate_version}"
+      end
 
       def format_version(jenkins_number)
         # + is not a legal character in GEM versions but we can change it back later
