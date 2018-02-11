@@ -6,8 +6,7 @@ task :default => [:build, :spec]
 
 if ENV['GENERATE_REPORTS'] == 'true'
   require 'ci/reporter/rake/rspec'
-  task :server_spec => 'ci:setup:rspec'
-  task :unit_spec => 'ci:setup:rspec'
+  task :spec => 'ci:setup:rspec'
 end
 
 JENKINS_USER = 'jenkins'
