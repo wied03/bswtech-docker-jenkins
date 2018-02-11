@@ -41,6 +41,7 @@ describe 'GEM Server' do
         end
 
         its(:name) {is_expected.to eq 'jenkins-plugin-proxy-jenkins-core'}
+        its(:files) {is_expected.to eq []}
       end
     end
 
