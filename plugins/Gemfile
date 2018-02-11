@@ -26,4 +26,4 @@ jenkins_gem['email-ext', '2.61']
 jenkins_gem['git', '3.7.0']
 
 # the actual core pipeline plugin
-#jenkins_gem['workflow-aggregator', '2.5']
+jenkins_gem['workflow-aggregator', '2.5']
