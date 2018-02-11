@@ -72,7 +72,9 @@ def add_hpi_to_gem(gem, index_gem_path)
   begin
     temp_file.write hpi_response.body
     signature = Digest::SHA1.file temp_file
-    fail 'ZIP failed SHA1 check' unless signature.base64digest == metadata['sha1']
+    expected_sha = metadata['sha1']
+    actual = signature.base64digest
+    fail "ZIP failed SHA1 check. Expected '#{expected_sha}', got '#{actual}'" unless actual  == expected_sha
     begin
       Dir.mktmpdir 'gem_temp_dir' do |local_temp_path|
         gem.extract_files local_temp_path
