@@ -72,7 +72,7 @@ if (env.BRANCH_NAME == 'master') {
           ruby.rake 'push'
         }
         bswKeepBuild()
-        archiveArtifacts artifacts: 'plugins/installed_plugins.txt',
+        archiveArtifacts artifacts: 'plugins/Gemfile.lock',
                          excludes: null
       }
       catch (any) {
