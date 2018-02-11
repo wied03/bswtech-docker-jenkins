@@ -59,7 +59,7 @@ module BswTech
 
       def add_core_jenkins(version,
                            gem_spec)
-        gem_spec.add_runtime_dependency get_name('jenkins-core'),
+        gem_spec.add_runtime_dependency get_name(JENKINS_CORE_PACKAGE),
                                         ">= #{version}"
       end
 

@@ -1,6 +1,7 @@
 require 'bundler'
 require 'yaml'
 require 'fileutils'
+require 'bsw_tech/jenkins_gem/update_json_parser'
 
 # TODO: Move all of this to a separate library
 # TODO: Reactivate Gemfury
@@ -13,7 +14,7 @@ FileUtils.rm_rf dir
 FileUtils.mkdir_p dir
 
 Bundler.load.specs.select do |s|
-  s.name.start_with?('jenkins') && !s.name.include?('jenkins-core')
+  s.name.start_with?('jenkins') && !s.name.include?(BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE)
 end.each do |s|
   hash = YAML.load s.to_yaml
   jenkins_name = hash.metadata['jenkins_name']
