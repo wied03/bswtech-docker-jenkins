@@ -4,6 +4,10 @@ jenkins_gem = lambda do |name, version|
   gem "jenkins-plugin-proxy-#{name}", version
 end
 
-jenkins_gem['jenkins-core', '2.89.3']
+jenkins_version = ENV['JENKINS_VERSION']
+fail 'Need Jenkins version!' unless jenkins_version && !jenkins_version.empty?
+jenkins_gem['jenkins-core', jenkins_version]
+
+
 jenkins_gem['git', '3.7.0']
 
