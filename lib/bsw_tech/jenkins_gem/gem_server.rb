@@ -25,7 +25,6 @@ def fetch(uri_str, limit = 10)
     response
   when Net::HTTPRedirection then
     location = response['location']
-    warn "redirected to #{location}"
     fetch(location, limit - 1)
   else
     response.value
@@ -59,7 +58,6 @@ def add_hpi_to_gem(gem, index_gem_path)
   metadata = spec.metadata
   jenkins_name = metadata['jenkins_name']
   url = "https://updates.jenkins.io/download/plugins/#{jenkins_name}/#{metadata['jenkins_version']}/#{jenkins_name}.hpi"
-  puts "Fetching plugin from URL #{url}"
   hpi_response = begin
     fetch(url)
   rescue StandardError => e
