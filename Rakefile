@@ -82,6 +82,15 @@ task :fetch_plugins do
   end
 end
 
+desc 'Display plugin dependency graph'
+task :display_plugins do
+  Dir.chdir('plugins') do
+    Bundler.with_clean_env do
+      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} bundle list"
+    end
+  end
+end
+
 JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
 task :build => [:plugin_manager_override, :fetch_plugins] do
