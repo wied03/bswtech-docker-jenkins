@@ -73,22 +73,19 @@ task :plugin_manager_override => :update_gradle_jenkins_dep do
   sh './gradlew build'
 end
 
-# Read by Jenkins repo's script that downloads plugins+deps
-GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
-
-task :generate_plugin_list do
-  plugins = {
-
-    'blueocean' => '1.4.1' # New UI
-  }
-  # Will be read by shell script (plugins/install-plugins/sh)
-  File.write(GEN_PLUGIN_FILENAME, plugins.map {|plugin, version| "#{plugin}:#{version}" }.join("\n"))
+GEN_PLUGIN_FILENAME = 'plugins/Gemfile.lock'
+task :fetch_plugins do
+  Dir.chdir('plugins') do
+    Bundler.with_clean_env do
+      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} ./jenkins_bundle_install.sh"
+    end
+  end
 end
 
 JENKINS_BIN_DIR='/usr/lib/jenkins'
 INSTALLED_PLUGINS_FILE=File.join(JENKINS_BIN_DIR, 'installed_plugins.txt')
 desc "Builds Docker image #{image_tag}"
-task :build => [:plugin_manager_override, :generate_plugin_list] do
+task :build => [:plugin_manager_override, :fetch_plugins] do
   # not using docker COPY, so need to force changes
   resources_hash = FileList['resources/**'].inject do |exist, file|
     Digest::SHA256.hexdigest(Digest::SHA256.hexdigest(exist)+File.read(file))
