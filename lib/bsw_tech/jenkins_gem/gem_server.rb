@@ -26,6 +26,10 @@ def fetch(uri_str, limit = 10)
   end
 end
 
+get '/quick/Marshal.4.8/:rz_file' do |rz_file|
+  File.open(File.join(index_dir, 'quick', 'Marshal.4.8', rz_file), 'rb')
+end
+
 get '/specs.4.8.gz' do
   puts "Fetching Jenkins plugin list..."
 

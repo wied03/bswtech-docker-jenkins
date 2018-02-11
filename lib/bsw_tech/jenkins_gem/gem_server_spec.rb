@@ -1,8 +1,11 @@
 require 'spec_helper'
 require 'rack/test'
+index_directory = File.join(File.dirname(__FILE__), 'test_gem_index')
+ENV['INDEX_DIRECTORY'] = index_directory
 require 'bsw_tech/jenkins_gem/gem_server'
 
-fdescribe 'GEM Server' do
+describe 'GEM Server' do
+  after(:suite) {FileUtils.rm_rf index_directory}
   include Rack::Test::Methods
 
   def app
@@ -15,6 +18,12 @@ fdescribe 'GEM Server' do
       Marshal.load(Gem.gunzip(response.body))
     end
 
-    its(:length) { is_expected.to eq 1440 }
+    its(:length) {is_expected.to eq 1440}
+  end
+
+  describe 'individual GEM' do
+    subject {get '/quick/Marshal.4.8/jenkins-plugin-proxy-git-3.7.0.gemspec.rz'}
+
+    its(:ok?) {is_expected.to eq true}
   end
 end
