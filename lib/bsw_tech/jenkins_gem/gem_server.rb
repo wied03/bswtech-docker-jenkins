@@ -42,7 +42,7 @@ get '/specs.4.8.gz' do
 end
 
 get '/gems/:gem_filename' do |gem_filename|
-  path = File.join(gems_dir, gem_filename)
+  path = File.absolute_path(File.join(gems_dir, gem_filename))
   next [404, "Unable to find gem #{gem_filename}"] unless File.exists? path
   gem = ::Gem::Package.new path
   spec = gem.spec
