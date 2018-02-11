@@ -68,10 +68,11 @@ def add_hpi_to_gem(gem, index_gem_path)
   end
   return [404, hpi_response.body] unless hpi_response.is_a? Net::HTTPSuccess
   temp_file = Tempfile.new('.zip')
-
   begin
     temp_file.write hpi_response.body
+    temp_file.rewind
     signature = Digest::SHA1.file temp_file
+    temp_file.rewind
     expected_sha = metadata['sha1']
     actual = signature.base64digest
     fail "ZIP failed SHA1 check. Expected '#{expected_sha}', got '#{actual}'" unless actual  == expected_sha
