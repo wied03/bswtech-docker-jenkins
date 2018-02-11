@@ -42,3 +42,6 @@ jenkins_gem['antisamy-markup-formatter', '1.5']
 
 # Authenticate via SAML (Google, Okta, etc.)
 jenkins_gem['saml', '1.0.5']
+
+# Best authorization setup available
+jenkins_gem['role-strategy','2.7.0']
