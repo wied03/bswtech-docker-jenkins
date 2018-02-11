@@ -18,14 +18,15 @@ module BswTech
         @gem_listing = metadata['plugins'].map do |plugin_name, info|
           begin
             Gem::Specification.new do |s|
-              s.name = "#{PREFIX}-#{plugin_name}"
+              s.name = get_name(plugin_name)
               excerpt = info['excerpt'].gsub('TODO:', '')
               s.summary = excerpt
               jenkins_version = info['version']
               s.version = format_version(jenkins_version)
               s.metadata = {
                 'jenkins_version' => jenkins_version,
-                'jenkins_name' => plugin_name
+                'jenkins_name' => plugin_name,
+                'sha1' => info['sha1']
               }
               s.homepage = info['wiki']
               developers = info['developers'].map do |dev|
@@ -35,6 +36,7 @@ module BswTech
               info['dependencies'].each do |dependency|
                 add_dependency dependency, s
               end
+              add_core_jenkins(info['requiredCore'], s)
             end
           rescue StandardError => e
             puts "Error while parsing plugin '#{plugin_name}' info #{info}"
@@ -44,6 +46,16 @@ module BswTech
       end
 
       private
+
+      def add_core_jenkins(version,
+                           gem_spec)
+        gem_spec.add_runtime_dependency get_name('jenkins-core'),
+                                        ">= #{version}"
+      end
+
+      def get_name(package)
+        "#{PREFIX}-#{package}"
+      end
 
       def add_dependency(dependency, gem_spec)
         return if dependency['optional']
@@ -55,7 +67,7 @@ module BswTech
           candidate_version = new_version if new_version
         end
         candidate_version = format_version candidate_version
-        gem_spec.add_runtime_dependency "#{PREFIX}-#{dependency_name}",
+        gem_spec.add_runtime_dependency get_name(dependency_name),
                                         ">= #{candidate_version}"
       end
 

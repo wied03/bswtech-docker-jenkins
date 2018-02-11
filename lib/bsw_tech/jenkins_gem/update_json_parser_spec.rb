@@ -23,7 +23,8 @@ updateCenter.post(
       end
       its(:metadata) {is_expected.to eq({
                                           'jenkins_version' => '1.0',
-                                          'jenkins_name' => 'AnchorChain'
+                                          'jenkins_name' => 'AnchorChain',
+                                          'sha1' => 'rY1W96ad9TJI1F3phFG8X4LE26Q='
                                         })}
     end
 
@@ -38,7 +39,8 @@ updateCenter.post(
       its(:version) {is_expected.to eq Gem::Version.new('1.0.123')}
       its(:metadata) {is_expected.to eq({
                                           'jenkins_version' => '1.0+123',
-                                          'jenkins_name' => 'AnchorChain'
+                                          'jenkins_name' => 'AnchorChain',
+                                          'sha1' => 'rY1W96ad9TJI1F3phFG8X4LE26Q='
                                         })}
     end
 
@@ -53,7 +55,8 @@ updateCenter.post(
       its(:version) {is_expected.to eq Gem::Version.new('1.0.123')}
       its(:metadata) {is_expected.to eq({
                                           'jenkins_version' => '1.0-123',
-                                          'jenkins_name' => 'AnchorChain'
+                                          'jenkins_name' => 'AnchorChain',
+                                          'sha1' => 'rY1W96ad9TJI1F3phFG8X4LE26Q='
                                         })}
     end
 
@@ -94,7 +97,8 @@ updateCenter.post(
       subject(:deps) {gem_spec.dependencies}
 
       context 'none' do
-        its(:length) {is_expected.to eq 0}
+        # Only Jenkins core
+        its(:length) {is_expected.to eq 1}
       end
 
       context 'only required' do
@@ -105,9 +109,10 @@ updateCenter.post(
           CODE
         }
 
-        describe 'jenkins-plugin-proxy-maven-plugin' do
+        shared_examples :dependency do |name, version|
+          expected_name = "jenkins-plugin-proxy-#{name}"
+          describe expected_name do
           subject(:dep) do
-            expected_name = 'jenkins-plugin-proxy-maven-plugin'
             result = deps.find {|dependency| dependency.name == expected_name}
             fail "Unable to find dependency #{expected_name} in #{deps}" unless result
             result
@@ -116,9 +121,18 @@ updateCenter.post(
           describe '#requirement' do
             subject {dep.requirement.requirements}
 
-            it {is_expected.to eq [['>=', Gem::Version.new('2.9')]]}
+              it {is_expected.to eq [['>=', Gem::Version.new(version)]]}
           end
         end
+      end
+
+        include_examples :dependency,
+                         'maven-plugin',
+                         '2.9'
+
+        include_examples :dependency,
+                         'jenkins-core',
+                         '1.398'
       end
 
       context 'optional' do
@@ -129,8 +143,8 @@ updateCenter.post(
           CODE
         }
 
-        # Current Jenkins script ignores optional dependencies, so will we
-        its(:length) {is_expected.to eq 0}
+        # Current Jenkins script ignores optional dependencies, so will we, only Jenkins
+        its(:length) {is_expected.to eq 1}
       end
 
       context 'dash-version' do
