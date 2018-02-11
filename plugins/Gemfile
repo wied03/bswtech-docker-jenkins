@@ -50,3 +50,6 @@ jenkins_gem['ec2', '1.38']
 
 # 2.5 does not have changelog but 2.4.2 is no longer in the index
 jenkins_gem['jira', '2.5.0']
+
+# Needed to trigger multibranch pipelines from Bitbucket/webhooks
+jenkins_gem['cloudbees-bitbucket-branch-source', '2.2.9']
