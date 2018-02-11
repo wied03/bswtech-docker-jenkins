@@ -22,9 +22,34 @@ describe 'GEM Server' do
     its(:length) {is_expected.to eq 1516}
   end
 
-  describe 'individual GEM' do
+  describe 'individual GEM metadata' do
     subject {get '/quick/Marshal.4.8/jenkins-plugin-proxy-git-3.7.0.gemspec.rz'}
 
     its(:ok?) {is_expected.to eq true}
+  end
+
+  describe 'individual GEMs' do
+    describe 'Jenkins core' do
+      subject(:response) {get '/gems/jenkins-plugin-proxy-jenkins-core-2.89.3.gem'}
+
+      its(:ok?) {is_expected.to eq true}
+
+      describe 'GEM' do
+        subject do
+          package = ::Gem::Package.new StringIO.new(response.body)
+          package.spec
+        end
+
+        its(:name) {is_expected.to eq 'jenkins-plugin-proxy-jenkins-core'}
+      end
+    end
+
+    context 'not found' do
+      subject(:response) {get '/gems/foobar.gem'}
+
+      its(:ok?) {is_expected.to eq false}
+      its(:status) {is_expected.to eq 404}
+    end
+    pending 'write it'
   end
 end

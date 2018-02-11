@@ -30,7 +30,6 @@ def fetch(uri_str, limit = 10)
 end
 
 get '/quick/Marshal.4.8/:rz_file' do |rz_file|
-  build_index(index_dir, gems_dir)
   File.open(File.join(index_dir, 'quick', 'Marshal.4.8', rz_file), 'rb')
 end
 
@@ -44,12 +43,13 @@ get '/gems/:gem_filename' do |gem_filename|
   next [404, "Unable to find gem #{gem_filename}"] unless File.exists? path
   gem = ::Gem::Package.new path
   spec = gem.spec
-  puts "found gem #{spec.name}, metadata #{spec.metadata}"
+  if spec.name.include? BswTech::JenkinsGem::UpdateJsonParser::JENKINS_CORE_PACKAGE
+  end
+  File.open(path, 'rb')
   # TODO: This will work. Fetch the HPI file from Jenkins' server and rebuild the GEM with the HPI inside it
   # TODO: ETag based index expire?
   # TODO: Check SHA1 when we fetch the HPI
   # TODO: Somewhere, use the Jenkins metadata JSON to verify if any security problems exist
-  nil
 end
 
 def build_index(index_dir, gems_dir)
