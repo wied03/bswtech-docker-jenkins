@@ -78,15 +78,6 @@ GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
 
 task :generate_plugin_list do
   plugins = {
-    'build-timeout' => '1.19', # Standard Jenkins
-    'docker-workflow' => '1.15', # CloudBees Docker Pipeline
-    'credentials' => '2.1.16', # Core credentials plugin
-    'credentials-binding' => '1.15', # Allow use of creds in environment variables/pipeline steps
-    'email-ext' => '2.61', # better email extensions
-    'git' => '3.7.0',
-    'workflow-aggregator' => '2.5', # the actual core pipeline plugin
-    # We have no direct dependency on workflow-job, usually Pipeline takes care of it.
-    'workflow-job' => '2.17',
     'pipeline-graph-analysis' => '1.6',
     'ssh-agent' => '1.15', # We use this for core-ansible for SSH credentials
     'timestamper' => '1.8.9', # Base jenkins package, adds them to console output

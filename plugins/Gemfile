@@ -8,6 +8,22 @@ jenkins_version = ENV['JENKINS_VERSION']
 fail 'Need Jenkins version!' unless jenkins_version && !jenkins_version.empty?
 jenkins_gem['jenkins-core', jenkins_version]
 
+# Standard Jenkins
+jenkins_gem['build-timeout', '1.19']
+
+# CloudBees Docker Pipeline (for dealing with registry, etc.)
+jenkins_gem['docker-workflow', '1.15']
+
+# Core credentials plugin
+jenkins_gem['credentials', '2.1.16']
+
+# Allow use of creds in environment variables/pipeline steps
+jenkins_gem['credentials-binding', '1.15']
+
+# better email extensions
+jenkins_gem['email-ext', '2.61']
 
 jenkins_gem['git', '3.7.0']
 
+# the actual core pipeline plugin
+#jenkins_gem['workflow-aggregator', '2.5']
