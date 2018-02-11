@@ -7,6 +7,9 @@ module BswTech
         # For some reason, Jenkins seems to reference invalid dependency versions sometimes
         'matrix-project' => {
           '1.7.1' => '1.12'
+        },
+        'apache-httpcomponents-client-4-api' => {
+          '4.5.3-2.0' => '4.5.3.2.1'
         }
       }
 
@@ -21,7 +24,11 @@ module BswTech
               s.name = "#{PREFIX}-#{plugin_name}"
               excerpt = info['excerpt'].gsub('TODO:', '')
               s.summary = excerpt
-              s.version = format_version(info['version'])
+              jenkins_version = info['version']
+              s.version = format_version(jenkins_version)
+              s.metadata = {
+                'jenkins_version' => jenkins_version
+              }
               s.homepage = info['wiki']
               developers = info['developers'].map do |dev|
                 dev['email'] || dev['developerId']
@@ -49,13 +56,15 @@ module BswTech
           new_version = remap[candidate_version]
           candidate_version = new_version if new_version
         end
+        candidate_version = format_version candidate_version
         gem_spec.add_runtime_dependency "#{PREFIX}-#{dependency_name}",
                                         ">= #{candidate_version}"
       end
 
       def format_version(jenkins_number)
         # + is not a legal character in GEM versions but we can change it back later
-        Gem::Version.new(jenkins_number.gsub('+', '.PLUS.'))
+        jenkins_number.gsub('+', '.')
+          .gsub('-', '.')
       end
 
       def get_hash(file_blob)
