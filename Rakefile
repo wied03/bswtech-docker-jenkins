@@ -82,6 +82,15 @@ task :display_plugins do
   end
 end
 
+desc 'Seed plugins with derived GEMs from Jenkins Update Center'
+task :seed_plugins do
+  Dir.chdir('plugins') do
+    Bundler.with_clean_env do
+      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} jenkins_seed"
+    end
+  end
+end
+
 JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
 task :build => [:plugin_manager_override, :fetch_plugins] do
