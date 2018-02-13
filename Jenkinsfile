@@ -20,6 +20,9 @@ if (params.DOCKER_BASE_VERSION) {
     env.DOCKER_BASE_VERSION = params.DOCKER_BASE_VERSION
 }
 
+def furyRepo = 'https://repo.fury.io/wied03/'
+def furyCredentialId = 'gemfury_key'
+
 node('docker.build') {
   try {
     stage('Checkout') {
@@ -39,7 +42,9 @@ node('docker.build') {
 
     stage('Build image') {
       milestone()
-      ruby.rake 'build'
+      with_gem_credentials(furyRepo, furyCredentialId) {
+        ruby.rake 'build'
+      }
       stash 'complete-workspace'
     }
 
