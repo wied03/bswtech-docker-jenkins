@@ -1,6 +1,10 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    bswtech-jenkins-gem (1.0.0)
+      gemfury (~> 0.7)
+      rubyzip (~> 1.2)
+      sinatra (~> 2.0)
     builder (3.2.3)
     ci_reporter (2.0.0)
       builder (>= 2.1.2)
@@ -12,18 +16,27 @@ GEM
       excon (>= 0.38.0)
       json
     excon (0.55.0)
+    faraday (0.11.0)
+      multipart-post (>= 1.2, < 3)
+    gemfury (0.7.0)
+      faraday (>= 0.9.0, < 0.12.0.pre)
+      highline (~> 1.6)
+      multi_json (~> 1.10)
+      netrc (>= 0.10.0, < 0.12.0.pre)
+      thor (>= 0.14.0, < 1.0.0.pre)
+    highline (1.7.10)
     json (2.0.3)
     multi_json (1.12.1)
+    multipart-post (2.0.0)
     mustermann (1.0.1)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (4.1.0)
     net-telnet (0.1.1)
+    netrc (0.11.0)
     rack (2.0.4)
     rack-protection (2.0.0)
       rack
-    rack-test (0.8.2)
-      rack (>= 1.0, < 3)
     rake (12.0.0)
     retryable (2.0.4)
     rspec (3.7.0)
@@ -59,20 +72,19 @@ GEM
       net-ssh (>= 2.7, < 5.0)
       net-telnet
       sfl
+    thor (0.20.0)
     tilt (2.0.8)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  bswtech-jenkins-gem
   ci_reporter_rspec
   docker-api
-  rack-test
   rake
   retryable
-  rubyzip
   serverspec
-  sinatra
 
 BUNDLED WITH
    1.16.0
