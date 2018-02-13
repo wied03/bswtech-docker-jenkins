@@ -67,7 +67,7 @@ GEN_PLUGIN_FILENAME = 'plugins/Gemfile.lock'
 task :fetch_plugins do
   Dir.chdir('plugins') do
     Bundler.with_clean_env do
-      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} ./jenkins_bundle_install.sh"
+      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} jenkins_bundle_install"
     end
   end
 end
