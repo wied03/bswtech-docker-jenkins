@@ -32,7 +32,13 @@ node('docker.build') {
     }
 
     stage('Dependencies') {
-      ruby.dependencies()
+      ruby.shell('!(rbenv version 2>&1 | grep "not installed") || rbenv install')
+      // faster than running gem install if we already have it
+      ruby.shell('gem contents bundler > /dev/null || gem install bundler')
+      withCredentials([string(credentialsId: 'gemfury_key', variable: 'gemKey')]) {
+        ruby.shell("bundle config https://repo.fury.io/wied03/ ${env.gemKey}")
+      }
+      ruby.shell('bundle install')
     }
 
     stage('Build image') {

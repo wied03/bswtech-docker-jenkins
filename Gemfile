@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+source 'https://repo.fury.io/wied03/'
 
 gem 'serverspec'
 gem 'docker-api'

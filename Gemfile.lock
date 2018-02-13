@@ -1,5 +1,6 @@
 GEM
   remote: https://rubygems.org/
+  remote: https://repo.fury.io/wied03/
   specs:
     bswtech-jenkins-gem (1.0.0)
       gemfury (~> 0.7)
@@ -87,4 +88,4 @@ DEPENDENCIES
   serverspec
 
 BUNDLED WITH
-   1.16.0
+   1.14.6

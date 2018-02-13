@@ -378,4 +378,4 @@ DEPENDENCIES
   jenkins-plugin-proxy-ws-cleanup (= 0.34)
 
 BUNDLED WITH
-   1.16.0
+   1.14.6
