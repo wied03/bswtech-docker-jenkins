@@ -64,6 +64,7 @@ task :plugin_manager_override => :update_gradle_jenkins_dep do
 end
 
 GEN_PLUGIN_FILENAME = 'plugins/Gemfile.lock'
+desc 'Fetch plugins using GEM/Bundler wrapper'
 task :fetch_plugins do
   Dir.chdir('plugins') do
     Bundler.with_clean_env do
