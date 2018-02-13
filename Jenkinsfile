@@ -35,8 +35,8 @@ node('docker.build') {
     }
 
     stage('Dependencies') {
-      withCredentials([string(credentialsId: 'gemfury_key', variable: 'gemKey')]) {
-        ruby.dependencies(['https://repo.fury.io/wied03/': env.gemKey])
+      ruby.with_gem_credentials(furyRepo, furyCredentialId) {
+        ruby.dependencies()
       }
     }
 
@@ -76,8 +76,8 @@ if (env.BRANCH_NAME == 'master') {
       try {
         // might be on a different node (filesystem deps)
         unstash 'complete-workspace'
-        withCredentials([string(credentialsId: 'gemfury_key', variable: 'gemKey')]) {
-          ruby.dependencies(['https://repo.fury.io/wied03/': env.gemKey])
+        ruby.with_gem_credentials(furyRepo, furyCredentialId) {
+          ruby.dependencies()
         }
 
         // 2nd arg is creds
