@@ -11,10 +11,17 @@ if (env.BRANCH_NAME == 'master') {
                                  description: 'Base Docker image version',
                                  name: 'DOCKER_BASE_VERSION')])])
 }
+else {
+  // build numbers are not unique across branches
+  env.BUILD_NUMBER = "${env.BRANCH_NAME}.${env.BUILD_NUMBER}"
+}
 
 if (params.DOCKER_BASE_VERSION) {
     env.DOCKER_BASE_VERSION = params.DOCKER_BASE_VERSION
 }
+
+def furyRepo = 'https://repo.fury.io/wied03/'
+def furyCredentialId = 'gemfury_key'
 
 node('docker.build') {
   try {
@@ -28,12 +35,16 @@ node('docker.build') {
     }
 
     stage('Dependencies') {
-      ruby.dependencies()
+      ruby.with_gem_credentials(furyRepo, furyCredentialId) {
+        ruby.dependencies()
+      }
     }
 
     stage('Build image') {
       milestone()
-      ruby.rake 'build'
+      ruby.with_gem_credentials(furyRepo, furyCredentialId) {
+        ruby.rake 'build'
+      }
       stash 'complete-workspace'
     }
 
@@ -65,14 +76,16 @@ if (env.BRANCH_NAME == 'master') {
       try {
         // might be on a different node (filesystem deps)
         unstash 'complete-workspace'
-        ruby.dependencies()
+        ruby.with_gem_credentials(furyRepo, furyCredentialId) {
+          ruby.dependencies()
+        }
 
         // 2nd arg is creds
         docker.withRegistry('https://quay.io', 'quay_io_docker') {
           ruby.rake 'push'
         }
         bswKeepBuild()
-        archiveArtifacts artifacts: 'plugins/installed_plugins.txt',
+        archiveArtifacts artifacts: 'plugins/Gemfile.lock',
                          excludes: null
       }
       catch (any) {

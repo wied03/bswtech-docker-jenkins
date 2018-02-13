@@ -28,7 +28,7 @@ task :test_user do
   }
 end
 
-desc "Run serverspec tests"
+desc 'Run serverspec tests with actual container'
 RSpec::Core::RakeTask.new(:spec => [:build, :test_user])
 
 JENKINS_VERSION = '2.89.3-1.1'
@@ -63,44 +63,31 @@ task :plugin_manager_override => :update_gradle_jenkins_dep do
   sh './gradlew build'
 end
 
-# Read by Jenkins repo's script that downloads plugins+deps
-GEN_PLUGIN_FILENAME = 'plugins/install_plugins.txt'
-
-task :generate_plugin_list do
-  plugins = {
-    'build-timeout' => '1.19', # Standard Jenkins
-    'docker-workflow' => '1.15', # CloudBees Docker Pipeline
-    'credentials' => '2.1.16', # Core credentials plugin
-    'credentials-binding' => '1.15', # Allow use of creds in environment variables/pipeline steps
-    'email-ext' => '2.61', # better email extensions
-    'git' => '3.7.0',
-    'workflow-aggregator' => '2.5', # the actual core pipeline plugin
-    # We have no direct dependency on workflow-job, usually Pipeline takes care of it.
-    'workflow-job' => '2.17',
-    'pipeline-graph-analysis' => '1.6',
-    'ssh-agent' => '1.15', # We use this for core-ansible for SSH credentials
-    'timestamper' => '1.8.9', # Base jenkins package, adds them to console output
-    'ws-cleanup' => '0.34', # Workspace cleanup
-    'antisamy-markup-formatter' => '1.5', # OWASP HTML sanitizer for text fields, standard Jenkins
-    'saml' => '1.0.5', # Authenticate via SAML
-    'role-strategy' => '2.6.1', # Best authorization setup available
-    'matrix-auth' => '2.2',
-    'ec2' => '1.38',
-    'jira' => '2.4.2', # 2.5 does not have changelog
-    # Needed to trigger multibranch pipelines from Bitbucket
-    'cloudbees-bitbucket-branch-source' => '2.2.9'
-  }
-  # Will be read by shell script (plugins/install-plugins/sh)
-  File.write(GEN_PLUGIN_FILENAME, plugins.map {|plugin, version| "#{plugin}:#{version}" }.join("\n"))
+GEN_PLUGIN_FILENAME = 'plugins/Gemfile.lock'
+desc 'Fetch plugins using GEM/Bundler wrapper'
+task :fetch_plugins do
+  Dir.chdir('plugins') do
+    Bundler.with_clean_env do
+      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} jenkins_bundle_install"
+    end
+  end
 end
 
-JENKINS_BIN_DIR='/usr/lib/jenkins'
-INSTALLED_PLUGINS_FILE=File.join(JENKINS_BIN_DIR, 'installed_plugins.txt')
+desc 'Display plugin dependency graph'
+task :display_plugins do
+  Dir.chdir('plugins') do
+    Bundler.with_clean_env do
+      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} bundle list"
+    end
+  end
+end
+
+JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
-task :build => [:plugin_manager_override, :generate_plugin_list] do
+task :build => [:plugin_manager_override, :fetch_plugins] do
   # not using docker COPY, so need to force changes
   resources_hash = FileList['resources/**'].inject do |exist, file|
-    Digest::SHA256.hexdigest(Digest::SHA256.hexdigest(exist)+File.read(file))
+    Digest::SHA256.hexdigest(Digest::SHA256.hexdigest(exist) + File.read(file))
   end
   base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.44'
   args = {
@@ -114,18 +101,15 @@ task :build => [:plugin_manager_override, :generate_plugin_list] do
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
-    'InstalledPluginsFile' => INSTALLED_PLUGINS_FILE,
     'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME)),
     'ResourcesHash' => resources_hash,
     'BaseVersion' => base_version
   }
-  flat_args = args.map {|key,val| "-var #{key}=#{val}"}.join ' '
+  flat_args = args.map {|key, val| "-var #{key}=#{val}"}.join ' '
   begin
     # SELinux causes problems when trying to use the Rocker MOUNT directive
     sh 'setenforce 0' unless ON_MAC
     sh "rocker build #{flat_args}"
-    # goes inside the image so it's cached but we want to view this in source control
-    sh "docker run --rm -i -u root -v #{Dir.pwd}:/src #{image_tag} cp #{INSTALLED_PLUGINS_FILE} /src/plugins"
   ensure
     sh 'setenforce 1' unless ON_MAC
   end

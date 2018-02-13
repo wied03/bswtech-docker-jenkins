@@ -1,0 +1,57 @@
+source 'https://repo.fury.io/wied03/'
+source 'http://localhost:9292' if ENV['GEM_SEED_ENABLED'] == '1'
+
+jenkins_gem = lambda do |name, version|
+  gem "jenkins-plugin-proxy-#{name}", version
+end
+
+jenkins_version = ENV['JENKINS_VERSION']
+fail 'Need Jenkins version!' unless jenkins_version && !jenkins_version.empty?
+jenkins_gem['jenkins-core', jenkins_version]
+
+# Standard Jenkins
+jenkins_gem['build-timeout', '1.19']
+
+# CloudBees Docker Pipeline (for dealing with registry, etc.)
+jenkins_gem['docker-workflow', '1.15']
+
+# Core credentials plugin
+jenkins_gem['credentials', '2.1.16']
+
+# Allow use of creds in environment variables/pipeline steps
+jenkins_gem['credentials-binding', '1.15']
+
+# better email extensions
+jenkins_gem['email-ext', '2.61']
+
+jenkins_gem['git', '3.7.0']
+
+# the actual core pipeline plugin
+jenkins_gem['workflow-aggregator', '2.5']
+
+# We use this for core-ansible for SSH credentials
+jenkins_gem['ssh-agent', '1.15']
+
+# Base jenkins package, adds them to console output
+jenkins_gem['timestamper', '1.8.9']
+
+# Workspace cleanup
+jenkins_gem['ws-cleanup', '0.34']
+
+# OWASP HTML sanitizer for text fields, standard Jenkins
+jenkins_gem['antisamy-markup-formatter', '1.5']
+
+# Authenticate via SAML (Google, Okta, etc.)
+jenkins_gem['saml', '1.0.5']
+
+# Best authorization setup available
+jenkins_gem['role-strategy','2.7.0']
+
+# # 1.37 and 1.38 had issues with spawning EC2 spot instance slaves over and over again
+jenkins_gem['ec2', '1.36']
+
+# 2.5 does not have changelog
+jenkins_gem['jira', '2.4.2']
+
+# Needed to trigger multibranch pipelines from Bitbucket/webhooks
+jenkins_gem['cloudbees-bitbucket-branch-source', '2.2.9']
