@@ -32,13 +32,9 @@ node('docker.build') {
     }
 
     stage('Dependencies') {
-      ruby.shell('!(rbenv version 2>&1 | grep "not installed") || rbenv install')
-      // faster than running gem install if we already have it
-      ruby.shell('gem contents bundler > /dev/null || gem install bundler')
       withCredentials([string(credentialsId: 'gemfury_key', variable: 'gemKey')]) {
-        ruby.shell("bundle config https://repo.fury.io/wied03/ ${env.gemKey}")
+        ruby.dependencies(['https://repo.fury.io/wied03/': env.gemKey])
       }
-      ruby.shell('bundle install')
     }
 
     stage('Build image') {
@@ -75,7 +71,9 @@ if (env.BRANCH_NAME == 'master') {
       try {
         // might be on a different node (filesystem deps)
         unstash 'complete-workspace'
-        ruby.dependencies()
+        withCredentials([string(credentialsId: 'gemfury_key', variable: 'gemKey')]) {
+          ruby.dependencies(['https://repo.fury.io/wied03/': env.gemKey])
+        }
 
         // 2nd arg is creds
         docker.withRegistry('https://quay.io', 'quay_io_docker') {
