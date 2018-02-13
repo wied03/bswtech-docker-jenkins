@@ -48,11 +48,10 @@ jenkins_gem['saml', '1.0.5']
 jenkins_gem['role-strategy','2.7.0']
 
 # # 1.37 and 1.38 had issues with spawning EC2 spot instance slaves over and over again
-# TODO: Get this working. Might need to see if 1.36 has older AWS dependencies, etc. than 1.37 or 1.38
 jenkins_gem['ec2', '1.36']
-#
-# # 2.5 does not have changelog but 2.4.2 is no longer in the index
-# jenkins_gem['jira', '2.5.0']
-#
+
+# 2.5 does not have changelog
+jenkins_gem['jira', '2.4.2']
+
 # Needed to trigger multibranch pipelines from Bitbucket/webhooks
 jenkins_gem['cloudbees-bitbucket-branch-source', '2.2.9']
