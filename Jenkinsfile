@@ -42,7 +42,7 @@ node('docker.build') {
 
     stage('Build image') {
       milestone()
-      with_gem_credentials(furyRepo, furyCredentialId) {
+      ruby.with_gem_credentials(furyRepo, furyCredentialId) {
         ruby.rake 'build'
       }
       stash 'complete-workspace'
