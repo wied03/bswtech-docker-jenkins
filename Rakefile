@@ -63,32 +63,35 @@ task :plugin_manager_override => :update_gradle_jenkins_dep do
   sh './gradlew build'
 end
 
+execute_plugin_command = lambda do |command|
+  Dir.chdir('plugins') do
+    Bundler.with_clean_env do
+      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} #{command}"
+    end
+  end
+end
+
 GEN_PLUGIN_FILENAME = 'plugins/Gemfile.lock'
 desc 'Fetch plugins using GEM/Bundler wrapper'
 task :fetch_plugins do
-  Dir.chdir('plugins') do
-    Bundler.with_clean_env do
-      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} jenkins_bundle_install"
-    end
-  end
+  execute_plugin_command['jenkins_bundle_install']
+end
+
+desc 'Does a bundle update to upgrade a single plugin'
+task :upgrade_plugin, [:plugin_name] do |_, args|
+  plugin_name = args[:plugin_name]
+  fail 'Must provided a plugin name!' unless plugin_name
+  execute_plugin_command["bundle update jenkins-plugin-proxy-#{plugin_name}"]
 end
 
 desc 'Display plugin dependency graph'
 task :display_plugins do
-  Dir.chdir('plugins') do
-    Bundler.with_clean_env do
-      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} bundle list"
-    end
-  end
+  execute_plugin_command['bundle list']
 end
 
-desc 'Seed plugins with derived GEMs from Jenkins Update Center'
+desc 'Seed NEW Gemfury/local GEM index with derived GEMs from Jenkins Update Center'
 task :seed_plugins do
-  Dir.chdir('plugins') do
-    Bundler.with_clean_env do
-      sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} jenkins_seed"
-    end
-  end
+  execute_plugin_command['jenkins_seed']
 end
 
 JENKINS_BIN_DIR = '/usr/lib/jenkins'
