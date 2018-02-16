@@ -38,6 +38,9 @@ node('docker.build') {
       ruby.with_gem_credentials(furyRepo, furyCredentialId) {
         ruby.dependencies()
       }
+      // easier to see what Docker tag this build is for
+      // true,true = quiet, return stdout
+      currentBuild.description = ruby.rake('dump_version', true, true)
     }
 
     stage('Build image') {

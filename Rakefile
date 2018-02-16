@@ -84,6 +84,11 @@ task :upgrade_plugin, [:plugin_name] do |_, args|
   execute_plugin_command["jenkins_bundle_update jenkins-plugin-proxy-#{plugin_name}"]
 end
 
+desc 'Dumps image version this build is for'
+task :dump_version do
+  puts IMAGE_VERSION
+end
+
 desc 'Display plugin dependency graph'
 task :display_plugins do
   execute_plugin_command['bundle list']
