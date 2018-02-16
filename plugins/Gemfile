@@ -12,8 +12,8 @@ jenkins_gem['jenkins-core', jenkins_version]
 # Standard Jenkins
 jenkins_gem['build-timeout', '1.19']
 
-# CloudBees Docker Pipeline (for dealing with registry, etc.)
-jenkins_gem['docker-workflow', '1.15']
+# CloudBees Docker commands in Pipeline (for dealing with withRegistry, etc.)
+jenkins_gem['docker-workflow', '1.15.1']
 
 # Core credentials plugin
 jenkins_gem['credentials', '2.1.16']
