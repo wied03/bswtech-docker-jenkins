@@ -31,7 +31,7 @@ end
 desc 'Run serverspec tests with actual container'
 RSpec::Core::RakeTask.new(:spec => [:build, :test_user])
 
-JENKINS_VERSION = '2.89.3-1.1'
+JENKINS_VERSION = '2.89.4-1.1'
 JAVA_VERSION = '1.8.0.161-0.b14.el7_4'
 GIT_VERSION = '1.8.3.1-12.el7_4'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
