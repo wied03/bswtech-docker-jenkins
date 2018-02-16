@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   remote: https://repo.fury.io/wied03/
   specs:
-    bswtech-jenkins-gem (1.0.1)
+    bswtech-jenkins-gem (1.0.2)
       gemfury (~> 0.7)
       rubyzip (~> 1.2)
       sinatra (~> 2.0)

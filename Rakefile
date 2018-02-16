@@ -81,7 +81,7 @@ desc 'Does a bundle update to upgrade a single plugin'
 task :upgrade_plugin, [:plugin_name] do |_, args|
   plugin_name = args[:plugin_name]
   fail 'Must provided a plugin name!' unless plugin_name
-  execute_plugin_command["bundle update jenkins-plugin-proxy-#{plugin_name}"]
+  execute_plugin_command["jenkins_bundle_update jenkins-plugin-proxy-#{plugin_name}"]
 end
 
 desc 'Display plugin dependency graph'
