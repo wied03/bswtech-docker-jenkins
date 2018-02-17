@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   remote: https://repo.fury.io/wied03/
   specs:
-    bswtech-jenkins-gem (1.0.2)
+    bswtech-jenkins-gem (1.0.24)
       gemfury (~> 0.7)
       rubyzip (~> 1.2)
       sinatra (~> 2.0)
@@ -29,14 +29,14 @@ GEM
     json (2.0.3)
     multi_json (1.13.1)
     multipart-post (2.0.0)
-    mustermann (1.0.1)
+    mustermann (1.0.2)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (4.1.0)
     net-telnet (0.1.1)
     netrc (0.11.0)
     rack (2.0.4)
-    rack-protection (2.0.0)
+    rack-protection (2.0.1)
       rack
     rake (12.0.0)
     retryable (2.0.4)
@@ -63,10 +63,10 @@ GEM
       rspec-its
       specinfra (~> 2.53)
     sfl (2.3)
-    sinatra (2.0.0)
+    sinatra (2.0.1)
       mustermann (~> 1.0)
       rack (~> 2.0)
-      rack-protection (= 2.0.0)
+      rack-protection (= 2.0.1)
       tilt (~> 2.0)
     specinfra (2.67.2)
       net-scp
