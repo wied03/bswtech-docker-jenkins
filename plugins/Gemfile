@@ -55,3 +55,6 @@ jenkins_gem['jira', '2.4.2']
 
 # Needed to trigger multibranch pipelines from Bitbucket/webhooks
 jenkins_gem['cloudbees-bitbucket-branch-source', '2.2.9']
+
+# Handy to be able to have distributed locks
+jenkins_gem['lockable-resources', '2.1']
