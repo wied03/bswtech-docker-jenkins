@@ -47,8 +47,7 @@ jenkins_gem['saml', '1.0.5']
 # Best authorization setup available
 jenkins_gem['role-strategy','2.7.0']
 
-# # 1.37 and 1.38 had issues with spawning EC2 spot instance slaves over and over again
-jenkins_gem['ec2', '1.36']
+jenkins_gem['ec2', '1.38']
 
 # 2.5 does not have changelog
 jenkins_gem['jira', '2.4.2']
