@@ -77,11 +77,29 @@ task :fetch_plugins do
   execute_plugin_command['jenkins_bundle_install']
 end
 
-desc 'Does a bundle update to upgrade a single plugin'
-task :upgrade_plugin, [:plugin_name] do |_, args|
+get_plugin_name = lambda do |jenkins|
+  "jenkins-plugin-proxy-#{jenkins}"
+end
+
+desc 'Does a bundle update to upgrade a single plugin based on Gemfury sources'
+task :upgrade_plugin_conservative, [:plugin_name] do |_, args|
   plugin_name = args[:plugin_name]
   fail 'Must provided a plugin name!' unless plugin_name
-  execute_plugin_command["jenkins_bundle_update jenkins-plugin-proxy-#{plugin_name}"]
+  execute_plugin_command["bundle update --conservative #{get_plugin_name[plugin_name]}"]
+end
+
+desc 'Does a bundle update to upgrade a single plugin based on Gemfury sources'
+task :upgrade_plugin_liberal, [:plugin_name] do |_, args|
+  plugin_name = args[:plugin_name]
+  fail 'Must provided a plugin name!' unless plugin_name
+  execute_plugin_command["bundle update #{get_plugin_name[plugin_name]}"]
+end
+
+desc 'Does a bundle update to upgrade a single plugin, removes local index before updating'
+task :upgrade_plugin_new, [:plugin_name] do |_, args|
+  plugin_name = args[:plugin_name]
+  fail 'Must provided a plugin name!' unless plugin_name
+  execute_plugin_command["jenkins_bundle_update #{get_plugin_name[plugin_name]}"]
 end
 
 desc 'Dumps image version this build is for'
