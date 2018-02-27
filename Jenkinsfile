@@ -61,6 +61,8 @@ node('docker.build') {
       finally {
         junit keepLongStdio: true,
               testResults: 'spec/reports/*.xml'
+        archiveArtifacts artifacts: 'spec/reports/rspec.html',
+                         excludes: null
       }
     }
   }
