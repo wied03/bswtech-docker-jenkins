@@ -57,3 +57,6 @@ jenkins_gem['cloudbees-bitbucket-branch-source', '2.2.10']
 
 # Handy to be able to have distributed locks
 jenkins_gem['lockable-resources', '2.1']
+
+# Allow publishing HTML to the actual Jenkins build page
+jenkins_gem['htmlpublisher', '1.14']
