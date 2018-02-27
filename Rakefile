@@ -25,12 +25,16 @@ end
 
 desc 'Run serverspec tests with actual container'
 RSpec::Core::RakeTask.new(:spec => [:build, :test_user]) do |task|
-  formatter = lambda do |type, file|
-    "--format #{type} --out spec/reports/#{file}"
+  formatter = lambda do |type|
+    "--format #{type}"
+  end
+  file_formatter = lambda do |type, file|
+    "#{formatter[type]} --out spec/reports/#{file}"
   end
   task.rspec_opts = [
-    formatter['html', 'rspec.html'],
-    formatter['RspecJunitFormatter', 'rspec.xml']
+    formatter['progress'],
+    file_formatter['html', 'rspec.html'],
+    file_formatter['RspecJunitFormatter', 'rspec.xml']
   ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
 end
 
