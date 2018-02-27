@@ -4,11 +4,6 @@ require 'digest'
 
 task :default => [:build, :spec]
 
-if ENV['GENERATE_REPORTS'] == 'true'
-  require 'ci/reporter/rake/rspec'
-  task :spec => 'ci:setup:rspec'
-end
-
 JENKINS_USER = 'jenkins'
 JENKINS_GROUP = 'jenkins'
 JENKINS_GID = ENV['JENKINS_GID'] = '1002'
@@ -29,7 +24,15 @@ task :test_user do
 end
 
 desc 'Run serverspec tests with actual container'
-RSpec::Core::RakeTask.new(:spec => [:build, :test_user])
+RSpec::Core::RakeTask.new(:spec => [:build, :test_user]) do |task|
+  formatter = lambda do |type, file|
+    "--format #{type} --out spec/reports/#{file}"
+  end
+  task.rspec_opts = [
+    formatter['html', 'rspec.html'],
+    formatter['RspecJunitFormatter', 'rspec.xml']
+  ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
+end
 
 JENKINS_VERSION = '2.89.4-1.1'
 JAVA_VERSION = '1.8.0.161-0.b14.el7_4'
