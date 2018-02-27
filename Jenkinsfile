@@ -48,7 +48,6 @@ node('docker.build') {
       ruby.with_gem_credentials(furyRepo, furyCredentialId) {
         ruby.rake 'build'
       }
-      stash 'complete-workspace'
     }
 
     stage('Test') {
@@ -80,7 +79,6 @@ if (env.BRANCH_NAME == 'master') {
     node('docker.build') {
       try {
         // might be on a different node (filesystem deps)
-        unstash 'complete-workspace'
         ruby.with_gem_credentials(furyRepo, furyCredentialId) {
           ruby.dependencies()
         }
