@@ -60,8 +60,13 @@ node('docker.build') {
       finally {
         junit keepLongStdio: true,
               testResults: 'spec/reports/*.xml'
-        archiveArtifacts artifacts: 'spec/reports/rspec.html',
-                         excludes: null
+        // make this available from the build page
+        publishHTML allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: 'spec/reports',
+                    reportFiles: 'rspec.html',
+                    reportName: 'RSpec Report'
       }
     }
   }
