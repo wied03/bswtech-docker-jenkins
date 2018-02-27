@@ -54,18 +54,20 @@ node('docker.build') {
       milestone()
       // RSpec CI reporter
       env.GENERATE_REPORTS = 'true'
+      env.HTML_REPORT_PATH = 'spec/reports/html'
+      env.JUNIT_REPORT_PATH = 'spec/reports/xml'
       try {
         ruby.rake 'spec'
       }
       finally {
         junit keepLongStdio: true,
-              testResults: 'spec/reports/*.xml'
+              testResults: new File(env.JUNIT_REPORT_PATH, '*.xml')
         // make this available from the build page
         publishHTML allowMissing: false,
                     alwaysLinkToLastBuild: false,
                     keepAll: true,
-                    reportDir: 'spec/reports',
-                    reportFiles: 'rspec.html',
+                    reportDir: env.HTML_REPORT_PATH,
+                    reportFiles: 'overview.html',
                     reportName: 'RSpec Report'
       }
     }

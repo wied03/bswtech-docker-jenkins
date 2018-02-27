@@ -1,6 +1,11 @@
 require 'rake'
 require 'rspec/core/rake_task'
 require 'digest'
+# Needs to be before requires. more obvious path than the Rails' standard this library uses
+HASHES_FILE = ENV['secure_headers_generated_hashes_file'] = 'content_sec_policy/hashes.yml'
+require 'secure_headers'
+load 'tasks/tasks.rake'
+require_relative 'app/attribute_parser'
 
 task :default => [:build, :spec]
 
@@ -23,18 +28,19 @@ task :test_user do
   }
 end
 
+ENV['REPORT_PATH'] = ENV['HTML_REPORT_PATH']
 desc 'Run serverspec tests with actual container'
 RSpec::Core::RakeTask.new(:spec => [:build, :test_user]) do |task|
   formatter = lambda do |type|
     "--format #{type}"
   end
   file_formatter = lambda do |type, file|
-    "#{formatter[type]} --out spec/reports/#{file}"
+    "#{formatter[type]} --out #{file}"
   end
   task.rspec_opts = [
     formatter['progress'],
-    file_formatter['html', 'rspec.html'],
-    file_formatter['RspecJunitFormatter', 'rspec.xml']
+    formatter['RspecHtmlReporter'],
+    file_formatter['RspecJunitFormatter', File.join(ENV['JUNIT_REPORT_PATH'], 'rspec.xml')]
   ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
 end
 
@@ -122,6 +128,27 @@ end
 desc 'Seed NEW Gemfury/local GEM index with derived GEMs from Jenkins Update Center'
 task :seed_plugins do
   execute_plugin_command['jenkins_seed']
+end
+
+desc 'Writes a content security policy setting for the hudson.model.DirectoryBrowserSupport.CSP system property'
+task :build_csp => :'secure_headers:generate_hashes' do
+  config = SecureHeaders::Configuration.new do |config|
+    config.csp = {
+      default_src: %w('none'),
+      sandbox: %w(allow-scripts),
+      img_src: %w('self')
+    }
+    hashes = YAML.load_file HASHES_FILE
+    script_tag_hashes = hashes['scripts'].map {|_, hash_list| hash_list}.flatten
+    script_hashes = script_tag_hashes + AttributeParser.js_file_hashes
+    config.csp[:script_src] = script_hashes.uniq
+    style_tag_hashes = hashes['styles'].map {|_, hash_list| hash_list}.flatten
+    style_hashes = style_tag_hashes + AttributeParser.inline_style_hashes + AttributeParser.css_file_hashes
+    config.csp[:style_src] = style_hashes.uniq
+  end
+  config.validate_config!
+  csp = SecureHeaders::ContentSecurityPolicy.new config.csp
+  puts "System.setProperty(\"hudson.model.DirectoryBrowserSupport.CSP\", \"#{csp.value}\")"
 end
 
 JENKINS_BIN_DIR = '/usr/lib/jenkins'

@@ -5,3 +5,5 @@
 /plugins/install_plugins.txt
 /.idea
 /spec/reports
+# Generated CSP stuff
+/content_sec_policy/*.yml
