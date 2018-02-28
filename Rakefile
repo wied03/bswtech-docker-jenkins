@@ -28,7 +28,6 @@ task :test_user do
   }
 end
 
-ENV['REPORT_PATH'] = ENV['HTML_REPORT_PATH']
 desc 'Run serverspec tests with actual container'
 RSpec::Core::RakeTask.new(:spec => [:build, :test_user]) do |task|
   formatter = lambda do |type|
@@ -39,7 +38,7 @@ RSpec::Core::RakeTask.new(:spec => [:build, :test_user]) do |task|
   end
   task.rspec_opts = [
     formatter['progress'],
-    formatter['RspecHtmlReporter'],
+    file_formatter['html', File.join(ENV['HTML_REPORT_PATH'], 'rspec.html')],
     file_formatter['RspecJunitFormatter', File.join(ENV['JUNIT_REPORT_PATH'], 'rspec.xml')]
   ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
 end
