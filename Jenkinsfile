@@ -61,7 +61,7 @@ node('docker.build') {
       }
       finally {
         junit keepLongStdio: true,
-              testResults: new File(env.JUNIT_REPORT_PATH, '*.xml')
+              testResults: "${env.JUNIT_REPORT_PATH}/*.xml"
       }
     }
   }
