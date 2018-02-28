@@ -129,7 +129,8 @@ task :seed_plugins do
   execute_plugin_command['jenkins_seed']
 end
 
-desc 'Writes a content security policy setting for the hudson.model.DirectoryBrowserSupport.CSP system property'
+# TODO: Use this when we actually need it (not yet)
+#desc 'Writes a content security policy setting for the hudson.model.DirectoryBrowserSupport.CSP system property'
 task :build_csp => :'secure_headers:generate_hashes' do
   config = SecureHeaders::Configuration.new do |config|
     config.csp = {

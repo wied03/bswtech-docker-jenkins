@@ -62,13 +62,6 @@ node('docker.build') {
       finally {
         junit keepLongStdio: true,
               testResults: new File(env.JUNIT_REPORT_PATH, '*.xml')
-        // make this available from the build page
-        publishHTML allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: env.HTML_REPORT_PATH,
-                    reportFiles: 'overview.html',
-                    reportName: 'RSpec Report'
       }
     }
   }
