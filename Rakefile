@@ -38,7 +38,6 @@ RSpec::Core::RakeTask.new(:spec => [:build, :test_user]) do |task|
   end
   task.rspec_opts = [
     formatter['progress'],
-    file_formatter['html', File.join(ENV['HTML_REPORT_PATH'], 'rspec.html')],
     file_formatter['RspecJunitFormatter', File.join(ENV['JUNIT_REPORT_PATH'], 'rspec.xml')]
   ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
 end
