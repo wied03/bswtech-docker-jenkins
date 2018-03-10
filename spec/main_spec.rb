@@ -77,8 +77,6 @@ describe 'Jenkins container' do
     it { is_expected.to be_running }
   end
 
-  JENKINS_UID = ENV['JENKINS_UID']
-
   describe command('id') do
     its(:stdout) { is_expected.to include "uid=#{JENKINS_UID}" }
   end
