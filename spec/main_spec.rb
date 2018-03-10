@@ -38,13 +38,15 @@ describe 'Jenkins container' do
   end
 
   it 'fully starts up' do
-    wait_for_jenkins
+    output = wait_for_jenkins
+    puts "Jenkins log: #{output}"
   end
 
   it 'shows no ERRORs in logs' do
     output = wait_for_jenkins
     # asserting these after up and running should catch stuff
     expect(output).to_not include 'ERROR'
+    expect(output).to_not include 'Error'
     expect(output).to_not include 'Exception'
     expect(output).to_not include 'SEVERE'
   end
@@ -72,27 +74,24 @@ describe 'Jenkins container' do
     expect(warning_lines).to be_empty
   end
 
+  it 'uses Tomcat native' do
+    output = wait_for_jenkins
+    expect(output).to_not include 'INFO: The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found'
+  end
+
   describe docker_container do
     it { is_expected.to exist }
     it { is_expected.to be_running }
   end
 
-  describe user('jenkins') do
-    it { is_expected.to exist }
-    it { is_expected.to have_home_directory JENKINS_HOME_IMAGE }
-    # Jenkins seems to have problems making SSH connections if we don't use Bash
-    it { is_expected.to have_login_shell '/bin/bash' }
-    it { is_expected.to belong_to_primary_group 'jenkins' }
-  end
-
-  describe command('whoami') do
-    its(:stdout) { is_expected.to include 'jenkins' }
+  describe command('id') do
+    its(:stdout) { is_expected.to include "uid=#{JENKINS_UID}" }
   end
 
   describe file(JENKINS_HOME_IMAGE) do
     it { is_expected.to exist }
     it { is_expected.to be_directory }
-    it { is_expected.to be_owned_by 'jenkins' }
+    it { is_expected.to be_owned_by JENKINS_UID }
   end
 
   ['/var/cache/tomcat/work',
@@ -101,7 +100,7 @@ describe 'Jenkins container' do
     describe file(dir) do
       it { is_expected.to exist }
       it { is_expected.to be_directory }
-      it { is_expected.to be_owned_by 'jenkins' }
+      it { is_expected.to be_owned_by JENKINS_UID}
     end
   end
 

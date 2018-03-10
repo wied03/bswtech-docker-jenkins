@@ -9,27 +9,24 @@ require_relative 'app/attribute_parser'
 
 task :default => [:build, :spec]
 
-JENKINS_USER = 'jenkins'
-JENKINS_GROUP = 'jenkins'
 JENKINS_GID = ENV['JENKINS_GID'] = '1002'
 JENKINS_UID = ENV['JENKINS_UID'] = '1002'
+TEST_VOL_DIR = ENV['TEST_VOL_DIR'] = File.join(Dir.pwd, 'jenkins_test_volume')
 
 ON_MAC = RUBY_PLATFORM.include?('darwin')
 
-# Docker mac does not replicate problem like CI does
-desc 'Creates test user on Jenkins slave'
-task :test_user do
-  next unless ENV['JENKINS_URL']
-  # jenkins slave will have root access
-  sh "groupadd -g #{JENKINS_GID} #{JENKINS_GROUP}"
-  sh "useradd -r -u #{JENKINS_UID} -g #{JENKINS_GID} -m -s /bin/false #{JENKINS_USER}"
-  at_exit {
-    sh "userdel -r #{JENKINS_USER}"
-  }
+task :clean_test_volume do
+  rm_rf TEST_VOL_DIR
+  next unless Gem::Platform.local.os == 'linux'
+  puts 'Creating/changing ownership of test volume'
+  mkdir TEST_VOL_DIR
+  chown JENKINS_UID,
+        nil,
+        TEST_VOL_DIR
 end
 
 desc 'Run serverspec tests with actual container'
-RSpec::Core::RakeTask.new(:spec => [:build, :test_user]) do |task|
+RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume]) do |task|
   formatter = lambda do |type|
     "--format #{type}"
   end
@@ -53,13 +50,12 @@ ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
-task :test_run => :build do
+task :test_run => [:build, :clean_test_volume] do
   at_exit {
     sh 'docker rm -f jenkins'
-    sh 'docker volume rm jenkins_test_volume'
   }
 
-  sh "docker run -v jenkins_test_volume:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat/temp:#{TMPFS_FLAGS},exec --tmpfs=/var/cache/tomcat/work:#{TMPFS_FLAGS} --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
+  sh "docker run -v #{TEST_VOL_DIR}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat:#{TMPFS_FLAGS},exec --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID} -P --name jenkins #{image_tag}"
 end
 
 task :update_gradle_jenkins_dep do
@@ -159,10 +155,6 @@ task :build => [:plugin_manager_override, :fetch_plugins] do
   end
   base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.44'
   args = {
-    'JenkinsGid' => JENKINS_GID,
-    'JenkinsGroup' => JENKINS_GROUP,
-    'JenkinsUid' => JENKINS_UID,
-    'JenkinsUser' => JENKINS_USER,
     'ImageTag' => image_tag,
     'ImageVersion' => IMAGE_VERSION,
     'JenkinsVersion' => JENKINS_VERSION,
