@@ -155,8 +155,6 @@ task :build => [:plugin_manager_override, :fetch_plugins] do
   end
   base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.44'
   args = {
-    'JenkinsGid' => JENKINS_GID,
-    'JenkinsUid' => JENKINS_UID,
     'ImageTag' => image_tag,
     'ImageVersion' => IMAGE_VERSION,
     'JenkinsVersion' => JENKINS_VERSION,
