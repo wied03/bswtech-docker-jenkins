@@ -7,3 +7,4 @@
 /spec/reports
 # Generated CSP stuff
 /content_sec_policy/*.yml
+/jenkins_test_volume

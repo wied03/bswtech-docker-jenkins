@@ -14,8 +14,12 @@ JENKINS_UID = ENV['JENKINS_UID'] = '1002'
 
 ON_MAC = RUBY_PLATFORM.include?('darwin')
 
+task :clean_test_volume do
+  rm_rf 'jenkins_test_volume'
+end
+
 desc 'Run serverspec tests with actual container'
-RSpec::Core::RakeTask.new(:spec => :build) do |task|
+RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume]) do |task|
   formatter = lambda do |type|
     "--format #{type}"
   end

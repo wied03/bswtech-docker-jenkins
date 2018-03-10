@@ -11,7 +11,13 @@ JENKINS_UID = ENV['JENKINS_UID']
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{ENV['JENKINS_GID']}"
 docker_options = {
   'User' => JENKINS_UID,
+  'Volumes' => {
+    '/var/jenkins_home' => {}
+  },
   'HostConfig' => {
+    'Binds' => [
+      "#{File.join(Dir.pwd, 'jenkins_test_volume')}:/var/jenkins_home:Z"
+    ],
     'CapDrop' => ['all'],
     'ReadonlyRootfs' => true,
     'Tmpfs' => {
@@ -25,20 +31,6 @@ docker_options = {
 }
 
 set :docker_container_create_options, docker_options
-
-# TODO: Move this to a shared GEM
-def set_volumes(volumes)
-  opts = Specinfra.configuration.docker_container_create_options
-  host_config = opts['HostConfig'] ||= {}
-  host_config['Binds'] = volumes.map { |name, image_path| "#{name}:#{image_path}" }
-  Specinfra.backend.cleanup_volumes = volumes
-end
-
-volumes = {
-  'jenkins_test_home' => '/var/jenkins_home:Z'
-}
-
-set_volumes volumes
 
 RSpec.configure do |config|
   config.include DockerSpecHelper
