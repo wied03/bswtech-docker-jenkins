@@ -38,7 +38,8 @@ describe 'Jenkins container' do
   end
 
   it 'fully starts up' do
-    wait_for_jenkins
+    output = wait_for_jenkins
+    puts "Jenkins log: #{output}"
   end
 
   it 'shows no ERRORs in logs' do
