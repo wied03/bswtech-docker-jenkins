@@ -74,6 +74,11 @@ describe 'Jenkins container' do
     expect(warning_lines).to be_empty
   end
 
+  it 'uses Tomcat native' do
+    output = wait_for_jenkins
+    expect(output).to_not include 'INFO: The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found'
+  end
+
   describe docker_container do
     it { is_expected.to exist }
     it { is_expected.to be_running }
