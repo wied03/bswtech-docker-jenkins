@@ -17,6 +17,12 @@ ON_MAC = RUBY_PLATFORM.include?('darwin')
 
 task :clean_test_volume do
   rm_rf TEST_VOL_DIR
+  next unless Gem::Platform.local.os == 'linux'
+  puts 'Creating/changing ownership of test volume'
+  mkdir TEST_VOL_DIR
+  chown JENKINS_UID,
+        nil,
+        TEST_VOL_DIR
 end
 
 desc 'Run serverspec tests with actual container'
