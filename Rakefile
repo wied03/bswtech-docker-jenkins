@@ -11,11 +11,12 @@ task :default => [:build, :spec]
 
 JENKINS_GID = ENV['JENKINS_GID'] = '1002'
 JENKINS_UID = ENV['JENKINS_UID'] = '1002'
+TEST_VOL_DIR = ENV['TEST_VOL_DIR'] = File.join(Dir.pwd, 'jenkins_test_volume')
 
 ON_MAC = RUBY_PLATFORM.include?('darwin')
 
 task :clean_test_volume do
-  rm_rf 'jenkins_test_volume'
+  rm_rf TEST_VOL_DIR
 end
 
 desc 'Run serverspec tests with actual container'
@@ -43,13 +44,12 @@ ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
-task :test_run => :build do
+task :test_run => [:build, :clean_test_volume] do
   at_exit {
     sh 'docker rm -f jenkins'
-    sh 'docker volume rm jenkins_test_volume'
   }
 
-  sh "docker run -v jenkins_test_volume:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat/temp:#{TMPFS_FLAGS},exec --tmpfs=/var/cache/tomcat/work:#{TMPFS_FLAGS} --tmpfs=/run --tmpfs=/tmp:exec -P --name jenkins #{image_tag}"
+  sh "docker run -v #{TEST_VOL_DIR}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat:#{TMPFS_FLAGS},exec --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID} -P --name jenkins #{image_tag}"
 end
 
 task :update_gradle_jenkins_dep do

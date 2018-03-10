@@ -7,8 +7,8 @@ set :docker_image, ENV['IMAGE_TAG']
 # testing this can take a while
 Docker.options[:read_timeout] = 120
 JENKINS_UID = ENV['JENKINS_UID']
-
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{ENV['JENKINS_GID']}"
+
 docker_options = {
   'User' => JENKINS_UID,
   'Volumes' => {
@@ -16,7 +16,7 @@ docker_options = {
   },
   'HostConfig' => {
     'Binds' => [
-      "#{File.join(Dir.pwd, 'jenkins_test_volume')}:/var/jenkins_home:Z"
+      "#{ENV['TEST_VOL_DIR']}:/var/jenkins_home:Z"
     ],
     'CapDrop' => ['all'],
     'ReadonlyRootfs' => true,
