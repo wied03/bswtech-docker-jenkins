@@ -9,27 +9,13 @@ require_relative 'app/attribute_parser'
 
 task :default => [:build, :spec]
 
-JENKINS_USER = 'jenkins'
-JENKINS_GROUP = 'jenkins'
 JENKINS_GID = ENV['JENKINS_GID'] = '1002'
 JENKINS_UID = ENV['JENKINS_UID'] = '1002'
 
 ON_MAC = RUBY_PLATFORM.include?('darwin')
 
-# Docker mac does not replicate problem like CI does
-desc 'Creates test user on Jenkins slave'
-task :test_user do
-  next unless ENV['JENKINS_URL']
-  # jenkins slave will have root access
-  sh "groupadd -g #{JENKINS_GID} #{JENKINS_GROUP}"
-  sh "useradd -r -u #{JENKINS_UID} -g #{JENKINS_GID} -m -s /bin/false #{JENKINS_USER}"
-  at_exit {
-    sh "userdel -r #{JENKINS_USER}"
-  }
-end
-
 desc 'Run serverspec tests with actual container'
-RSpec::Core::RakeTask.new(:spec => [:build, :test_user]) do |task|
+RSpec::Core::RakeTask.new(:spec => :build) do |task|
   formatter = lambda do |type|
     "--format #{type}"
   end
@@ -160,9 +146,7 @@ task :build => [:plugin_manager_override, :fetch_plugins] do
   base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.44'
   args = {
     'JenkinsGid' => JENKINS_GID,
-    'JenkinsGroup' => JENKINS_GROUP,
     'JenkinsUid' => JENKINS_UID,
-    'JenkinsUser' => JENKINS_USER,
     'ImageTag' => image_tag,
     'ImageVersion' => IMAGE_VERSION,
     'JenkinsVersion' => JENKINS_VERSION,

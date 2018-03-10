@@ -30,11 +30,8 @@ RUN echo {{ .PluginHash }} \
   && cp -R /src/plugins/plugins_final $JENKINS_PLUGIN_DIR/
 
 # RPM puts a user in there but we want control over the GID
-RUN userdel -r jenkins \
- && groupadd -g {{ .JenkinsGid }} {{ .JenkinsGroup }} \
- && useradd -d ${JENKINS_HOME} -u {{ .JenkinsUid }} -g {{ .JenkinsGid }} -m -s /bin/bash {{ .JenkinsUser }} \
+RUN mkdir $JENKINS_HOME \
  && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
- && chown -R {{ .JenkinsUser }} ${JENKINS_HOME} "$JENKINS_REF_DIR" \
  # Keep track of version in the footer
  && printf ".jenkins_ver:after {\n        content: \" - I{{ .ImageVersion }}\";\n}\n" >> ${JENKINS_APP_DIR}/css/layout-common.css \
  && cp -v /src/resources/*.properties /etc/tomcat/ \
@@ -50,13 +47,11 @@ RUN userdel -r jenkins \
  && cp -v /src/build/libs/bswtech-docker-jenkins.jar ${JENKINS_APP_DIR}/WEB-INF/lib/ \
  && cp -v /src/resources/init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy \
  && rm -rfv /usr/share/tomcat/work \
- && rm /etc/tomcat/tomcat-users.xml \
- && chown -Rv {{ .JenkinsUser }}.{{ .JenkinsGroup }} /var/cache/tomcat
+ && rm /etc/tomcat/tomcat-users.xml
 
 VOLUME ["${JENKINS_HOME}"]
 
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
-USER {{ .JenkinsUser }}
 
 EXPOSE 8080
 
