@@ -77,22 +77,16 @@ describe 'Jenkins container' do
     it { is_expected.to be_running }
   end
 
-  describe user('jenkins') do
-    it { is_expected.to exist }
-    it { is_expected.to have_home_directory JENKINS_HOME_IMAGE }
-    # Jenkins seems to have problems making SSH connections if we don't use Bash
-    it { is_expected.to have_login_shell '/bin/bash' }
-    it { is_expected.to belong_to_primary_group 'jenkins' }
-  end
+  JENKINS_UID = ENV['JENKINS_UID']
 
-  describe command('whoami') do
-    its(:stdout) { is_expected.to include 'jenkins' }
+  describe command('id') do
+    its(:stdout) { is_expected.to include "uid=#{JENKINS_UID}" }
   end
 
   describe file(JENKINS_HOME_IMAGE) do
     it { is_expected.to exist }
     it { is_expected.to be_directory }
-    it { is_expected.to be_owned_by 'jenkins' }
+    it { is_expected.to be_owned_by JENKINS_UID }
   end
 
   ['/var/cache/tomcat/work',
@@ -101,7 +95,7 @@ describe 'Jenkins container' do
     describe file(dir) do
       it { is_expected.to exist }
       it { is_expected.to be_directory }
-      it { is_expected.to be_owned_by 'jenkins' }
+      it { is_expected.to be_owned_by JENKINS_UID}
     end
   end
 
