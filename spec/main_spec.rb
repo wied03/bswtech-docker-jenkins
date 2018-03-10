@@ -46,6 +46,7 @@ describe 'Jenkins container' do
     output = wait_for_jenkins
     # asserting these after up and running should catch stuff
     expect(output).to_not include 'ERROR'
+    expect(output).to_not include 'Error'
     expect(output).to_not include 'Exception'
     expect(output).to_not include 'SEVERE'
   end
