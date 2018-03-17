@@ -18,24 +18,6 @@ ON_MAC = RUBY_PLATFORM.include?('darwin')
 task :clean_test_volume do
   rm_rf TEST_VOL_DIR
   mkdir TEST_VOL_DIR
-  jira_file = File.join(TEST_VOL_DIR, 'hudson.plugins.jira.JiraProjectProperty.xml')
-  File.write jira_file, "<?xml version='1.0' encoding='UTF-8'?>
-  <hudson.plugins.jira.JiraProjectProperty_-DescriptorImpl plugin=\"jira@2.4.2\">
-    <sites>
-      <hudson.plugins.jira.JiraSite>
-        <url>https://somejirahost.bswtechconsulting.com/</url>
-        <useHTTPAuth>false</useHTTPAuth>
-        <userName>jenkins</userName>
-        <password>somepassword</password>
-        <supportsWikiStyleComment>true</supportsWikiStyleComment>
-        <recordScmChanges>false</recordScmChanges>
-        <updateJiraIssueForAllStatus>false</updateJiraIssueForAllStatus>
-        <timeout>10</timeout>
-        <dateTimePattern></dateTimePattern>
-        <appendChangeTimestamp>false</appendChangeTimestamp>
-      </hudson.plugins.jira.JiraSite>
-    </sites>
-  </hudson.plugins.jira.JiraProjectProperty_-DescriptorImpl>"
   next unless Gem::Platform.local.os == 'linux'
   puts 'Creating/changing ownership of test volume'
   chown JENKINS_UID,
@@ -43,8 +25,31 @@ task :clean_test_volume do
         TEST_VOL_DIR
 end
 
+task :setup_test_volume => :clean_test_volume do
+  # New stuff in 2.107.1 doesn't yet work right with JIRA plugin, so we test that
+  # we whitelist serialization appropriately (see jenkins.sh)
+  jira_file = File.join(TEST_VOL_DIR, 'hudson.plugins.jira.JiraProjectProperty.xml')
+  File.write jira_file, "<?xml version='1.0' encoding='UTF-8'?>
+    <hudson.plugins.jira.JiraProjectProperty_-DescriptorImpl plugin=\"jira@2.4.2\">
+      <sites>
+        <hudson.plugins.jira.JiraSite>
+          <url>https://somejirahost.bswtechconsulting.com/</url>
+          <useHTTPAuth>false</useHTTPAuth>
+          <userName>jenkins</userName>
+          <password>somepassword</password>
+          <supportsWikiStyleComment>true</supportsWikiStyleComment>
+          <recordScmChanges>false</recordScmChanges>
+          <updateJiraIssueForAllStatus>false</updateJiraIssueForAllStatus>
+          <timeout>10</timeout>
+          <dateTimePattern></dateTimePattern>
+          <appendChangeTimestamp>false</appendChangeTimestamp>
+        </hudson.plugins.jira.JiraSite>
+      </sites>
+    </hudson.plugins.jira.JiraProjectProperty_-DescriptorImpl>"
+end
+
 desc 'Run serverspec tests with actual container'
-RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume]) do |task|
+RSpec::Core::RakeTask.new(:spec => [:build, :setup_test_volume]) do |task|
   formatter = lambda do |type|
     "--format #{type}"
   end
@@ -68,7 +73,7 @@ ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
-task :test_run => [:build, :clean_test_volume] do
+task :test_run => [:build, :setup_test_volume] do
   at_exit {
     sh 'docker rm -f jenkins'
   }
