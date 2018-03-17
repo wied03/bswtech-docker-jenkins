@@ -256,7 +256,7 @@ GEM
     jenkins-plugin-proxy-scm-api (2.2.6)
       jenkins-plugin-proxy-jenkins-core (>= 1.609.3)
       jenkins-plugin-proxy-structs (>= 1.9)
-    jenkins-plugin-proxy-script-security (1.41)
+    jenkins-plugin-proxy-script-security (1.42)
       jenkins-plugin-proxy-jenkins-core (>= 2.7.3)
     jenkins-plugin-proxy-ssh-agent (1.15)
       jenkins-plugin-proxy-bouncycastle-api (>= 1.0.2)
