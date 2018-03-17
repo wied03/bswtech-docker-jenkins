@@ -109,6 +109,11 @@ task :upgrade_plugin_new, [:plugin_name] do |_, args|
   execute_plugin_command["jenkins_bundle_update #{get_plugin_name[plugin_name]}"]
 end
 
+desc 'Get new Jenkins shim for bundler'
+task :upgrade_jenkins_plugin_shim do
+  execute_plugin_command["jenkins_bundle_update #{get_plugin_name['jenkins-core']}"]
+end
+
 desc 'Dumps image version this build is for'
 task :dump_version do
   puts IMAGE_VERSION
