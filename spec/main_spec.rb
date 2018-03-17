@@ -56,7 +56,7 @@ describe 'Jenkins container' do
     # This should not be a big deal, its plugins that we do not control
     expected_unpackaged_classes_plugin_messages = [
         'jira',
-    ].select do |plugin|
+    ].map do |plugin|
       "Deprecated unpacked classes directory found in /usr/lib/jenkins/plugins/../plugins/#{plugin}/WEB-INF/classes"
     end
     exclusions = [
@@ -65,8 +65,14 @@ describe 'Jenkins container' do
       'Security role name ** used in an <auth-constraint> without being defined in a <security-role>'
     ] + expected_unpackaged_classes_plugin_messages
     warning_lines = output.lines.select do |line|
-      # empty contextPath is an expected error
-      line.include?('WARN') && !exclusions.any? { |e| line.include?(e)}
+      if line.upcase.include?('WARN')
+        excluded = exclusions.any? do |e|
+          match = line.include?(e)
+          puts "Excluding warning '#{line}' due to exclusion '#{e}'" if match
+          match
+        end
+        !excluded
+      end
     end
     expect(warning_lines).to be_empty
   end
