@@ -57,7 +57,7 @@ describe 'Jenkins container' do
     expected_unpackaged_classes_plugin_messages = [
         'jira',
     ].map do |plugin|
-      "Deprecated unpacked classes directory found in /usr/lib/jenkins/plugins/../plugins/#{plugin}/WEB-INF/classes"
+      "Deprecated unpacked classes directory found in /usr/lib/jenkins/plugins/../plugins/#{plugin}.hpi/WEB-INF/classes"
     end
     exclusions = [
       'Unknown version string [3.1]',
