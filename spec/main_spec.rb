@@ -56,16 +56,13 @@ describe 'Jenkins container' do
     # This should not be a big deal, its plugins that we do not control
     expected_unpackaged_classes_plugin_messages = [
         'jira',
-        'jsch'
     ].select do |plugin|
       "Deprecated unpacked classes directory found in /usr/lib/jenkins/plugins/../plugins/#{plugin}/WEB-INF/classes"
     end
     exclusions = [
       'Unknown version string [3.1]',
       'Empty contextPath',
-      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>',
-      # https://issues.jenkins-ci.org/browse/JENKINS-48480 - Not a real warning
-      'This Jenkins instance uses deprecated Remoting protocols'
+      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>'
     ] + expected_unpackaged_classes_plugin_messages
     warning_lines = output.lines.select do |line|
       # empty contextPath is an expected error
