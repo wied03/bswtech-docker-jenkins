@@ -107,10 +107,6 @@ describe 'Jenkins container' do
     end
   end
 
-  describe group('jenkins') do
-    it { is_expected.to exist }
-  end
-
   describe command('grep Cap /proc/self/status') do
     its(:stdout) { is_expected.to_not match /Cap\S+:\s+0+[a-z]+/m }
   end
