@@ -47,7 +47,7 @@ jenkins_gem['saml', '1.0.5']
 # Best authorization setup available
 jenkins_gem['role-strategy','2.7.0']
 
-jenkins_gem['ec2', '1.38']
+jenkins_gem['ec2', '1.39']
 
 # 2.5 does not have changelog
 jenkins_gem['jira', '2.4.2']
@@ -56,7 +56,7 @@ jenkins_gem['jira', '2.4.2']
 jenkins_gem['cloudbees-bitbucket-branch-source', '2.2.10']
 
 # Handy to be able to have distributed locks
-jenkins_gem['lockable-resources', '2.1']
+jenkins_gem['lockable-resources', '2.2']
 
 # Allow publishing HTML to the actual Jenkins build page
 jenkins_gem['htmlpublisher', '1.14']
