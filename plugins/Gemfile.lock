@@ -62,7 +62,7 @@ GEM
       jenkins-plugin-proxy-jenkins-core (>= 1.642.3)
       jenkins-plugin-proxy-workflow-cps (>= 2.25)
       jenkins-plugin-proxy-workflow-durable-task-step (>= 2.8)
-    jenkins-plugin-proxy-durable-task (1.18)
+    jenkins-plugin-proxy-durable-task (1.22)
       jenkins-plugin-proxy-jenkins-core (>= 2.7.3)
     jenkins-plugin-proxy-ec2 (1.39)
       jenkins-plugin-proxy-aws-credentials (>= 1.11)
