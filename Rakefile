@@ -39,7 +39,7 @@ RSpec::Core::RakeTask.new(:spec => [:build, :clean_test_volume]) do |task|
   ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
 end
 
-JENKINS_VERSION = '2.89.4-1.1'
+JENKINS_VERSION = '2.107.1-1.1'
 JAVA_VERSION = '1.8.0.161-0.b14.el7_4'
 GIT_VERSION = '1.8.3.1-12.el7_4'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
