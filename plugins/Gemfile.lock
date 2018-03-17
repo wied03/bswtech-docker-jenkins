@@ -293,7 +293,7 @@ GEM
       jenkins-plugin-proxy-workflow-scm-step (>= 2.3)
       jenkins-plugin-proxy-workflow-step-api (>= 2.7)
       jenkins-plugin-proxy-workflow-support (>= 2.12)
-    jenkins-plugin-proxy-workflow-api (2.25)
+    jenkins-plugin-proxy-workflow-api (2.26)
       jenkins-plugin-proxy-jenkins-core (>= 2.60.3)
       jenkins-plugin-proxy-scm-api (>= 2.0.8)
       jenkins-plugin-proxy-structs (>= 1.7)
