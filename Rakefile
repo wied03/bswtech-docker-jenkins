@@ -17,9 +17,27 @@ ON_MAC = RUBY_PLATFORM.include?('darwin')
 
 task :clean_test_volume do
   rm_rf TEST_VOL_DIR
+  mkdir TEST_VOL_DIR
+  jira_file = File.join(TEST_VOL_DIR, 'hudson.plugins.jira.JiraProjectProperty.xml')
+  File.write jira_file, "<?xml version='1.0' encoding='UTF-8'?>
+  <hudson.plugins.jira.JiraProjectProperty_-DescriptorImpl plugin=\"jira@2.4.2\">
+    <sites>
+      <hudson.plugins.jira.JiraSite>
+        <url>https://somejirahost.bswtechconsulting.com/</url>
+        <useHTTPAuth>false</useHTTPAuth>
+        <userName>jenkins</userName>
+        <password>somepassword</password>
+        <supportsWikiStyleComment>true</supportsWikiStyleComment>
+        <recordScmChanges>false</recordScmChanges>
+        <updateJiraIssueForAllStatus>false</updateJiraIssueForAllStatus>
+        <timeout>10</timeout>
+        <dateTimePattern></dateTimePattern>
+        <appendChangeTimestamp>false</appendChangeTimestamp>
+      </hudson.plugins.jira.JiraSite>
+    </sites>
+  </hudson.plugins.jira.JiraProjectProperty_-DescriptorImpl>"
   next unless Gem::Platform.local.os == 'linux'
   puts 'Creating/changing ownership of test volume'
-  mkdir TEST_VOL_DIR
   chown JENKINS_UID,
         nil,
         TEST_VOL_DIR
