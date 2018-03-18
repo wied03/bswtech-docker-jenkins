@@ -7,10 +7,11 @@ set :docker_image, ENV['IMAGE_TAG']
 # testing this can take a while
 Docker.options[:read_timeout] = 120
 JENKINS_UID = ENV['JENKINS_UID']
-TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{ENV['JENKINS_GID']}"
+JENKINS_GID = ENV['JENKINS_GID']
+TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 
 docker_options = {
-  'User' => JENKINS_UID,
+  'User' => "#{JENKINS_UID}:#{JENKINS_GID}",
   'Volumes' => {
     '/var/jenkins_home' => {}
   },

@@ -78,7 +78,7 @@ task :test_run => [:build, :setup_test_volume] do
     sh 'docker rm -f jenkins'
   }
 
-  sh "docker run -v #{TEST_VOL_DIR}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat:#{TMPFS_FLAGS},exec --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID} -P --name jenkins #{image_tag}"
+  sh "docker run -v #{TEST_VOL_DIR}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat:#{TMPFS_FLAGS},exec --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} -P --name jenkins #{image_tag}"
 end
 
 task :update_gradle_jenkins_dep do

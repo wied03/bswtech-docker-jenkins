@@ -87,20 +87,15 @@ describe 'Jenkins container' do
     it {is_expected.to be_running}
   end
 
-  describe user('jenkins') do
-    it {is_expected.to exist}
-    it {is_expected.to have_home_directory JENKINS_HOME_IMAGE}
-    # Jenkins seems to have problems making SSH connections if we don't use Bash
-    it {is_expected.to have_login_shell '/bin/bash'}
-    it {is_expected.to belong_to_primary_group 'jenkins'}
+  # Need the NSS Wrapper to get these
+  NSS_WRAPPED = '/usr/local/bin/jenkins.sh'
+
+  describe command("#{NSS_WRAPPED} getent passwd jenkins") do
+    its(:stdout) {is_expected.to include 'jenkins:x:1002:1002:Jenkins user:/var/jenkins_home:/bin/bash'}
   end
 
-  describe command('whoami') do
-    its(:stdout) {is_expected.to include 'jenkins'}
-  end
-
-  describe command('id') do
-    its(:stdout) {is_expected.to include "uid=#{JENKINS_UID}"}
+  describe command("#{NSS_WRAPPED} id") do
+    its(:stdout) {is_expected.to include 'uid=1002(jenkins)'}
   end
 
   describe file(JENKINS_HOME_IMAGE) do

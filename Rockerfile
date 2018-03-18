@@ -16,7 +16,7 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  && yum_check.sh epel-release \
  # Tomcat is more controllable than the Winstone hack Jenkins comes with
  # And it's an existing RPM within the CentOS ecosystem (security notifications, etc.)
- && yum_check.sh {{ .JavaPackage }} jenkins-{{ .JenkinsVersion }} {{ .GitPackage }} tomcat-7.0.76-3.el7_4 tomcat-native unzip \
+ && yum_check.sh {{ .JavaPackage }} jenkins-{{ .JenkinsVersion }} {{ .GitPackage }} tomcat-7.0.76-3.el7_4 tomcat-native unzip nss_wrapper \
  # trading in faster startup for image size
  && unzip ${JENKINS_WAR_FILE} -d ${JENKINS_APP_DIR} \
  # See above for why no Winstone
@@ -43,6 +43,7 @@ RUN mkdir $JENKINS_HOME \
  && ln -s ${JENKINS_HOME}/server.xml /etc/tomcat/server.xml \
  && cp -v /src/resources/server.xml $JENKINS_REF_DIR \
  && cp -v /src/resources/jenkins.sh /usr/local/bin/ \
+ && cp -v /src/resources/passwd.template $JENKINS_APP_DIR \
  # Longer timeout by default
  && sed -i 's/<session-timeout>30<\/session-timeout>/<session-timeout>60<\/session-timeout>/' /etc/tomcat/web.xml \
  # Our own plugin manager to deal with pre-loaded plugins

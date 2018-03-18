@@ -2,6 +2,16 @@
 
 set -e
 
+# Git, etc. needs the uid to resolve
+export USER_ID=$(id -u)
+export GROUP_ID=$(id -g)
+echo "Setting up 'jenkins' user to resolve as uid=${USER_ID},gid=${GROUP_ID}"
+export LD_PRELOAD=libnss_wrapper.so
+export NSS_WRAPPER_PASSWD=/tmp/passwd
+ESCAPED_HOME=${JENKINS_HOME//\//\\/}
+cat ${JENKINS_APP_DIR}/passwd.template | sed "s/JENKINS_UID/${USER_ID}/" | sed "s/JENKINS_GID/${GROUP_ID}/" | sed "s/JENKINS_HOME/${ESCAPED_HOME}/" > ${NSS_WRAPPER_PASSWD}
+export NSS_WRAPPER_GROUP=/etc/group
+
 # no overwrite
 cp -Rvn $JENKINS_REF_DIR/* $JENKINS_HOME
 
