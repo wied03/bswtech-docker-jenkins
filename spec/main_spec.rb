@@ -13,11 +13,11 @@ describe 'Jenkins container' do
   end
 
   describe package('jenkins') do
-    it { is_expected.to be_installed }
+    it {is_expected.to be_installed}
   end
 
   describe package('git') do
-    it { is_expected.to be_installed }
+    it {is_expected.to be_installed}
   end
 
   it 'listens on port 8080' do
@@ -55,7 +55,7 @@ describe 'Jenkins container' do
     output = wait_for_jenkins
     # This should not be a big deal, its plugins that we do not control
     expected_unpackaged_classes_plugin_messages = [
-        'jira',
+      'jira',
     ].map do |plugin|
       "Deprecated unpacked classes directory found in /usr/lib/jenkins/plugins/../plugins/#{plugin}.hpi/WEB-INF/classes"
     end
@@ -83,36 +83,48 @@ describe 'Jenkins container' do
   end
 
   describe docker_container do
-    it { is_expected.to exist }
-    it { is_expected.to be_running }
+    it {is_expected.to exist}
+    it {is_expected.to be_running}
+  end
+
+  describe user('jenkins') do
+    it {is_expected.to exist}
+    it {is_expected.to have_home_directory JENKINS_HOME_IMAGE}
+    # Jenkins seems to have problems making SSH connections if we don't use Bash
+    it {is_expected.to have_login_shell '/bin/bash'}
+    it {is_expected.to belong_to_primary_group 'jenkins'}
+  end
+
+  describe command('whoami') do
+    its(:stdout) {is_expected.to include 'jenkins'}
   end
 
   describe command('id') do
-    its(:stdout) { is_expected.to include "uid=#{JENKINS_UID}" }
+    its(:stdout) {is_expected.to include "uid=#{JENKINS_UID}"}
   end
 
   describe file(JENKINS_HOME_IMAGE) do
-    it { is_expected.to exist }
-    it { is_expected.to be_directory }
-    it { is_expected.to be_owned_by JENKINS_UID }
+    it {is_expected.to exist}
+    it {is_expected.to be_directory}
+    it {is_expected.to be_owned_by JENKINS_UID}
   end
 
   ['/var/cache/tomcat/work',
    '/var/cache/tomcat/temp',
    '/usr/share/tomcat/work'].each do |dir|
     describe file(dir) do
-      it { is_expected.to exist }
-      it { is_expected.to be_directory }
-      it { is_expected.to be_owned_by JENKINS_UID}
+      it {is_expected.to exist}
+      it {is_expected.to be_directory}
+      it {is_expected.to be_owned_by JENKINS_UID}
     end
   end
 
   describe command('grep Cap /proc/self/status') do
-    its(:stdout) { is_expected.to_not match /Cap\S+:\s+0+[a-z]+/m }
+    its(:stdout) {is_expected.to_not match /Cap\S+:\s+0+[a-z]+/m}
   end
 
   describe command('touch /howdy') do
-    its(:exit_status) { is_expected.to eq 1 }
-    its(:stderr) { is_expected.to match /touch: cannot touch '\/howdy'.*/ }
+    its(:exit_status) {is_expected.to eq 1}
+    its(:stderr) {is_expected.to match /touch: cannot touch '\/howdy'.*/}
   end
 end
