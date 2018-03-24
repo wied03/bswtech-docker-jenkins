@@ -99,15 +99,16 @@ task :plugin_manager_override => :update_gradle_jenkins_dep do
   end
 end
 
+PLUGIN_GEM_WRAPPER_PATH = 'plugins/rubygems_wrapper'
+
 execute_plugin_command = lambda do |command|
-  Dir.chdir('plugins/rubygems_wrapper') do
+  Dir.chdir(PLUGIN_GEM_WRAPPER_PATH) do
     Bundler.with_clean_env do
       sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} #{command}"
     end
   end
 end
 
-GEN_PLUGIN_FILENAME = 'plugins/Gemfile.lock'
 desc 'Fetch plugins using GEM/Bundler wrapper'
 task :fetch_plugins do
   execute_plugin_command['jenkins_bundle_install']
@@ -196,7 +197,7 @@ task :build => [:plugin_manager_override, :fetch_plugins] do
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
-    'PluginHash' => Digest::SHA256.hexdigest(File.read(GEN_PLUGIN_FILENAME)),
+    'PluginHash' => Digest::SHA256.hexdigest(File.read(File.join(PLUGIN_GEM_WRAPPER_PATH, 'Gemfile.lock'))),
     'ResourcesHash' => resources_hash,
     'BaseVersion' => base_version
   }
