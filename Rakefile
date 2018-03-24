@@ -81,20 +81,26 @@ task :test_run => [:build, :setup_test_volume] do
   sh "docker run -v #{TEST_VOL_DIR}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat:#{TMPFS_FLAGS},exec --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} -P --name jenkins #{image_tag}"
 end
 
+PLUGIN_MANAGER_PATH = 'plugins/modified_plugin_manager'
+
 task :update_gradle_jenkins_dep do
   # mac sed
   sed_replace = RUBY_PLATFORM.include?('darwin') ? '-i .bak' : '-i'
   # Want the version we build the plugin manager against to be consistent
-  sh "sed #{sed_replace} \"s/org.jenkins-ci.main:jenkins-core:.*/org.jenkins-ci.main:jenkins-core:#{VERSION_NO_SUBRELEASE}'/\" ./build.gradle"
-  sh 'rm -f *.bak'
+  Dir.chdir(PLUGIN_MANAGER_PATH) do
+    sh "sed #{sed_replace} \"s/org.jenkins-ci.main:jenkins-core:.*/org.jenkins-ci.main:jenkins-core:#{VERSION_NO_SUBRELEASE}'/\" ./build.gradle"
+    sh 'rm -f *.bak'
+  end
 end
 
 task :plugin_manager_override => :update_gradle_jenkins_dep do
-  sh './gradlew build'
+  Dir.chdir(PLUGIN_MANAGER_PATH) do
+    sh './gradlew build'
+  end
 end
 
 execute_plugin_command = lambda do |command|
-  Dir.chdir('plugins') do
+  Dir.chdir('plugins/rubygems_wrapper') do
     Bundler.with_clean_env do
       sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} #{command}"
     end

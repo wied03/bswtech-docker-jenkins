@@ -29,7 +29,7 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
 
 # Now pre-load our plugins into the image
 RUN echo {{ .PluginHash }} \
-  && cp -R /src/plugins/plugins_final $JENKINS_PLUGIN_DIR/
+  && cp -R /src/plugins/rubygems_wrapper/plugins_final $JENKINS_PLUGIN_DIR/
 
 # RPM puts a user in there but we want control over the GID
 RUN mkdir $JENKINS_HOME \
@@ -47,7 +47,7 @@ RUN mkdir $JENKINS_HOME \
  # Longer timeout by default
  && sed -i 's/<session-timeout>30<\/session-timeout>/<session-timeout>60<\/session-timeout>/' /etc/tomcat/web.xml \
  # Our own plugin manager to deal with pre-loaded plugins
- && cp -v /src/build/libs/bswtech-docker-jenkins.jar ${JENKINS_APP_DIR}/WEB-INF/lib/ \
+ && cp -v /src/plugins/modified_plugin_manager/build/libs/bswtech-docker-jenkins.jar ${JENKINS_APP_DIR}/WEB-INF/lib/ \
  && cp -v /src/resources/init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy \
  && rm -rfv /usr/share/tomcat/work \
  && rm /etc/tomcat/tomcat-users.xml
