@@ -22,7 +22,7 @@ jenkins_gem['credentials', '2.1.16']
 jenkins_gem['credentials-binding', '1.15']
 
 # better email extensions
-jenkins_gem['email-ext', '2.61']
+jenkins_gem['email-ext', '2.62']
 
 jenkins_gem['git', '3.8.0']
 
