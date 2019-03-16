@@ -18,8 +18,10 @@ repositories {
     }
 }
 
+println "Building using Jenkins version ${jenkinsVersion}"
+
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    compile 'org.jenkins-ci.main:jenkins-core:2.107.1'
+    compile "org.jenkins-ci.main:jenkins-core:${jenkinsVersion}"
     compile 'javax.servlet:javax.servlet-api:3.1.0'
 }
