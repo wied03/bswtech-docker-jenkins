@@ -191,7 +191,8 @@ task :build => [JAR_PATH, :fetch_plugins] do
     'JenkinsBinDir' => JENKINS_BIN_DIR,
     'PluginHash' => Digest::SHA256.hexdigest(File.read(File.join(PLUGIN_GEM_WRAPPER_PATH, 'Gemfile.lock'))),
     'ResourcesHash' => resources_hash,
-    'BaseVersion' => base_version
+    'BaseVersion' => base_version,
+    'PluginJarPath' => JAR_PATH
   }
   flat_args = args.map {|key, val| "-var #{key}=#{val}"}.join ' '
   begin
