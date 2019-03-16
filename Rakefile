@@ -62,16 +62,16 @@ RSpec::Core::RakeTask.new(:spec => [:build, :setup_test_volume]) do |task|
   ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
 end
 
-JENKINS_VERSION = '2.121.1-1.1'
-JAVA_VERSION = '1.8.0.161-0.b14.el7_4'
-GIT_VERSION = '1.8.3.1-12.el7_4'
+JENKINS_VERSION = '2.164.1-1.1'
+JAVA_VERSION = '1.8.0.201.b09-2.el7_6'
+GIT_VERSION = '1.8.3.1-20.el7'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
 # Drop the RPM subrelease when we build our image
 VERSION_NO_SUBRELEASE = Gem::Version.new(JENKINS_VERSION).release
 IMAGE_VERSION = "#{VERSION_NO_SUBRELEASE}.#{MINOR_VERSION}"
 ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 PLUGIN_MANAGER_PATH = 'plugins/modified_plugin_manager'
-JAR_PATH = File.join(PLUGIN_MANAGER_PATH, 'build', 'libs', 'bswtech-docker-jenkins.jar')
+JAR_PATH = File.join(PLUGIN_MANAGER_PATH, 'build', 'libs', "bswtech-docker-jenkins-#{VERSION_NO_SUBRELEASE}.jar")
 
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
@@ -84,9 +84,10 @@ task :test_run => [:build, :setup_test_volume] do
 end
 
 JAVA_SOURCE = FileList[File.join(PLUGIN_MANAGER_PATH, '**/*')].exclude(File.join(PLUGIN_MANAGER_PATH, 'build', '**/*'))
+desc 'Builds the plugin manager for read-only Jenkins plugins'
 file JAR_PATH => JAVA_SOURCE do
   Dir.chdir(PLUGIN_MANAGER_PATH) do
-    sh "./gradlew -PjenkinsVersion=#{VERSION_NO_SUBRELEASE} build"
+    sh "./gradlew -Pversion=#{VERSION_NO_SUBRELEASE} clean build"
   end
 end
 

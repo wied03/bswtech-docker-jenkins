@@ -18,10 +18,14 @@ repositories {
     }
 }
 
-println "Building using Jenkins version ${jenkinsVersion}"
+println "Building using Jenkins version ${version}"
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    compile "org.jenkins-ci.main:jenkins-core:${jenkinsVersion}"
+    compile "org.jenkins-ci.main:jenkins-core:${version}"
     compile 'javax.servlet:javax.servlet-api:3.1.0'
+}
+
+jar {
+  archiveName "bswtech-docker-jenkins-${version}.jar"
 }
