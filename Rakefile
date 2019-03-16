@@ -92,6 +92,10 @@ file JAR_PATH => JAVA_SOURCE do
 end
 
 PLUGIN_GEM_WRAPPER_PATH = 'plugins/rubygems_wrapper'
+# this comes from the GEM
+PLUGIN_FINAL_DIRECTORY = File.join(PLUGIN_GEM_WRAPPER_PATH, 'plugins_final')
+PLUGIN_GEMFILE = File.join(PLUGIN_GEM_WRAPPER_PATH, 'Gemfile')
+PLUGIN_GEMFILE_LOCK = PLUGIN_GEMFILE + '.lock'
 
 execute_plugin_command = lambda do |command|
   Dir.chdir(PLUGIN_GEM_WRAPPER_PATH) do
@@ -102,7 +106,7 @@ execute_plugin_command = lambda do |command|
 end
 
 desc 'Fetch plugins using GEM/Bundler wrapper'
-task :fetch_plugins do
+file PLUGIN_FINAL_DIRECTORY => PLUGIN_GEMFILE do
   execute_plugin_command['jenkins_bundle_install']
 end
 
@@ -176,7 +180,7 @@ end
 
 JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
-task :build => [JAR_PATH, :fetch_plugins] do
+task :build => [JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
   # not using docker COPY, so need to force changes
   resources_hash = FileList['resources/**'].inject do |exist, file|
     Digest::SHA256.hexdigest(Digest::SHA256.hexdigest(exist) + File.read(file))
@@ -189,7 +193,7 @@ task :build => [JAR_PATH, :fetch_plugins] do
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
-    'PluginHash' => Digest::SHA256.hexdigest(File.read(File.join(PLUGIN_GEM_WRAPPER_PATH, 'Gemfile.lock'))),
+    'PluginHash' => Digest::SHA256.hexdigest(File.read(PLUGIN_GEMFILE_LOCK)),
     'ResourcesHash' => resources_hash,
     'BaseVersion' => base_version,
     'PluginJarPath' => JAR_PATH
