@@ -19,8 +19,8 @@ jenkins_gem['docker-workflow', '1.17']
 jenkins_gem['credentials', '2.1.18']
 
 # Allow use of creds in environment variables/pipeline steps
-# 1.18 does not have release notes
-jenkins_gem['credentials-binding', '1.17']
+# 1.18 does not have release notes but 1.17 is not in the index anymore
+jenkins_gem['credentials-binding', '1.18']
 
 # better email extensions
 jenkins_gem['email-ext', '2.65']
@@ -46,15 +46,15 @@ jenkins_gem['antisamy-markup-formatter', '1.5']
 jenkins_gem['saml', '1.1.2']
 
 # Best authorization setup available
-jenkins_gem['role-strategy','2.7.0']
+jenkins_gem['role-strategy','2.10']
 
 jenkins_gem['ec2', '1.42']
 
 jenkins_gem['jira', '3.0.5']
 
 # Needed to trigger multibranch pipelines from Bitbucket/webhooks
-# 2.4.2 does not have release notes
-jenkins_gem['cloudbees-bitbucket-branch-source', '2.4.0']
+# 2.4.2 does not have release notes but 2.4.0 is not in the index anymore
+jenkins_gem['cloudbees-bitbucket-branch-source', '2.4.2']
 
 # Handy to be able to have distributed locks
 jenkins_gem['lockable-resources', '2.4']
