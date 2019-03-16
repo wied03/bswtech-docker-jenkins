@@ -16,47 +16,48 @@ jenkins_gem['build-timeout', '1.19']
 jenkins_gem['docker-workflow', '1.17']
 
 # Core credentials plugin
-jenkins_gem['credentials', '2.1.16']
+jenkins_gem['credentials', '2.1.18']
 
 # Allow use of creds in environment variables/pipeline steps
-jenkins_gem['credentials-binding', '1.15']
+# 1.18 does not have release notes
+jenkins_gem['credentials-binding', '1.17']
 
 # better email extensions
-jenkins_gem['email-ext', '2.62']
+jenkins_gem['email-ext', '2.65']
 
-jenkins_gem['git', '3.8.0']
+jenkins_gem['git', '3.9.3']
 
 # the actual core pipeline plugin
-jenkins_gem['workflow-aggregator', '2.5']
+jenkins_gem['workflow-aggregator', '2.6']
 
 # We use this for core-ansible for SSH credentials
-jenkins_gem['ssh-agent', '1.15']
+jenkins_gem['ssh-agent', '1.17']
 
 # Base jenkins package, adds them to console output
-jenkins_gem['timestamper', '1.8.9']
+jenkins_gem['timestamper', '1.9']
 
 # Workspace cleanup
-jenkins_gem['ws-cleanup', '0.34']
+jenkins_gem['ws-cleanup', '0.37']
 
 # OWASP HTML sanitizer for text fields, standard Jenkins
 jenkins_gem['antisamy-markup-formatter', '1.5']
 
 # Authenticate via SAML (Google, Okta, etc.)
-jenkins_gem['saml', '1.0.5']
+jenkins_gem['saml', '1.1.2']
 
 # Best authorization setup available
 jenkins_gem['role-strategy','2.7.0']
 
-jenkins_gem['ec2', '1.39']
+jenkins_gem['ec2', '1.42']
 
-# 2.5 does not have changelog
-jenkins_gem['jira', '2.4.2']
+jenkins_gem['jira', '3.0.5']
 
 # Needed to trigger multibranch pipelines from Bitbucket/webhooks
-jenkins_gem['cloudbees-bitbucket-branch-source', '2.2.11']
+# 2.4.2 does not have release notes
+jenkins_gem['cloudbees-bitbucket-branch-source', '2.4.0']
 
 # Handy to be able to have distributed locks
-jenkins_gem['lockable-resources', '2.2']
+jenkins_gem['lockable-resources', '2.4']
 
 # Allow publishing HTML to the actual Jenkins build page
-jenkins_gem['htmlpublisher', '1.14']
+jenkins_gem['htmlpublisher', '1.18']
