@@ -55,7 +55,7 @@ describe 'Jenkins container' do
     output = wait_for_jenkins
     # This should not be a big deal, its plugins that we do not control
     expected_unpackaged_classes_plugin_messages = [
-      'jira',
+      'jquery-ui',
     ].map do |plugin|
       "Deprecated unpacked classes directory found in /usr/lib/jenkins/plugins/../plugins/#{plugin}.hpi/WEB-INF/classes"
     end
