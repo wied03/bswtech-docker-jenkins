@@ -27,7 +27,8 @@ end
 
 task :setup_test_volume => :clean_test_volume do
   # New stuff in 2.107.1 doesn't yet work right with JIRA plugin, so we test that
-  # we whitelist serialization appropriately (see jenkins.sh)
+  # we whitelist serialization appropriately (jenkins.sh <= commit 6e97e673a9f8712177a25e5c354408aa96ded433 had to workaround this)
+  # has since been fixed in JIRA plugin but this should sniff out the problem if it comes back
   jira_file = File.join(TEST_VOL_DIR, 'hudson.plugins.jira.JiraProjectProperty.xml')
   File.write jira_file, "<?xml version='1.0' encoding='UTF-8'?>
     <hudson.plugins.jira.JiraProjectProperty_-DescriptorImpl plugin=\"jira@2.4.2\">
