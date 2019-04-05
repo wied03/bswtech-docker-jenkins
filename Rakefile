@@ -1,6 +1,8 @@
 require 'rake'
 require 'rspec/core/rake_task'
 require 'digest'
+require 'zip'
+
 # Needs to be before requires. more obvious path than the Rails' standard this library uses
 HASHES_FILE = ENV['secure_headers_generated_hashes_file'] = 'content_sec_policy/hashes.yml'
 require 'secure_headers'
@@ -117,9 +119,20 @@ execute_plugin_command = lambda do |command|
   end
 end
 
+JAVA_JENKINS_PLUGINS = ENV['JAVA_PLUGINS']&.split(',') || []
 desc 'Fetch plugins using GEM/Bundler wrapper'
-file PLUGIN_FINAL_DIRECTORY => PLUGIN_GEMFILE do
+file PLUGIN_FINAL_DIRECTORY => [PLUGIN_GEMFILE] + JAVA_JENKINS_PLUGINS do
   execute_plugin_command['jenkins_bundle_install']
+  JAVA_JENKINS_PLUGINS.each do |plugin|
+    destination = File.join(PLUGIN_FINAL_DIRECTORY, File.basename(plugin))
+    zip_file = Zip::File.open(plugin)
+    mkdir_p destination
+    zip_file.each do |file|
+      full_path = File.join(destination, file.name)
+      puts "Extracting #{full_path}"
+      file.extract(full_path)
+    end
+  end
 end
 
 get_plugin_name = lambda do |jenkins|
@@ -193,11 +206,17 @@ end
 JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
 task :build => [JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
+  hashit = lambda do |file_name|
+    Digest::SHA256.hexdigest(File.read(file_name))
+  end
   # not using docker COPY, so need to force changes
   resources_hash = FileList['resources/**'].inject do |exist, file|
-    Digest::SHA256.hexdigest(Digest::SHA256.hexdigest(exist) + File.read(file))
+    Digest::SHA256.hexdigest(exist + hashit[file])
   end
   base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.44'
+  plugin_hash = JAVA_JENKINS_PLUGINS.inject(hashit[PLUGIN_GEMFILE_LOCK]) do |exist, file|
+    Digest::SHA256.hexdigest(exist + hashit[file])
+  end
   args = {
     'ImageTag' => image_tag,
     'ImageVersion' => IMAGE_VERSION,
@@ -205,7 +224,7 @@ task :build => [JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
-    'PluginHash' => Digest::SHA256.hexdigest(File.read(PLUGIN_GEMFILE_LOCK)),
+    'PluginHash' => plugin_hash,
     'ResourcesHash' => resources_hash,
     'BaseVersion' => base_version,
     'PluginJarPath' => JAR_PATH

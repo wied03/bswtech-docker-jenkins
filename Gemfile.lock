@@ -81,6 +81,7 @@ DEPENDENCIES
   rake
   retryable
   rspec_junit_formatter
+  rubyzip
   secure_headers
   serverspec
 

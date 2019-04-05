@@ -12,3 +12,4 @@ gem 'bswtech-jenkins-gem'
 
 # Setup a CSP
 gem 'secure_headers'
+gem 'rubyzip'
