@@ -16,6 +16,10 @@ TEST_VOL_DIR = ENV['TEST_VOL_DIR'] = File.join(Dir.pwd, 'jenkins_test_volume')
 ON_MAC = RUBY_PLATFORM.include?('darwin')
 
 task :clean_test_volume do
+  if ENV['SKIP_TEST_VOLUME_CLEAN']
+    puts 'Skipping test volume clean'
+    next
+  end
   rm_rf TEST_VOL_DIR
   mkdir TEST_VOL_DIR
   next unless Gem::Platform.local.os == 'linux'
@@ -80,8 +84,15 @@ task :test_run => [:build, :setup_test_volume] do
   at_exit {
     sh 'docker rm -f jenkins'
   }
-
-  sh "docker run -v #{TEST_VOL_DIR}:/var/jenkins_home:Z --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat:#{TMPFS_FLAGS},exec --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} -P --name jenkins #{image_tag}"
+  volumes = [
+    "#{TEST_VOL_DIR}:/var/jenkins_home:Z"
+  ]
+  additional = ENV['additional_test_volumes']&.split(',') || []
+  volumes += additional
+  flat_volumes = volumes.map do |vol|
+    "-v #{vol}"
+  end.join(' ')
+  sh "docker run #{flat_volumes} --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat:#{TMPFS_FLAGS},exec --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} -P --name jenkins #{image_tag}"
 end
 
 JAVA_SOURCE = FileList[File.join(PLUGIN_MANAGER_PATH, '**/*')].exclude(File.join(PLUGIN_MANAGER_PATH, 'build', '**/*'))
