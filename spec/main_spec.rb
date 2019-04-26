@@ -53,6 +53,21 @@ describe 'Jenkins container' do
     error_lines = output.lines.select do |line|
       triggers.any? {|trigger| line.upcase.include?(trigger.upcase)}
     end
+    exclusion_error_indexes = []
+    exclusions = [
+      'hudson.ExtensionFinder$GuiceFinder$FaultTolerantScope$1 error',
+      'hudson.plugins.build_timeout.operations.AbortAndRestartOperation'
+    ]
+    error_lines.each_index do |index|
+      if exclusions.any? { |e| error_lines[index].include?(e)}
+        exclusion_error_indexes << index
+      end
+    end
+    expect(exclusion_error_indexes.size).to eq 2
+    expect(exclusion_error_indexes[1] - exclusion_error_indexes[0]).to eq 1
+    remove = exclusion_error_indexes.map {|index| error_lines[index]}
+    puts "Removing #{remove} because we are ignoring them, see https://github.com/jenkinsci/build-timeout-plugin/issues/67"
+    error_lines = error_lines - remove
     expect(error_lines).to be_empty
   end
 
