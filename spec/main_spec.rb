@@ -44,11 +44,16 @@ describe 'Jenkins container' do
 
   it 'shows no ERRORs in logs' do
     output = wait_for_jenkins
-    # asserting these after up and running should catch stuff
-    expect(output).to_not include 'ERROR'
-    expect(output).to_not include 'Error'
-    expect(output).to_not include 'Exception'
-    expect(output).to_not include 'SEVERE'
+    triggers = [
+      'error',
+      'failed',
+      'exception',
+      'severe'
+    ]
+    error_lines = output.lines.select do |line|
+      triggers.any? {|trigger| line.upcase.include?(trigger.upcase)}
+    end
+    expect(error_lines).to be_empty
   end
 
   it 'shows no warnings in logs' do
