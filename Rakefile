@@ -120,7 +120,7 @@ execute_plugin_command = lambda do |command|
   end
 end
 
-JAVA_JENKINS_PLUGINS = ENV['JAVA_PLUGINS']&.split(',') || []
+JAVA_JENKINS_PLUGINS = []
 desc 'Fetch plugins using GEM/Bundler wrapper'
 file PLUGIN_FINAL_DIRECTORY => [PLUGIN_GEMFILE] + JAVA_JENKINS_PLUGINS do
   execute_plugin_command['jenkins_bundle_install']
