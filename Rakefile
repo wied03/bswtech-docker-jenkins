@@ -154,6 +154,11 @@ task :upgrade_plugin_liberal, [:plugin_name] do |_, args|
   execute_plugin_command["bundle update #{get_plugin_name[plugin_name]}"]
 end
 
+desc 'Fetch new versions of plugins and liberally update'
+task :upgrade_plugins do
+  execute_plugin_command["jenkins_bundle_update"]
+end
+
 desc 'Does a bundle update to upgrade a single plugin, removes local index before updating'
 task :upgrade_plugin_new, [:plugin_names] do |_, args|
   plugin_names = args[:plugin_names].split(':')
