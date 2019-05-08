@@ -69,7 +69,7 @@ RSpec::Core::RakeTask.new(:spec => [:build, :setup_test_volume]) do |task|
   ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
 end
 
-JENKINS_VERSION = '2.164.1-1.1'
+JENKINS_VERSION = '2.164.2-1.1'
 JAVA_VERSION = '1.8.0.201.b09-2.el7_6'
 GIT_VERSION = '1.8.3.1-20.el7'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
@@ -214,7 +214,7 @@ task :build => [JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
   resources_hash = FileList['resources/**'].inject do |exist, file|
     Digest::SHA256.hexdigest(exist + hashit[file])
   end
-  base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.44'
+  base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.47'
   plugin_hash = JAVA_JENKINS_PLUGINS.inject(hashit[PLUGIN_GEMFILE_LOCK]) do |exist, file|
     Digest::SHA256.hexdigest(exist + hashit[file])
   end
