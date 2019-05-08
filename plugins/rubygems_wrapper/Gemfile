@@ -13,7 +13,7 @@ jenkins_gem['jenkins-core', jenkins_version]
 jenkins_gem['build-timeout', '1.19']
 
 # CloudBees Docker commands in Pipeline (for dealing with withRegistry, etc.)
-jenkins_gem['docker-workflow', '1.17']
+jenkins_gem['docker-workflow', '1.18']
 
 # Core credentials plugin
 jenkins_gem['credentials', '2.1.18']
@@ -23,9 +23,9 @@ jenkins_gem['credentials', '2.1.18']
 jenkins_gem['credentials-binding', '1.18']
 
 # better email extensions
-jenkins_gem['email-ext', '2.65']
+jenkins_gem['email-ext', '2.66']
 
-jenkins_gem['git', '3.9.3']
+jenkins_gem['git', '3.10.0']
 
 # the actual core pipeline plugin
 jenkins_gem['workflow-aggregator', '2.6']
@@ -50,14 +50,13 @@ jenkins_gem['role-strategy','2.10']
 
 jenkins_gem['ec2', '1.42']
 
-jenkins_gem['jira', '3.0.5']
+jenkins_gem['jira', '3.0.7']
 
 # Needed to trigger multibranch pipelines from Bitbucket/webhooks
-# 2.4.2 does not have release notes but 2.4.0 is not in the index anymore
-jenkins_gem['cloudbees-bitbucket-branch-source', '2.4.2']
+jenkins_gem['cloudbees-bitbucket-branch-source', '2.4.4']
 
 # Handy to be able to have distributed locks
-jenkins_gem['lockable-resources', '2.4']
+jenkins_gem['lockable-resources', '2.5']
 
 # Allow publishing HTML to the actual Jenkins build page
 jenkins_gem['htmlpublisher', '1.18']
