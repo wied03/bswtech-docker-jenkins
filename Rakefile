@@ -102,7 +102,7 @@ JAVA_SOURCE = FileList[File.join(PLUGIN_MANAGER_PATH, '**/*')].exclude(File.join
 desc 'Builds the plugin manager for read-only Jenkins plugins'
 file JAR_PATH => JAVA_SOURCE do
   Dir.chdir(PLUGIN_MANAGER_PATH) do
-    sh "./gradlew -Pversion=#{VERSION_NO_SUBRELEASE} clean build"
+    sh "./gradlew --no-daemon -Pversion=#{VERSION_NO_SUBRELEASE} clean build"
   end
 end
 
