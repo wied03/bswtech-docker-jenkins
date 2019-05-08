@@ -70,7 +70,7 @@ RSpec::Core::RakeTask.new(:spec => [:build, :setup_test_volume]) do |task|
 end
 
 JENKINS_VERSION = '2.164.2-1.1'
-JAVA_VERSION = '1.8.0.201.b09-2.el7_6'
+JAVA_VERSION = '1.8.0.212.b04-0.el7_6'
 GIT_VERSION = '1.8.3.1-20.el7'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
 # Drop the RPM subrelease when we build our image
