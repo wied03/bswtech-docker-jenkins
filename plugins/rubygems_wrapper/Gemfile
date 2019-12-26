@@ -13,19 +13,18 @@ jenkins_gem['jenkins-core', jenkins_version]
 jenkins_gem['build-timeout', '1.19']
 
 # CloudBees Docker commands in Pipeline (for dealing with withRegistry, etc.)
-jenkins_gem['docker-workflow', '1.18']
+jenkins_gem['docker-workflow', '1.21']
 
 # Core credentials plugin
-jenkins_gem['credentials', '2.1.18']
+jenkins_gem['credentials', '2.3.0']
 
 # Allow use of creds in environment variables/pipeline steps
-# 1.18 does not have release notes but 1.17 is not in the index anymore
-jenkins_gem['credentials-binding', '1.18']
+jenkins_gem['credentials-binding', '1.20']
 
 # better email extensions
-jenkins_gem['email-ext', '2.66']
+jenkins_gem['email-ext', '2.68']
 
-jenkins_gem['git', '3.10.0']
+jenkins_gem['git', '4.0.0']
 
 # the actual core pipeline plugin
 jenkins_gem['workflow-aggregator', '2.6']
@@ -34,29 +33,29 @@ jenkins_gem['workflow-aggregator', '2.6']
 jenkins_gem['ssh-agent', '1.17']
 
 # Base jenkins package, adds them to console output
-jenkins_gem['timestamper', '1.9']
+jenkins_gem['timestamper', '1.10']
 
 # Workspace cleanup
-jenkins_gem['ws-cleanup', '0.37']
+jenkins_gem['ws-cleanup', '0.38']
 
 # OWASP HTML sanitizer for text fields, standard Jenkins
-jenkins_gem['antisamy-markup-formatter', '1.5']
+jenkins_gem['antisamy-markup-formatter', '1.6']
 
 # Authenticate via SAML (Google, Okta, etc.)
-jenkins_gem['saml', '1.1.2']
+jenkins_gem['saml', '1.1.4']
 
 # Best authorization setup available
 jenkins_gem['role-strategy','2.10']
 
-jenkins_gem['ec2', '1.42']
+jenkins_gem['ec2', '1.47']
 
-jenkins_gem['jira', '3.0.7']
+jenkins_gem['jira', '3.0.11']
 
 # Needed to trigger multibranch pipelines from Bitbucket/webhooks
-jenkins_gem['cloudbees-bitbucket-branch-source', '2.4.4']
+jenkins_gem['cloudbees-bitbucket-branch-source', '2.6.0']
 
 # Handy to be able to have distributed locks
-jenkins_gem['lockable-resources', '2.5']
+jenkins_gem['lockable-resources', '2.7']
 
 # Allow publishing HTML to the actual Jenkins build page
-jenkins_gem['htmlpublisher', '1.18']
+jenkins_gem['htmlpublisher', '1.21']
