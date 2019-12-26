@@ -50,7 +50,9 @@ RUN mkdir $JENKINS_HOME \
  # Longer timeout by default
  && sed -i 's/<session-timeout>30<\/session-timeout>/<session-timeout>60<\/session-timeout>/' /etc/tomcat/web.xml \
  && rm -rfv /usr/share/tomcat/work \
- && rm /etc/tomcat/tomcat-users.xml
+ && rm /etc/tomcat/tomcat-users.xml \
+ # These cause problems on startup
+ && rm -rf ${JENKINS_APP_DIR}/WEB-INF/detached-plugins/*
 
 COPY resources/*.properties /etc/tomcat/
 COPY resources/server.xml $JENKINS_REF_DIR
