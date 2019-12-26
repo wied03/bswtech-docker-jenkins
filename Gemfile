@@ -1,5 +1,4 @@
 source 'https://rubygems.org'
-source 'https://repo.fury.io/wied03/'
 
 # For testing
 gem 'serverspec'
@@ -7,8 +6,11 @@ gem 'docker-api'
 gem 'rspec_junit_formatter'
 gem 'retryable'
 gem 'rake'
-# For plugins
-gem 'bswtech-jenkins-gem'
+
+source 'https://repo.fury.io/wied03/' do
+  # For plugins
+  gem 'bswtech-jenkins-gem'
+end
 
 # Setup a CSP
 gem 'secure_headers'

@@ -76,7 +76,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bswtech-jenkins-gem
+  bswtech-jenkins-gem!
   docker-api
   rake
   retryable
@@ -86,4 +86,4 @@ DEPENDENCIES
   serverspec
 
 BUNDLED WITH
-   1.16.1
+   2.1.2
