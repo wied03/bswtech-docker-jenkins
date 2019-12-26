@@ -69,8 +69,8 @@ RSpec::Core::RakeTask.new(:spec => [:build, :setup_test_volume]) do |task|
   ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
 end
 
-JENKINS_VERSION = '2.164.2-1.1'
-JAVA_VERSION = '1.8.0.212.b04-0.el7_6'
+JENKINS_VERSION = '2.204.1-1.1'
+JAVA_VERSION = '1.8.0.232.b09-0.el7_7'
 GIT_VERSION = '1.8.3.1-20.el7'
 MINOR_VERSION = ENV['MINOR_VERSION'] || '1'
 # Drop the RPM subrelease when we build our image
@@ -212,34 +212,21 @@ end
 JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
 task :build => [JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
-  hashit = lambda do |file_name|
-    Digest::SHA256.hexdigest(File.read(file_name))
-  end
-  # not using docker COPY, so need to force changes
-  resources_hash = FileList['resources/**'].inject do |exist, file|
-    Digest::SHA256.hexdigest(exist + hashit[file])
-  end
   base_version = ENV['DOCKER_BASE_VERSION'] || '1.0.47'
-  plugin_hash = JAVA_JENKINS_PLUGINS.inject(hashit[PLUGIN_GEMFILE_LOCK]) do |exist, file|
-    Digest::SHA256.hexdigest(exist + hashit[file])
-  end
   args = {
-    'ImageTag' => image_tag,
     'ImageVersion' => IMAGE_VERSION,
     'JenkinsVersion' => JENKINS_VERSION,
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
-    'PluginHash' => plugin_hash,
-    'ResourcesHash' => resources_hash,
     'BaseVersion' => base_version,
     'PluginJarPath' => JAR_PATH
   }
-  flat_args = args.map {|key, val| "-var #{key}=#{val}"}.join ' '
+  flat_args = args.map {|key, val| "--build-arg #{key}=#{val}"}.join ' '
   begin
     # SELinux causes problems when trying to use the Rocker MOUNT directive
     sh 'setenforce 0' unless ON_MAC
-    sh "rocker build #{flat_args}"
+    sh "docker build --label Version=#{IMAGE_VERSION} -t #{image_tag} #{flat_args} ."
   ensure
     sh 'setenforce 1' unless ON_MAC
   end
