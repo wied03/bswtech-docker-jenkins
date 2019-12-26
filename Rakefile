@@ -2,6 +2,7 @@ require 'rake'
 require 'rspec/core/rake_task'
 require 'digest'
 require 'zip'
+require 'bundler'
 
 # Needs to be before requires. more obvious path than the Rails' standard this library uses
 HASHES_FILE = ENV['secure_headers_generated_hashes_file'] = 'content_sec_policy/hashes.yml'
@@ -114,7 +115,7 @@ PLUGIN_GEMFILE_LOCK = PLUGIN_GEMFILE + '.lock'
 
 execute_plugin_command = lambda do |command|
   Dir.chdir(PLUGIN_GEM_WRAPPER_PATH) do
-    Bundler.with_clean_env do
+    Bundler.with_unbundled_env do
       sh "JENKINS_VERSION=#{VERSION_NO_SUBRELEASE} #{command}"
     end
   end
