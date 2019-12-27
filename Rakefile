@@ -65,7 +65,7 @@ RSpec::Core::RakeTask.new(:spec => [:build, :setup_test_volume]) do |task|
     "#{formatter[type]} --out #{file}"
   end
   task.rspec_opts = [
-    formatter['progress'],
+    formatter['documentation'],
     file_formatter['RspecJunitFormatter', File.join(ENV['JUNIT_REPORT_PATH'], 'rspec.xml')]
   ].join(' ') if ENV['GENERATE_REPORTS'] == 'true'
 end
