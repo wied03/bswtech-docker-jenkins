@@ -213,13 +213,18 @@ end
 JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
 task :build => [JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
+  nss_upgrade_packages = %w(util softokn tools softokn-freebl sysinit).map do |suffix|
+    "nss-#{suffix}"
+  end
+  upgrade_packages = (%w(nss) + nss_upgrade_packages).join ' '
   args = {
     'ImageVersion' => IMAGE_VERSION,
     'JenkinsVersion' => JENKINS_VERSION,
     'JavaPackage' => "java-1.8.0-openjdk-#{JAVA_VERSION}", # can't use java headless because hudson.util.ChartUtil needs some X11 stuff
     'GitPackage' => "git-#{GIT_VERSION}",
     'JenkinsBinDir' => JENKINS_BIN_DIR,
-    'PluginJarPath' => JAR_PATH
+    'PluginJarPath' => JAR_PATH,
+    'UPGRADE_PACKAGES' => "\"#{upgrade_packages}\""
   }
   flat_args = args.map {|key, val| "--build-arg #{key}=#{val}"}.join ' '
   begin

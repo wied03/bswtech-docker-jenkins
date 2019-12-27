@@ -9,6 +9,7 @@ ARG ImageVersion=FOOBAR
 ARG PluginHash=FOOBAR
 ARG ResourcesHash=FOOBAR
 ARG PluginJarPath=FOOBAR
+ARG UPGRADE_PACKAGES=FOOBAR
 # end from Rake
 
 ENV JENKINS_HOME /var/jenkins_home
@@ -28,6 +29,7 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  # Tomcat is more controllable than the Winstone hack Jenkins comes with
  # And it's an existing RPM within the CentOS ecosystem (security notifications, etc.)
  && yum install -y ${JavaPackage} jenkins-${JenkinsVersion} ${GitPackage} tomcat-7.0.76-9.el7_6 tomcat-native unzip nss_wrapper \
+ && yum update -y ${UPGRADE_PACKAGES} \
  # trading in faster startup for image size
  && unzip ${JENKINS_WAR_FILE} -d ${JENKINS_APP_DIR} \
  # See above for why no Winstone
