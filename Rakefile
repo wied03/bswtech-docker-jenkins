@@ -96,7 +96,7 @@ task :test_run => [:build, :setup_test_volume] do
     "-v #{vol}"
   end.join(' ')
   port = ENV['JENKINS_PORT']
-  sh "docker run #{flat_volumes} #{port ? " -p #{port}:8080" : ''} --cap-drop=all --read-only --tmpfs=/usr/share/tomcat/work --tmpfs=/var/cache/tomcat:#{TMPFS_FLAGS},exec --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} -P --name jenkins #{image_tag}"
+  sh "docker run #{flat_volumes} #{port ? " -p #{port}:8080" : ''} --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} -P --name jenkins #{image_tag}"
 end
 
 JAVA_SOURCE = FileList[File.join(PLUGIN_MANAGER_PATH, '**/*')].exclude(File.join(PLUGIN_MANAGER_PATH, 'build', '**/*'))
