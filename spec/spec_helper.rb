@@ -9,15 +9,21 @@ Docker.options[:read_timeout] = 120
 JENKINS_UID = ENV['JENKINS_UID']
 JENKINS_GID = ENV['JENKINS_GID']
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
+TEST_SECRETS_CONTAINER_DIR = '/run/test_secrets'
 
 docker_options = {
   'User' => "#{JENKINS_UID}:#{JENKINS_GID}",
   'Volumes' => {
-    '/var/jenkins_home' => {}
+    '/var/jenkins_home' => {},
+    TEST_SECRETS_CONTAINER_DIR => {}
   },
+  'Env' => [
+    "SECRETS=#{TEST_SECRETS_CONTAINER_DIR}"
+  ],
   'HostConfig' => {
     'Binds' => [
-      "#{ENV['TEST_VOL_DIR']}:/var/jenkins_home:Z"
+      "#{ENV['TEST_VOL_DIR']}:/var/jenkins_home:Z",
+      "#{ENV['TEST_SECRETS_DIR']}:#{TEST_SECRETS_CONTAINER_DIR}:Z"
     ],
     'CapDrop' => ['all'],
     'ReadonlyRootfs' => true,

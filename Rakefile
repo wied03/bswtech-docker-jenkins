@@ -97,6 +97,7 @@ file SECRET_FILE => [JSON_FILE].compact do
   File.write SECRET_FILE, encoded
 end
 
+TEST_SECRETS_DIR = ENV['TEST_SECRETS_DIR'] = "#{Dir.pwd}/test_secrets"
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
 task :test_run => [:build, :setup_test_volume, SECRET_FILE] do
@@ -105,7 +106,7 @@ task :test_run => [:build, :setup_test_volume, SECRET_FILE] do
   }
   volumes = [
     "#{TEST_VOL_DIR}:/var/jenkins_home:Z",
-    "#{Dir.pwd}/test_secrets:/run/test_secrets:Z"
+    "#{TEST_SECRETS_DIR}:/run/test_secrets:Z"
   ]
   additional = ENV['additional_test_volumes']&.split(',') || []
   volumes += additional
