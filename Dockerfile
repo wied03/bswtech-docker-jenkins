@@ -51,6 +51,9 @@ COPY resources/passwd.template $JENKINS_APP_DIR
 COPY ${PluginJarPath} ${JENKINS_APP_DIR}/WEB-INF/lib/
 COPY resources/init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
 
+ENV CASC_JENKINS_CONFIG ${JENKINS_APP_DIR}/casc
+COPY resources/casc/* ${CASC_JENKINS_CONFIG}/
+
 VOLUME ["${JENKINS_HOME}"]
 
 EXPOSE 8080
