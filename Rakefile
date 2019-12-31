@@ -4,6 +4,7 @@ require 'digest'
 require 'zip'
 require 'bundler'
 require 'yaml'
+require 'base64'
 
 # Needs to be before requires. more obvious path than the Rails' standard this library uses
 HASHES_FILE = ENV['secure_headers_generated_hashes_file'] = 'content_sec_policy/hashes.yml'
@@ -34,6 +35,10 @@ task :clean_test_volume do
 end
 
 task :setup_test_volume => :clean_test_volume do
+  if ENV['PRESERVE_VOLUME'] == '1'
+    puts 'Skipping test vol clean due to PRESERVE_VOLUME'
+    next
+  end
   # New stuff in 2.107.1 doesn't yet work right with JIRA plugin, so we test that
   # we whitelist serialization appropriately (jenkins.sh <= commit 6e97e673a9f8712177a25e5c354408aa96ded433 had to workaround this)
   # has since been fixed in JIRA plugin but this should sniff out the problem if it comes back
@@ -82,9 +87,16 @@ ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 PLUGIN_MANAGER_PATH = 'plugins/modified_plugin_manager'
 JAR_PATH = File.join(PLUGIN_MANAGER_PATH, 'build', 'libs', "bswtech-docker-jenkins-#{VERSION_NO_SUBRELEASE}.jar")
 
+SECRET_FILE = 'test_secrets/somesecret'
+file SECRET_FILE => ENV['GCE_SVC_ACCOUNT_JSON_FILE'] do
+  encoded = Base64.encode64(File.read(ENV['GCE_SVC_ACCOUNT_JSON_FILE']))
+  mkdir_p File.expand_path('..', SECRET_FILE)
+  File.write SECRET_FILE, encoded
+end
+
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
-task :test_run => [:build, :setup_test_volume] do
+task :test_run => [:build, :setup_test_volume, SECRET_FILE] do
   at_exit {
     sh 'docker rm -f jenkins'
   }

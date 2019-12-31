@@ -4,7 +4,9 @@ credentials:
   system:
     domainCredentials:
     - credentials:
-      - string:
-          description: "fromafiledesc"
-          id: "fromafile"
-          secret: ${somesecret}
+      - googleRobotPrivateKey:
+          projectId: "bsw-tech"
+          serviceAccountConfig:
+            json:
+              filename: stuff.json
+              secretJsonKey: ${somesecret}
