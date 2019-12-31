@@ -62,7 +62,7 @@ task :setup_test_volume => :clean_test_volume do
     </hudson.plugins.jira.JiraProjectProperty_-DescriptorImpl>"
 end
 
-SECRET_FILE = 'test_secrets/somesecret'
+SECRET_FILE = 'test_secrets/gce_service_account'
 desc 'Run serverspec tests with actual container'
 RSpec::Core::RakeTask.new(:spec => [:build, :setup_test_volume, SECRET_FILE]) do |task|
   formatter = lambda do |type|

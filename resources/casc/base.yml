@@ -26,4 +26,4 @@ credentials:
           serviceAccountConfig:
             json:
               filename: stuff.json
-              secretJsonKey: ${somesecret}
+              secretJsonKey: ${gce_service_account}
