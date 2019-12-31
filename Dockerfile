@@ -5,10 +5,6 @@ ARG JenkinsBinDir=FOOBAR
 ARG JavaPackage=FOOBAR
 ARG JenkinsVersion=FOOBAR
 ARG GitPackage=FOOBAR
-ARG ImageVersion=FOOBAR
-ARG PluginHash=FOOBAR
-ARG ResourcesHash=FOOBAR
-ARG PluginJarPath=FOOBAR
 ARG UPGRADE_PACKAGES=FOOBAR
 # end from Rake
 
@@ -37,7 +33,7 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
 
 # Now pre-load our plugins into the image
 COPY plugins/rubygems_wrapper/plugins_final $JENKINS_PLUGIN_DIR/
-
+ARG ImageVersion=FOOBAR
 RUN mkdir $JENKINS_HOME \
  && mkdir -p $JENKINS_REF_DIR/init.groovy.d \
  # Keep track of version in the footer
@@ -48,6 +44,7 @@ RUN mkdir $JENKINS_HOME \
 COPY resources/jenkins.sh /usr/local/bin/
 COPY resources/passwd.template $JENKINS_APP_DIR
 # Our own plugin manager to deal with pre-loaded plugins
+ARG PluginJarPath=FOOBAR
 COPY ${PluginJarPath} ${JENKINS_APP_DIR}/WEB-INF/lib/
 COPY resources/init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
 
