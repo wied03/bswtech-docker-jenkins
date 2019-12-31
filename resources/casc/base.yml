@@ -7,7 +7,7 @@ credentials:
       - string:
           description: "fromafiledesc"
           id: "fromafile"
-          secret: ${filename}
+          secret: ${somesecret}
           #password: "{AQAAABAAAAAQEuuLmAEVfDZhO27tV+4JDa17K9otYnZth3aBkdMg8eE=}"
           #scope: GLOBAL
           #username: "hello"
