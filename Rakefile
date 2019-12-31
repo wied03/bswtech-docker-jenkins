@@ -3,6 +3,7 @@ require 'rspec/core/rake_task'
 require 'digest'
 require 'zip'
 require 'bundler'
+require 'yaml'
 
 # Needs to be before requires. more obvious path than the Rails' standard this library uses
 HASHES_FILE = ENV['secure_headers_generated_hashes_file'] = 'content_sec_policy/hashes.yml'
@@ -88,7 +89,8 @@ task :test_run => [:build, :setup_test_volume] do
     sh 'docker rm -f jenkins'
   }
   volumes = [
-    "#{TEST_VOL_DIR}:/var/jenkins_home:Z"
+    "#{TEST_VOL_DIR}:/var/jenkins_home:Z",
+    "#{Dir.pwd}/secrets:/run/secrets:/run/secrets:Z"
   ]
   additional = ENV['additional_test_volumes']&.split(',') || []
   volumes += additional
@@ -96,7 +98,7 @@ task :test_run => [:build, :setup_test_volume] do
     "-v #{vol}"
   end.join(' ')
   port = ENV['JENKINS_PORT']
-  sh "docker run #{flat_volumes} #{port ? " -p #{port}:8080" : ''} --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} -P --name jenkins #{image_tag}"
+  sh "docker run #{flat_volumes} #{port ? "-p #{port}:8080" : '-P'} --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} --name jenkins #{image_tag}"
 end
 
 JAVA_SOURCE = FileList[File.join(PLUGIN_MANAGER_PATH, '**/*')].exclude(File.join(PLUGIN_MANAGER_PATH, 'build', '**/*'))
@@ -210,9 +212,18 @@ task :build_csp => :'secure_headers:generate_hashes' do
   puts "System.setProperty(\"hudson.model.DirectoryBrowserSupport.CSP\", \"#{csp.value}\")"
 end
 
+desc 'Validates CASC'
+task :validate_casc do
+  FileList['resources/casc/*'].each do |yml|
+    puts "Validating #{yml}"
+    file = File.read yml
+    YAML.load file
+  end
+end
+
 JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
-task :build => [JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
+task :build => [:validate_casc, JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
   nss_upgrade_packages = %w(util softokn tools softokn-freebl sysinit).map do |suffix|
     "nss-#{suffix}"
   end

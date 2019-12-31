@@ -1,2 +1,20 @@
 jenkins:
   systemMessage: From the plugin!
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - string:
+          description: "fromafiledesc"
+          id: "fromafile"
+          secret: ${filename}
+          #password: "{AQAAABAAAAAQEuuLmAEVfDZhO27tV+4JDa17K9otYnZth3aBkdMg8eE=}"
+          #scope: GLOBAL
+          #username: "hello"
+# credentials:
+#   system:
+#     domainCredentials:
+#       - credentials:
+#         - string:
+#           id: some-secret
+#           secret: ${filename}
