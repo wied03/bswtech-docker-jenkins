@@ -80,7 +80,8 @@ describe 'Jenkins container' do
     exclusions = [
       'Unknown version string [3.1]',
       'Empty contextPath',
-      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>'
+      'Security role name ** used in an <auth-constraint> without being defined in a <security-role>',
+      "i.j.p.casc.BaseConfigurator#createAttribute: Can't handle class com.google.jenkins.plugins.credentials.oauth.JsonServiceAccountConfig#jsonKeyFileUpload: type is abstract but not Describable"
     ] + expected_unpackaged_classes_plugin_messages
     warning_lines = output.lines.select do |line|
       if line.upcase.include?('WARN')
