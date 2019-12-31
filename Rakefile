@@ -102,7 +102,7 @@ task :test_run => [:build, :setup_test_volume, SECRET_FILE] do
   }
   volumes = [
     "#{TEST_VOL_DIR}:/var/jenkins_home:Z",
-    "#{Dir.pwd}/test_secrets:/run/secrets:Z"
+    "#{Dir.pwd}/test_secrets:/run/test_secrets:Z"
   ]
   additional = ENV['additional_test_volumes']&.split(',') || []
   volumes += additional
@@ -110,7 +110,7 @@ task :test_run => [:build, :setup_test_volume, SECRET_FILE] do
     "-v #{vol}"
   end.join(' ')
   port = ENV['JENKINS_PORT']
-  sh "docker run #{flat_volumes} #{port ? "-p #{port}:8080" : '-P'} --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} --name jenkins #{image_tag}"
+  sh "docker run #{flat_volumes} #{port ? "-p #{port}:8080" : '-P'} -e SECRETS=/run/test_secrets --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} --name jenkins #{image_tag}"
 end
 
 JAVA_SOURCE = FileList[File.join(PLUGIN_MANAGER_PATH, '**/*')].exclude(File.join(PLUGIN_MANAGER_PATH, 'build', '**/*'))
