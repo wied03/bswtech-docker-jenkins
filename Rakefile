@@ -90,7 +90,7 @@ task :test_run => [:build, :setup_test_volume] do
   }
   volumes = [
     "#{TEST_VOL_DIR}:/var/jenkins_home:Z",
-    "#{Dir.pwd}/secrets:/run/secrets:Z"
+    "#{Dir.pwd}/test_secrets:/run/secrets:Z"
   ]
   additional = ENV['additional_test_volumes']&.split(',') || []
   volumes += additional
