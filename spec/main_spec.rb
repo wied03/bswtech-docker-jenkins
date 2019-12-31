@@ -32,7 +32,7 @@ describe 'Jenkins container' do
     with_retry do
       output = `docker logs #{current_container_id} 2>&1`
       expect(output).to include 'Jenkins initial setup is required'
-      expect(output).to include 'INFO: Jenkins is fully up and running'
+      expect(output).to match /INFO.*Jenkins is fully up and running/
       output
     end
   end
@@ -53,22 +53,20 @@ describe 'Jenkins container' do
     error_lines = output.lines.select do |line|
       triggers.any? {|trigger| line.upcase.include?(trigger.upcase)}
     end
-    exclusion_error_indexes = []
-    exclusions = [
-      'hudson.ExtensionFinder$GuiceFinder$FaultTolerantScope$1 error',
-      'hudson.plugins.build_timeout.operations.AbortAndRestartOperation'
-    ]
-    error_lines.each_index do |index|
-      if exclusions.any? { |e| error_lines[index].include?(e)}
-        exclusion_error_indexes << index
+    filtered_errors = []
+    found = false
+    error_lines.each do |line|
+      # https://github.com/jenkinsci/build-timeout-plugin/issues/67
+      if line.include? 'h.ExtensionFinder$GuiceFinder$FaultTolerantScope$1#error: Failed to instantiate optional component hudson.plugins.build_timeout.operations.AbortAndRestartOperation$DescriptorImpl; skipping'
+        found = true
+        puts "Ignoring #{line}"
+      else
+        filtered_errors << line
       end
     end
-    expect(exclusion_error_indexes.size).to eq 2
-    expect(exclusion_error_indexes[1] - exclusion_error_indexes[0]).to eq 1
-    remove = exclusion_error_indexes.map {|index| error_lines[index]}
-    puts "Removing #{remove} because we are ignoring them, see https://github.com/jenkinsci/build-timeout-plugin/issues/67"
-    error_lines = error_lines - remove
-    expect(error_lines).to be_empty
+    expect(found).to eq(true),
+                     'Expected our error in here'
+    expect(filtered_errors).to be_empty
   end
 
   it 'shows no warnings in logs' do
@@ -97,11 +95,6 @@ describe 'Jenkins container' do
     expect(warning_lines).to be_empty
   end
 
-  it 'uses Tomcat native' do
-    output = wait_for_jenkins
-    expect(output).to_not include 'INFO: The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found'
-  end
-
   describe docker_container do
     it {is_expected.to exist}
     it {is_expected.to be_running}
@@ -122,16 +115,6 @@ describe 'Jenkins container' do
     it {is_expected.to exist}
     it {is_expected.to be_directory}
     it {is_expected.to be_owned_by JENKINS_UID}
-  end
-
-  ['/var/cache/tomcat/work',
-   '/var/cache/tomcat/temp',
-   '/usr/share/tomcat/work'].each do |dir|
-    describe file(dir) do
-      it {is_expected.to exist}
-      it {is_expected.to be_directory}
-      it {is_expected.to be_owned_by JENKINS_UID}
-    end
   end
 
   describe command('grep Cap /proc/self/status') do
