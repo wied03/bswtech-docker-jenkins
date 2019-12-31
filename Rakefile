@@ -88,8 +88,9 @@ PLUGIN_MANAGER_PATH = 'plugins/modified_plugin_manager'
 JAR_PATH = File.join(PLUGIN_MANAGER_PATH, 'build', 'libs', "bswtech-docker-jenkins-#{VERSION_NO_SUBRELEASE}.jar")
 
 SECRET_FILE = 'test_secrets/somesecret'
-file SECRET_FILE => ENV['GCE_SVC_ACCOUNT_JSON_FILE'] do
-  encoded = Base64.encode64(File.read(ENV['GCE_SVC_ACCOUNT_JSON_FILE']))
+JSON_FILE = ENV['GCE_SVC_ACCOUNT_JSON_FILE']
+file SECRET_FILE => [JSON_FILE] do
+  encoded = Base64.encode64(File.read(JSON_FILE))
   mkdir_p File.expand_path('..', SECRET_FILE)
   File.write SECRET_FILE, encoded
 end
