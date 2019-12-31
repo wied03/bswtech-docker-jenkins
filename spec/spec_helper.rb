@@ -18,7 +18,8 @@ docker_options = {
     TEST_SECRETS_CONTAINER_DIR => {}
   },
   'Env' => [
-    "SECRETS=#{TEST_SECRETS_CONTAINER_DIR}"
+    "SECRETS=#{TEST_SECRETS_CONTAINER_DIR}",
+    "JENKINS_URL=http://foo"
   ],
   'HostConfig' => {
     'Binds' => [

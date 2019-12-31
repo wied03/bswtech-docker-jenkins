@@ -17,6 +17,9 @@ jenkins:
       credentialsId: "bsw-tech"
       instanceCapStr: "2"
       projectId: "bsw-tech"
+unclassified:
+  location:
+    url: ${JENKINS_URL}
 credentials:
   system:
     domainCredentials:

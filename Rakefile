@@ -101,12 +101,13 @@ TEST_SECRETS_DIR = ENV['TEST_SECRETS_DIR'] = "#{Dir.pwd}/test_secrets"
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
 task :test_run => [:build, :setup_test_volume, SECRET_FILE] do
+  mounted_secrets = '/run/test_secrets'
   at_exit {
     sh 'docker rm -f jenkins'
   }
   volumes = [
     "#{TEST_VOL_DIR}:/var/jenkins_home:Z",
-    "#{TEST_SECRETS_DIR}:/run/test_secrets:Z"
+    "#{TEST_SECRETS_DIR}:#{mounted_secrets}:Z"
   ]
   additional = ENV['additional_test_volumes']&.split(',') || []
   volumes += additional
@@ -114,7 +115,11 @@ task :test_run => [:build, :setup_test_volume, SECRET_FILE] do
     "-v #{vol}"
   end.join(' ')
   port = ENV['JENKINS_PORT']
-  sh "docker run #{flat_volumes} #{port ? "-p #{port}:8080" : '-P'} -e SECRETS=/run/test_secrets --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} --name jenkins #{image_tag}"
+  environment_variables = {
+    JENKINS_URL: 'http://nope',
+    SECRETS: mounted_secrets
+  }.map {|k,v| "-e #{k}=#{v}"}.join(' ')
+  sh "docker run #{flat_volumes} #{port ? "-p #{port}:8080" : '-P'} #{environment_variables} --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} --name jenkins #{image_tag}"
 end
 
 JAVA_SOURCE = FileList[File.join(PLUGIN_MANAGER_PATH, '**/*')].exclude(File.join(PLUGIN_MANAGER_PATH, 'build', '**/*'))
