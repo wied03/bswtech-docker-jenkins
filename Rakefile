@@ -217,7 +217,9 @@ task :validate_casc do
   FileList['resources/casc/*'].each do |yml|
     puts "Validating #{yml}"
     file = File.read yml
-    YAML.load file
+    parsed = YAML.load file
+    puts "Parsed as"
+    pp parsed
   end
 end
 
