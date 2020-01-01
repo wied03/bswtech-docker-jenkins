@@ -62,9 +62,8 @@ task :setup_test_volume => :clean_test_volume do
     </hudson.plugins.jira.JiraProjectProperty_-DescriptorImpl>"
 end
 
-SECRET_FILE = 'test_secrets/gce_service_account'
 desc 'Run serverspec tests with actual container'
-RSpec::Core::RakeTask.new(:spec => [:build, :setup_test_volume, SECRET_FILE]) do |task|
+RSpec::Core::RakeTask.new(:spec => [:build, :setup_test_volume]) do |task|
   formatter = lambda do |type|
     "--format #{type}"
   end
@@ -88,26 +87,14 @@ ENV['IMAGE_TAG'] = image_tag = "bswtech/bswtech-docker-jenkins:#{IMAGE_VERSION}"
 PLUGIN_MANAGER_PATH = 'plugins/modified_plugin_manager'
 JAR_PATH = File.join(PLUGIN_MANAGER_PATH, 'build', 'libs', "bswtech-docker-jenkins-#{VERSION_NO_SUBRELEASE}.jar")
 
-JSON_FILE = ENV['GCE_SVC_ACCOUNT_JSON_FILE']
-file SECRET_FILE => [JSON_FILE].compact do
-  source = JSON_FILE || 'test_secrets/test.json'
-  puts "Using JSON file #{source} for test"
-  encoded = Base64.encode64(File.read(source))
-  mkdir_p File.expand_path('..', SECRET_FILE)
-  File.write SECRET_FILE, encoded
-end
-
-TEST_SECRETS_DIR = ENV['TEST_SECRETS_DIR'] = "#{Dir.pwd}/test_secrets"
 TMPFS_FLAGS = "uid=#{JENKINS_UID},gid=#{JENKINS_GID}"
 desc 'Run the actual container for manual testing'
-task :test_run => [:build, :setup_test_volume, SECRET_FILE] do
-  mounted_secrets = '/run/test_secrets'
+task :test_run => [:build, :setup_test_volume] do
   at_exit {
     sh 'docker rm -f jenkins'
   }
   volumes = [
     "#{TEST_VOL_DIR}:/var/jenkins_home:Z",
-    "#{TEST_SECRETS_DIR}:#{mounted_secrets}:Z"
   ]
   additional = ENV['additional_test_volumes']&.split(',') || []
   volumes += additional
@@ -117,7 +104,6 @@ task :test_run => [:build, :setup_test_volume, SECRET_FILE] do
   port = ENV['JENKINS_PORT']
   environment_variables = {
     JENKINS_URL: 'http://nope',
-    SECRETS: mounted_secrets
   }.map {|k,v| "-e #{k}=#{v}"}.join(' ')
   sh "docker run #{flat_volumes} #{port ? "-p #{port}:8080" : '-P'} #{environment_variables} --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} --name jenkins #{image_tag}"
 end

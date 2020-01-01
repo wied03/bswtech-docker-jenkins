@@ -6,4 +6,3 @@
 # Generated CSP stuff
 /content_sec_policy/*.yml
 /jenkins_test_volume
-/test_secrets/gce_service_account
