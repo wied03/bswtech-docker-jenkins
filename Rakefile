@@ -18,8 +18,6 @@ JENKINS_GID = ENV['JENKINS_GID'] = '1002'
 JENKINS_UID = ENV['JENKINS_UID'] = '1002'
 TEST_VOL_DIR = ENV['TEST_VOL_DIR'] = File.join(Dir.pwd, 'jenkins_test_volume')
 
-ON_MAC = RUBY_PLATFORM.include?('darwin')
-
 task :clean_test_volume do
   if ENV['SKIP_TEST_VOLUME_CLEAN']
     puts 'Skipping test volume clean'
@@ -27,11 +25,6 @@ task :clean_test_volume do
   end
   rm_rf TEST_VOL_DIR
   mkdir TEST_VOL_DIR
-  next unless Gem::Platform.local.os == 'linux'
-  puts 'Creating/changing ownership of test volume'
-  chown JENKINS_UID,
-        nil,
-        TEST_VOL_DIR
 end
 
 task :setup_test_volume => :clean_test_volume do
