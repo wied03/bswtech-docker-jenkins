@@ -105,11 +105,11 @@ describe 'Jenkins container' do
   NSS_WRAPPED = '/usr/local/bin/jenkins.sh'
 
   describe command("#{NSS_WRAPPED} getent passwd jenkins") do
-    its(:stdout) {is_expected.to include 'jenkins:x:1002:1002:Jenkins user:/var/jenkins_home:/bin/bash'}
+    its(:stdout) {is_expected.to include "jenkins:x:#{Process.uid}:#{Process.gid}:Jenkins user:/var/jenkins_home:/bin/bash"}
   end
 
   describe command("#{NSS_WRAPPED} id") do
-    its(:stdout) {is_expected.to include 'uid=1002(jenkins)'}
+    its(:stdout) {is_expected.to include "uid=#{Process.uid}(jenkins)"}
   end
 
   describe file(JENKINS_HOME_IMAGE) do

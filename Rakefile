@@ -14,8 +14,8 @@ require_relative 'app/attribute_parser'
 
 task :default => [:build, :spec]
 
-JENKINS_GID = ENV['JENKINS_GID'] = '1002'
-JENKINS_UID = ENV['JENKINS_UID'] = '1002'
+JENKINS_GID = ENV['JENKINS_GID'] = Process.gid.to_s
+JENKINS_UID = ENV['JENKINS_UID'] = Process.uid.to_s
 TEST_VOL_DIR = ENV['TEST_VOL_DIR'] = File.join(Dir.pwd, 'jenkins_test_volume')
 
 task :clean_test_volume do
