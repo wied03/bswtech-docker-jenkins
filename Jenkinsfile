@@ -16,7 +16,7 @@ else {
 def furyRepo = 'https://repo.fury.io/wied03/'
 def furyCredentialId = 'gemfury_key'
 
-node('docker') {
+node('docker.build') {
   try {
     stage('Checkout') {
       checkout([
@@ -69,7 +69,7 @@ if (env.BRANCH_NAME == 'master') {
   stage('Publish Image') {
     milestone()
 
-    node('docker') {
+    node('docker.build') {
       try {
         // might be on a different node (filesystem deps)
         ruby.with_gem_credentials(furyRepo, furyCredentialId) {
