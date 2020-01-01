@@ -15,6 +15,9 @@ docker_options = {
   'Volumes' => {
     '/var/jenkins_home' => {}
   },
+  'Env' => [
+    "JENKINS_URL=http://foo"
+  ],
   'HostConfig' => {
     'Binds' => [
       "#{ENV['TEST_VOL_DIR']}:/var/jenkins_home:Z"

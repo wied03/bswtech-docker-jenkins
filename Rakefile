@@ -3,6 +3,8 @@ require 'rspec/core/rake_task'
 require 'digest'
 require 'zip'
 require 'bundler'
+require 'yaml'
+require 'base64'
 
 # Needs to be before requires. more obvious path than the Rails' standard this library uses
 HASHES_FILE = ENV['secure_headers_generated_hashes_file'] = 'content_sec_policy/hashes.yml'
@@ -12,11 +14,9 @@ require_relative 'app/attribute_parser'
 
 task :default => [:build, :spec]
 
-JENKINS_GID = ENV['JENKINS_GID'] = '1002'
-JENKINS_UID = ENV['JENKINS_UID'] = '1002'
+JENKINS_GID = ENV['JENKINS_GID'] = Process.gid.to_s
+JENKINS_UID = ENV['JENKINS_UID'] = Process.uid.to_s
 TEST_VOL_DIR = ENV['TEST_VOL_DIR'] = File.join(Dir.pwd, 'jenkins_test_volume')
-
-ON_MAC = RUBY_PLATFORM.include?('darwin')
 
 task :clean_test_volume do
   if ENV['SKIP_TEST_VOLUME_CLEAN']
@@ -25,14 +25,13 @@ task :clean_test_volume do
   end
   rm_rf TEST_VOL_DIR
   mkdir TEST_VOL_DIR
-  next unless Gem::Platform.local.os == 'linux'
-  puts 'Creating/changing ownership of test volume'
-  chown JENKINS_UID,
-        nil,
-        TEST_VOL_DIR
 end
 
 task :setup_test_volume => :clean_test_volume do
+  if ENV['PRESERVE_VOLUME'] == '1'
+    puts 'Skipping test vol clean due to PRESERVE_VOLUME'
+    next
+  end
   # New stuff in 2.107.1 doesn't yet work right with JIRA plugin, so we test that
   # we whitelist serialization appropriately (jenkins.sh <= commit 6e97e673a9f8712177a25e5c354408aa96ded433 had to workaround this)
   # has since been fixed in JIRA plugin but this should sniff out the problem if it comes back
@@ -88,7 +87,7 @@ task :test_run => [:build, :setup_test_volume] do
     sh 'docker rm -f jenkins'
   }
   volumes = [
-    "#{TEST_VOL_DIR}:/var/jenkins_home:Z"
+    "#{TEST_VOL_DIR}:/var/jenkins_home:Z",
   ]
   additional = ENV['additional_test_volumes']&.split(',') || []
   volumes += additional
@@ -96,7 +95,10 @@ task :test_run => [:build, :setup_test_volume] do
     "-v #{vol}"
   end.join(' ')
   port = ENV['JENKINS_PORT']
-  sh "docker run #{flat_volumes} #{port ? " -p #{port}:8080" : ''} --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} -P --name jenkins #{image_tag}"
+  environment_variables = {
+    JENKINS_URL: 'http://nope',
+  }.map {|k,v| "-e #{k}=#{v}"}.join(' ')
+  sh "docker run #{flat_volumes} #{port ? "-p #{port}:8080" : '-P'} #{environment_variables} --cap-drop=all --read-only --tmpfs=/run --tmpfs=/tmp:exec --user #{JENKINS_UID}:#{JENKINS_GID} --name jenkins #{image_tag}"
 end
 
 JAVA_SOURCE = FileList[File.join(PLUGIN_MANAGER_PATH, '**/*')].exclude(File.join(PLUGIN_MANAGER_PATH, 'build', '**/*'))
@@ -210,9 +212,20 @@ task :build_csp => :'secure_headers:generate_hashes' do
   puts "System.setProperty(\"hudson.model.DirectoryBrowserSupport.CSP\", \"#{csp.value}\")"
 end
 
+desc 'Validates CASC'
+task :validate_casc do
+  FileList['resources/casc/*'].each do |yml|
+    puts "Validating #{yml}"
+    file = File.read yml
+    parsed = YAML.load file
+    puts "Parsed as"
+    pp parsed
+  end
+end
+
 JENKINS_BIN_DIR = '/usr/lib/jenkins'
 desc "Builds Docker image #{image_tag}"
-task :build => [JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
+task :build => [:validate_casc, JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
   nss_upgrade_packages = %w(util softokn tools softokn-freebl sysinit).map do |suffix|
     "nss-#{suffix}"
   end
@@ -227,13 +240,7 @@ task :build => [JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
     'UPGRADE_PACKAGES' => "\"#{upgrade_packages}\""
   }
   flat_args = args.map {|key, val| "--build-arg #{key}=#{val}"}.join ' '
-  begin
-    # SELinux causes problems when trying to use the Rocker MOUNT directive
-    sh 'setenforce 0' unless ON_MAC
-    sh "docker build --label Version=#{IMAGE_VERSION} -t #{image_tag} #{flat_args} ."
-  ensure
-    sh 'setenforce 1' unless ON_MAC
-  end
+  sh "docker build --label Version=#{IMAGE_VERSION} -t #{image_tag} #{flat_args} ."
 end
 
 desc "Pushes out docker image #{image_tag} to the registry"
