@@ -5,7 +5,8 @@ jenkins:
       cloudName: "ourslave"
       configurations:
       - description: "Jenkins slaves"
-        labels: "docker.build ruby.build"
+        # New Jenkins/GCE does not seem to like periods in the label name
+        labels: "docker ruby"
         launchTimeoutSeconds: 300
         launchTimeoutSecondsStr: "300"
         namePrefix: "jenkins-slave"
