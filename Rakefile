@@ -247,13 +247,7 @@ task :build => [:validate_casc, JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
     'UPGRADE_PACKAGES' => "\"#{upgrade_packages}\""
   }
   flat_args = args.map {|key, val| "--build-arg #{key}=#{val}"}.join ' '
-  begin
-    # SELinux causes problems when trying to use the Rocker MOUNT directive
-    sh 'setenforce 0' unless ON_MAC
-    sh "docker build --label Version=#{IMAGE_VERSION} -t #{image_tag} #{flat_args} ."
-  ensure
-    sh 'setenforce 1' unless ON_MAC
-  end
+  sh "docker build --label Version=#{IMAGE_VERSION} -t #{image_tag} #{flat_args} ."
 end
 
 desc "Pushes out docker image #{image_tag} to the registry"
