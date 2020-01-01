@@ -6,6 +6,7 @@ jenkins:
       configurations:
       - description: "Jenkins slaves"
         # New Jenkins/GCE does not seem to like periods in the label name
+        # Builds work but provisioning does not
         labels: "docker ruby"
         launchTimeoutSeconds: 300
         launchTimeoutSecondsStr: "300"
