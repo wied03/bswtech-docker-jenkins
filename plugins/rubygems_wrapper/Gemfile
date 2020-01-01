@@ -26,7 +26,6 @@ jenkins_gem['email-ext', '2.68']
 
 # Source control stuff
 jenkins_gem['git', '4.0.0']
-jenkins_gem['github', '~> 1.29']
 jenkins_gem['github-branch-source', '~> 2.5']
 # Needed to trigger multibranch pipelines from Bitbucket/webhooks
 jenkins_gem['cloudbees-bitbucket-branch-source', '2.6.0']

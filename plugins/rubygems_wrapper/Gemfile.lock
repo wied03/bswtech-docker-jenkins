@@ -438,7 +438,6 @@ DEPENDENCIES
   jenkins-plugin-proxy-docker-workflow (= 1.21)
   jenkins-plugin-proxy-email-ext (= 2.68)
   jenkins-plugin-proxy-git (= 4.0.0)
-  jenkins-plugin-proxy-github (~> 1.29)
   jenkins-plugin-proxy-github-branch-source (~> 2.5)
   jenkins-plugin-proxy-google-compute-engine (~> 4.2)
   jenkins-plugin-proxy-htmlpublisher (= 1.21)
