@@ -16,7 +16,7 @@ else {
 def furyRepo = 'https://repo.fury.io/wied03/'
 def furyCredentialId = 'gemfury_key'
 
-node('docker.build') {
+node('docker') {
   try {
     stage('Checkout') {
       checkout([
