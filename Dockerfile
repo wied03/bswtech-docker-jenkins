@@ -26,6 +26,7 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  && yum update -y ${UPGRADE_PACKAGES} \
  # trading in faster startup for image size
  && unzip ${JENKINS_WAR_FILE} -d ${JENKINS_APP_DIR} \
+ && rm ${JENKINS_WAR_FILE} \
  && yum remove -y unzip \
  && yum clean all \
  && yum autoremove -y \
