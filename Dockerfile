@@ -32,6 +32,11 @@ RUN curl http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo -o /etc/yum.repos.
  && yum autoremove -y \
  && rm -rfv /tmp/*
 
+RUN curl -fsSL https://github.com/krallin/tini/releases/download/v0.9.0/tini-static -o /bin/tini \
+  && chmod +x /bin/tini \
+  # Ensure we do not have a fake tini
+  && echo "fa23d1e20732501c3bb8eeeca423c89ac80ed452  /bin/tini" | sha1sum -c -
+
 # Now pre-load our plugins into the image
 COPY plugins/rubygems_wrapper/plugins_final $JENKINS_PLUGIN_DIR/
 ARG ImageVersion=FOOBAR
@@ -56,4 +61,5 @@ VOLUME ["${JENKINS_HOME}"]
 
 EXPOSE 8080
 
+ENTRYPOINT ["/bin/tini", "-v", "--"]
 CMD ["/usr/local/bin/jenkins.sh"]
