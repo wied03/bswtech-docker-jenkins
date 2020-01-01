@@ -1,27 +1,5 @@
 jenkins:
   systemMessage: From the plugin!
-  clouds:
-  - computeEngine:
-      cloudName: "ourslave"
-      configurations:
-      - description: "Jenkins slaves"
-        # New Jenkins/GCE does not seem to like periods in the label name
-        # Builds work but provisioning does not
-        labels: "docker ruby"
-        launchTimeoutSeconds: 300
-        launchTimeoutSecondsStr: "300"
-        namePrefix: "jenkins-slave"
-        numExecutors: 2
-        numExecutorsStr: "2"
-        region: "https://www.googleapis.com/compute/v1/projects/bsw-tech/regions/us-west1"
-        retentionTimeMinutes: 120
-        retentionTimeMinutesStr: "120"
-        runAsUser: "jenkins"
-        template: "https://www.googleapis.com/compute/v1/projects/bsw-tech/global/instanceTemplates/jenkins-slave"
-        zone: "https://www.googleapis.com/compute/v1/projects/bsw-tech/zones/us-west1-a"
-      credentialsId: "bsw-tech"
-      instanceCapStr: "2"
-      projectId: "bsw-tech"
 unclassified:
   location:
     url: ${JENKINS_URL}
