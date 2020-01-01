@@ -69,7 +69,7 @@ if (env.BRANCH_NAME == 'master') {
   stage('Publish Image') {
     milestone()
 
-    node('docker.build') {
+    node('docker') {
       try {
         // might be on a different node (filesystem deps)
         ruby.with_gem_credentials(furyRepo, furyCredentialId) {
