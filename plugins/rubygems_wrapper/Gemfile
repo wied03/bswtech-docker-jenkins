@@ -10,25 +10,26 @@ fail 'Need Jenkins version!' unless jenkins_version && !jenkins_version.empty?
 jenkins_gem['jenkins-core', jenkins_version]
 
 # Standard Jenkins
-jenkins_gem['build-timeout', '1.19']
+jenkins_gem['build-timeout', '1.19.1']
 
 # CloudBees Docker commands in Pipeline (for dealing with withRegistry, etc.)
-jenkins_gem['docker-workflow', '1.21']
+# Aka "Docker Pipeline"
+jenkins_gem['docker-workflow', '1.22']
 
 # Core credentials plugin
-jenkins_gem['credentials', '2.3.0']
+jenkins_gem['credentials', '2.3.3']
 
 # Allow use of creds in environment variables/pipeline steps
 jenkins_gem['credentials-binding', '1.20']
 
 # better email extensions
-jenkins_gem['email-ext', '2.68']
+jenkins_gem['email-ext', '2.69']
 
 # Source control stuff
-jenkins_gem['git', '4.0.0']
+jenkins_gem['git', '4.2.0']
 jenkins_gem['github-branch-source', '~> 2.5']
 # Needed to trigger multibranch pipelines from Bitbucket/webhooks
-jenkins_gem['cloudbees-bitbucket-branch-source', '2.6.0']
+jenkins_gem['cloudbees-bitbucket-branch-source', '2.7.0']
 
 # the actual core pipeline plugin
 jenkins_gem['workflow-aggregator', '2.6']
@@ -43,7 +44,7 @@ jenkins_gem['timestamper', '1.10']
 jenkins_gem['ws-cleanup', '0.38']
 
 # OWASP HTML sanitizer for text fields, standard Jenkins
-jenkins_gem['antisamy-markup-formatter', '1.6']
+jenkins_gem['antisamy-markup-formatter', '~> 1.8']
 
 # Authenticate via SAML (Google, Okta, etc.)
 jenkins_gem['saml', '1.1.4']
@@ -55,10 +56,10 @@ jenkins_gem['google-compute-engine', '~> 4.2']
 
 jenkins_gem['configuration-as-code', '~> 1.3']
 
-jenkins_gem['jira', '3.0.11']
+jenkins_gem['jira', '~> 3.0']
 
 # Handy to be able to have distributed locks
 jenkins_gem['lockable-resources', '2.7']
 
 # Allow publishing HTML to the actual Jenkins build page
-jenkins_gem['htmlpublisher', '1.21']
+jenkins_gem['htmlpublisher', '1.22']
