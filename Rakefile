@@ -229,7 +229,8 @@ task :build => [:validate_casc, JAR_PATH, PLUGIN_FINAL_DIRECTORY] do
   nss_upgrade_packages = %w(util softokn tools softokn-freebl sysinit).map do |suffix|
     "nss-#{suffix}"
   end
-  upgrade_packages = (%w(nss) + nss_upgrade_packages).join ' '
+  other_upgrade_packages = %w(sqlite)
+  upgrade_packages = (%w(nss) + nss_upgrade_packages + other_upgrade_packages).join ' '
   args = {
     'ImageVersion' => IMAGE_VERSION,
     'JenkinsVersion' => JENKINS_VERSION,
