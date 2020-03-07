@@ -9,7 +9,6 @@ ARG UPGRADE_PACKAGES=FOOBAR
 # end from Rake
 
 ENV JENKINS_HOME /var/jenkins_home
-ENV JENKINS_SLAVE_AGENT_PORT 50000
 # from RPM
 ENV JENKINS_APP_DIR ${JenkinsBinDir}/app
 ENV JENKINS_REF_DIR ${JenkinsBinDir}/ref
@@ -52,7 +51,6 @@ COPY resources/passwd.template $JENKINS_APP_DIR
 # Our own plugin manager to deal with pre-loaded plugins
 ARG PluginJarPath=FOOBAR
 COPY ${PluginJarPath} ${JENKINS_APP_DIR}/WEB-INF/lib/
-COPY resources/init.groovy $JENKINS_REF_DIR/init.groovy.d/tcp-slave-agent-port.groovy
 
 ENV CASC_JENKINS_CONFIG ${JENKINS_APP_DIR}/casc
 COPY resources/casc/* ${CASC_JENKINS_CONFIG}/
