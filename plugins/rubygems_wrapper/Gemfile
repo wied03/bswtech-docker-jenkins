@@ -26,7 +26,7 @@ jenkins_gem['credentials-binding', '1.20']
 jenkins_gem['email-ext', '2.69']
 
 # Source control stuff
-jenkins_gem['git', '4.2.0']
+jenkins_gem['git', '~> 4.2']
 jenkins_gem['github-branch-source', '~> 2.5']
 # Needed to trigger multibranch pipelines from Bitbucket/webhooks
 jenkins_gem['cloudbees-bitbucket-branch-source', '2.7.0']
@@ -38,7 +38,7 @@ jenkins_gem['workflow-aggregator', '2.6']
 jenkins_gem['ssh-agent', '1.17']
 
 # Base jenkins package, adds them to console output
-jenkins_gem['timestamper', '1.10']
+jenkins_gem['timestamper', '~> 1.10']
 
 # Workspace cleanup
 jenkins_gem['ws-cleanup', '0.38']
